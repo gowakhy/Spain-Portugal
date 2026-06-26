@@ -2,12 +2,12 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-  <title>Spain + Portugal · Aug 2026</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover">
+  <title>My Trips</title>
   <link rel="manifest" href="manifest.json">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
-  <meta name="apple-mobile-web-app-title" content="ES+PT Trip">
+  <meta name="apple-mobile-web-app-title" content="My Trips">
   <link rel="apple-touch-icon" href="icon-192.png">
   <meta name="theme-color" content="#C84B31">
   <script>
@@ -21,8 +21,30 @@
   <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
   <style>
     *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
-    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-text-size-adjust: 100%; }
-    select { font-family: inherit; }
+    :root{
+      --safe-top: env(safe-area-inset-top, 0px);
+      --safe-bottom: env(safe-area-inset-bottom, 0px);
+    }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, Roboto, sans-serif;
+      -webkit-text-size-adjust: 100%;
+      -webkit-font-smoothing: antialiased;
+      text-rendering: optimizeLegibility;
+      background: #F2F1EC;
+      overscroll-behavior-y: none;
+    }
+    select, input, textarea, button { font-family: inherit; }
+    button { -webkit-tap-highlight-color: transparent; transition: transform .08s ease, background .15s ease, color .15s ease; }
+    button:active { transform: scale(.96); }
+    a { -webkit-tap-highlight-color: transparent; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    @keyframes sheetUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    @keyframes popIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .screen-in { animation: fadeIn .18s ease; }
+    .sheet-in { animation: sheetUp .26s cubic-bezier(.22,.61,.36,1); }
   </style>
 </head>
 <body>
@@ -39,12 +61,31 @@ function useWindowWidth(){
   },[]);
   return w;
 }
+// Per-trip storage: all "progress" keys are auto-prefixed with the active trip id.
+// App-level keys (the trip list, settings) stay global via the allowlist below.
+let ACTIVE_TRIP="";
+const GLOBAL_KEYS=new Set(["trips","last-trip","trip-overrides","migrated-v2"]);
+function nsKey(key){ return GLOBAL_KEYS.has(key)||!ACTIVE_TRIP ? key : ACTIVE_TRIP+"::"+key; }
 function ls(key,def){
-  try{const v=localStorage.getItem(key);return v?JSON.parse(v):def;}catch(e){return def;}
+  try{const v=localStorage.getItem(nsKey(key));return v?JSON.parse(v):def;}catch(e){return def;}
 }
 function lsSet(key,val){
-  try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}
+  try{localStorage.setItem(nsKey(key),JSON.stringify(val));}catch(e){}
 }
+// One-time migration: copy the original single-trip keys into the Spain trip's namespace.
+(function migrateV2(){
+  try{
+    if(localStorage.getItem('migrated-v2')) return;
+    ['bk-done','actual-spend','custom-dishes','custom-venues','custom-see','custom-notes',
+     'stay-done','stay-hidden','see-done','see-hidden','eat-done','eat-hidden'].forEach(k=>{
+      const v=localStorage.getItem(k);
+      if(v!=null && localStorage.getItem('spain-portugal-2026::'+k)==null){
+        localStorage.setItem('spain-portugal-2026::'+k,v);
+      }
+    });
+    localStorage.setItem('migrated-v2','1');
+  }catch(e){}
+})();
 function mapsUrl(name,addr){
   return 'https://maps.google.com/?q='+encodeURIComponent((addr||'')+' '+(name||''));
 }
@@ -53,6 +94,37 @@ function mapsUrl(name,addr){
 const ES="#C84B31", PT="#1A5FA0";
 const BG="#F7F6F2", CARD="#FFFFFF", C2="#F0EFEb", BORDER="#E2E1DD";
 const TXT="#1A1918", MUT="#9A9890", WRN="#B8720A", GRN="#2D8653";
+// Accent color for a city: Spain/Portugal cities keep their country color; others use the trip accent.
+function cityColor(trip,c){
+  if(c&&c.country==="pt") return PT;
+  if(c&&c.country==="es") return ES;
+  return (trip&&trip.color)||ES;
+}
+
+// ─── ICONS (crisp inline SVG, stroke style) ───────────────────────────────────
+const ICON_PATHS={
+  days:"M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z",
+  see:"M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+  eat:"M5 3v8M3 3v6a2 2 0 0 0 2 2v0 M7 3v6a2 2 0 0 1-2 2v0M5 11v10 M16 3c-1.5 0-3 1.8-3 5s1.5 4 3 4 3 1 3 1v8 M19 3v10",
+  stay:"M3 18v-6a1 1 0 0 1 1-1h11a3 3 0 0 1 3 3v4 M3 18h18 M3 14V6 M21 18v-2 M7 11V9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v2",
+  budget:"M3 7a1 1 0 0 1 1-1h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z M16 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z M3 7l13-3 2 2",
+  notes:"M4 4h11l5 5v11a0 0 0 0 1 0 0H4a0 0 0 0 1 0 0V4Z M14 4v5h5 M8 13h8 M8 17h5",
+  back:"M15 5l-7 7 7 7",
+  gear:"M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z M19.4 13.5a1.6 1.6 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.6 1.6 0 0 0-2.7 1.1V21a2 2 0 1 1-4 0v-.1A1.6 1.6 0 0 0 7 19.4a1.6 1.6 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.6 1.6 0 0 0-1.1-2.7H1a2 2 0 1 1 0-4h.1A1.6 1.6 0 0 0 2.6 7a1.6 1.6 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.6 1.6 0 0 0 1.8.3H7a1.6 1.6 0 0 0 1-1.5V1a2 2 0 1 1 4 0v.1a1.6 1.6 0 0 0 1 1.5 1.6 1.6 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.6 1.6 0 0 0-.3 1.8V7a1.6 1.6 0 0 0 1.5 1H23a2 2 0 1 1 0 4h-.1a1.6 1.6 0 0 0-1.5 1Z",
+  plus:"M12 5v14M5 12h14",
+  pin:"M12 21s7-5.2 7-11a7 7 0 1 0-14 0c0 5.8 7 11 7 11Z M12 12.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
+  list:"M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
+  wallet:"M3 7a1 1 0 0 1 1-1h14a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z M16 12.5a1 1 0 1 0 0-2 1 1 0 0 0 0 2Z",
+  chat:"M21 12a8 8 0 0 1-11.5 7.2L3 21l1.8-6.5A8 8 0 1 1 21 12Z",
+};
+function Icon({name,size=22,color="currentColor",stroke=2,fill=false}){
+  const d=ICON_PATHS[name]; if(!d) return null;
+  return <svg width={size} height={size} viewBox="0 0 24 24" fill={fill?color:"none"}
+    stroke={color} strokeWidth={stroke} strokeLinecap="round" strokeLinejoin="round"
+    style={{display:"block",flexShrink:0}} aria-hidden="true">
+    {d.split(" M").map((seg,i)=><path key={i} d={(i?"M":"")+seg}/>)}
+  </svg>;
+}
 
 // ─── BOOKINGS ────────────────────────────────────────────────────────────────
 const BOOKINGS=[
@@ -92,6 +164,8 @@ const PHRASES={
 // ─── BUDGET ───────────────────────────────────────────────────────────────────
 const BUDGET={
   total:1683, onGround:1343, flights:340,
+  summary:[["All-in","$1,683","incl. flights"],["On-ground","$1,343","12 days in Iberia"],["Daily avg","$111.90","pure daily $82"]],
+  donutLabel:"$1,343", donutSub:"on-ground",
   note:"Pure daily spend (accommodation + food + local transport) = $82/day. The $111.90 average includes intercity transport and attractions spread across the trip.",
   cats:[
     {label:"Accommodation",amount:638.75,pct:47.6,color:"#4A90E2"},
@@ -630,20 +704,48 @@ const DAY_MAP={1:"madrid",2:"madrid",3:"seville",4:"seville",5:"granada",
                6:"granada",7:"malaga",8:"valencia",9:"barcelona",10:"barcelona",
                11:"porto",12:"lisbon"};
 
-const TRIP_START=new Date(2026,7,2); // Aug 2, 2026 (month is 0-indexed)
 const DNAMES=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const MNAMES=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
 // Transit cities share a day with the next stop — not in DAY_MAP
 const TRANSIT_DAY={toledo:3, cordoba:5};
-function cityDates(cityId){
-  const cityDays=Object.entries(DAY_MAP).filter(([,id])=>id===cityId).map(([d])=>Number(d));
-  const d1=cityDays.length?Math.min(...cityDays):TRANSIT_DAY[cityId];
-  const d2=cityDays.length?Math.max(...cityDays):TRANSIT_DAY[cityId];
+function cityDates(trip,cityId){
+  if(!trip||!trip.startDate||!trip.dayMap) return "";
+  const dayMap=trip.dayMap, transit=trip.transitDay||{};
+  const start=new Date(trip.startDate+"T00:00:00");
+  const cityDays=Object.entries(dayMap).filter(([,id])=>id===cityId).map(([d])=>Number(d));
+  const d1=cityDays.length?Math.min(...cityDays):transit[cityId];
+  const d2=cityDays.length?Math.max(...cityDays):transit[cityId];
   if(!d1) return "";
-  const date1=new Date(TRIP_START.getTime()+(d1-1)*86400000);
-  const date2=new Date(TRIP_START.getTime()+(d2-1)*86400000);
-  if(d1===d2) return `${DNAMES[date1.getDay()]} · Aug ${date1.getDate()}`;
-  return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} · Aug ${date1.getDate()}-${date2.getDate()}`;
+  const date1=new Date(start.getTime()+(d1-1)*86400000);
+  const date2=new Date(start.getTime()+(d2-1)*86400000);
+  const m1=MNAMES[date1.getMonth()], m2=MNAMES[date2.getMonth()];
+  if(d1===d2) return `${DNAMES[date1.getDay()]} · ${m1} ${date1.getDate()}`;
+  if(m1===m2) return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} · ${m1} ${date1.getDate()}-${date2.getDate()}`;
+  return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} · ${m1} ${date1.getDate()}-${m2} ${date2.getDate()}`;
 }
+
+// ─── TRIP ASSEMBLY ─────────────────────────────────────────────────────────────
+// The Spain+Portugal trip is built-in (lives in the code, present on every device).
+const spainTrip={
+  id:"spain-portugal-2026",
+  title:"Spain + Portugal",
+  flags:"🇪🇸🇵🇹",
+  color:ES,
+  startDate:"2026-08-02",
+  days:12,
+  subtitle:"August 2026 · 12 days · 10 cities · Cairo ↔",
+  homeAirport:"CAI",
+  flightCities:["porto"], // cities arrived at by flight (besides the initial hop)
+  cities:CITIES,
+  dayMap:DAY_MAP,
+  transitDay:TRANSIT_DAY,
+  bookings:BOOKINGS,
+  budget:BUDGET,
+  budgetHacks:BUDGET_HACKS,
+  phrases:PHRASES,
+  builtin:true,
+};
+const BUILTIN_TRIPS=[spainTrip];
 
 // ─── SMALL UI PIECES ─────────────────────────────────────────────────────────
 function Tag({children,color}){
@@ -664,7 +766,9 @@ function Row({t,d}){
 }
 
 // ─── HORIZONTAL ROUTE STRIP ───────────────────────────────────────────────────
-function RouteStrip({sel,onSelect,dayMode,activeDay}){
+function RouteStrip({trip,sel,onSelect,dayMode,activeDay}){
+  const CITIES=trip.cities, DAY_MAP=trip.dayMap||{};
+  const home=trip.homeAirport, flightCities=trip.flightCities||[];
   const activeCityId=dayMode?DAY_MAP[activeDay]:sel;
 
   return(
@@ -674,21 +778,21 @@ function RouteStrip({sel,onSelect,dayMode,activeDay}){
         <div style={{display:"flex",alignItems:"center",padding:"16px 20px",
           minWidth:"max-content",gap:0}}>
 
-          {/* Cairo start */}
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
+          {/* Home airport start */}
+          {home&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
             <div style={{fontSize:14}}>✈</div>
             <div style={{width:10,height:10,borderRadius:"50%",background:"#ccc"}}/>
-            <div style={{fontSize:9,color:MUT,fontWeight:600}}>CAI</div>
-          </div>
+            <div style={{fontSize:9,color:MUT,fontWeight:600}}>{home}</div>
+          </div>}
 
-          {/* Flight line to Madrid */}
-          <FlightConnector/>
+          {/* Flight line to first city */}
+          {home&&<FlightConnector/>}
 
           {/* City nodes */}
           {CITIES.map((c,i)=>{
             const isActive=c.id===activeCityId;
-            const cc2=c.country==="pt"?PT:ES;
-            const needFlight=c.id==="porto"; // after Barcelona
+            const cc2=cityColor(trip,c);
+            const needFlight=flightCities.includes(c.id);
             return(
               <div key={c.id} style={{display:"flex",alignItems:"center",gap:0}}>
                 {/* Connector before this city */}
@@ -700,8 +804,8 @@ function RouteStrip({sel,onSelect,dayMode,activeDay}){
                     background:"none",border:"none",cursor:"pointer",padding:"0 6px",
                     position:"relative"}}>
                   {/* Heat indicator */}
-                  <div style={{width:7,height:7,borderRadius:"50%",background:c.heatColor,
-                    boxShadow:`0 0 4px ${c.heatColor}88`}}/>
+                  <div style={{width:7,height:7,borderRadius:"50%",background:c.heatColor||cc2,
+                    boxShadow:`0 0 4px ${(c.heatColor||cc2)}88`}}/>
                   {/* City circle */}
                   <div style={{
                     width:isActive?34:26, height:isActive?34:26,
@@ -730,23 +834,24 @@ function RouteStrip({sel,onSelect,dayMode,activeDay}){
             );
           })}
 
-          {/* Flight line to Cairo */}
-          <FlightConnector/>
+          {/* Flight line back home */}
+          {home&&<FlightConnector/>}
 
-          {/* Cairo end */}
-          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
+          {/* Home airport end */}
+          {home&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
             <div style={{fontSize:14}}>✈</div>
             <div style={{width:10,height:10,borderRadius:"50%",background:"#ccc"}}/>
-            <div style={{fontSize:9,color:MUT,fontWeight:600}}>CAI</div>
-          </div>
+            <div style={{fontSize:9,color:MUT,fontWeight:600}}>{home}</div>
+          </div>}
         </div>
       </div>
 
-      {/* Dynamic legend bar */}
+      {/* Dynamic legend bar — only when cities carry heat data (built-in trips) */}
       {(()=>{
         const sc=CITIES.find(c=>c.id===sel)||CITIES[0];
-        const scColor=sc.country==="pt"?PT:ES;
-        const scFlag=sc.country==="pt"?"🇵🇹 Portugal":"🇪🇸 Spain";
+        if(!sc||!sc.heatLabel) return null;
+        const scColor=cityColor(trip,sc);
+        const scFlag=sc.country==="pt"?"🇵🇹 Portugal":sc.country==="es"?"🇪🇸 Spain":(trip.flags||"");
         return(
           <div style={{display:"flex",alignItems:"center",borderTop:`1px solid ${BORDER}`,
             fontSize:9,fontWeight:600,letterSpacing:.4,textTransform:"uppercase"}}>
@@ -788,7 +893,8 @@ function FlightConnector(){
 }
 
 // ─── BUDGET OVERLAY ───────────────────────────────────────────────────────────
-function BudgetOverlay({onClose}){
+function BudgetOverlay({trip,onClose}){
+  const BUDGET=trip.budget, CITIES=trip.cities;
   const C=2*Math.PI*52;
   let cum=0;
   const segs=BUDGET.cats.map(cat=>{
@@ -797,22 +903,25 @@ function BudgetOverlay({onClose}){
     cum+=cat.pct;
     return {...cat,len,offset};
   });
-  const maxCity=Math.max(...CITIES.map(c=>c.cityCost.total));
+  const maxCity=Math.max(...CITIES.map(c=>(c.cityCost&&c.cityCost.total)||0),1);
+  const summary=BUDGET.summary||[["Total","$"+(BUDGET.total||0),""]];
 
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.35)",zIndex:200,
-      display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div style={{background:CARD,borderRadius:14,padding:26,width:520,maxWidth:"95vw",
-        maxHeight:"85vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.15)"}}
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",zIndex:200,
+      display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s ease"}} onClick={onClose}>
+      <div className="sheet-in no-scrollbar" style={{background:CARD,borderRadius:"22px 22px 0 0",
+        padding:"10px 22px calc(24px + var(--safe-bottom))",width:"100%",maxWidth:560,
+        maxHeight:"90vh",overflowY:"auto",boxShadow:"0 -10px 40px rgba(0,0,0,.18)"}}
         onClick={e=>e.stopPropagation()}>
+        <div style={{width:38,height:4,borderRadius:2,background:BORDER,margin:"4px auto 14px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-          <div style={{fontWeight:800,fontSize:16,color:TXT}}>Trip Budget</div>
+          <div style={{fontWeight:800,fontSize:18,color:TXT}}>Trip Budget</div>
           <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
         </div>
 
         {/* Totals */}
         <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:22}}>
-          {[["All-in","$1,683","incl. flights"],["On-ground","$1,343","12 days in Iberia"],["Daily avg","$111.90","pure daily $82"]].map(([l,v,s])=>(
+          {summary.map(([l,v,s])=>(
             <div key={l} style={{background:C2,borderRadius:10,padding:"12px",textAlign:"center"}}>
               <div style={{fontSize:9,color:MUT,marginBottom:3,textTransform:"uppercase",letterSpacing:.5}}>{l}</div>
               <div style={{fontSize:17,fontWeight:800,color:TXT}}>{v}</div>
@@ -831,8 +940,8 @@ function BudgetOverlay({onClose}){
                 strokeDashoffset={s.offset}
                 transform="rotate(-90,62,62)"/>
             ))}
-            <text x="62" y="57" textAnchor="middle" fontSize="13" fontWeight="800" fill={TXT}>$1,343</text>
-            <text x="62" y="72" textAnchor="middle" fontSize="9" fill={MUT}>on-ground</text>
+            <text x="62" y="57" textAnchor="middle" fontSize="13" fontWeight="800" fill={TXT}>{BUDGET.donutLabel||('$'+(BUDGET.onGround||0))}</text>
+            <text x="62" y="72" textAnchor="middle" fontSize="9" fill={MUT}>{BUDGET.donutSub||"total"}</text>
           </svg>
           <div style={{flex:1}}>
             {BUDGET.cats.map(c=>(
@@ -851,7 +960,7 @@ function BudgetOverlay({onClose}){
 
         <SH label="Per-city spend"/>
         <div style={{borderRadius:8,overflow:"hidden",border:`1px solid ${BORDER}`}}>
-          {CITIES.map((c,i)=>(
+          {CITIES.filter(c=>c.cityCost).map((c,i)=>(
             <div key={c.id} style={{padding:"8px 12px",borderBottom:i<CITIES.length-1?`1px solid ${BORDER}`:"none",
               background:i%2===0?CARD:C2}}>
               <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
@@ -882,15 +991,18 @@ function BudgetOverlay({onClose}){
 }
 
 // ─── PHRASES OVERLAY ──────────────────────────────────────────────────────────
-function PhrasesOverlay({onClose}){
+function PhrasesOverlay({trip,onClose}){
+  const PHRASES=trip.phrases||{};
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.35)",zIndex:200,
-      display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div style={{background:CARD,borderRadius:14,padding:26,width:480,maxWidth:"95vw",
-        maxHeight:"80vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.15)"}}
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",zIndex:200,
+      display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s ease"}} onClick={onClose}>
+      <div className="sheet-in no-scrollbar" style={{background:CARD,borderRadius:"22px 22px 0 0",
+        padding:"10px 22px calc(24px + var(--safe-bottom))",width:"100%",maxWidth:500,
+        maxHeight:"88vh",overflowY:"auto",boxShadow:"0 -10px 40px rgba(0,0,0,.18)"}}
         onClick={e=>e.stopPropagation()}>
+        <div style={{width:38,height:4,borderRadius:2,background:BORDER,margin:"4px auto 14px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
-          <div style={{fontWeight:800,fontSize:16,color:TXT}}>Phrase Book</div>
+          <div style={{fontWeight:800,fontSize:18,color:TXT}}>Phrase Book</div>
           <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
         </div>
         {Object.values(PHRASES).map(lang=>(
@@ -912,15 +1024,18 @@ function PhrasesOverlay({onClose}){
 }
 
 // ─── BOOKINGS OVERLAY ─────────────────────────────────────────────────────────
-function BookingsOverlay({done,onToggle,onClose}){
+function BookingsOverlay({trip,done,onToggle,onClose}){
+  const BOOKINGS=trip.bookings||[];
   return(
-    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.35)",zIndex:200,
-      display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
-      <div style={{background:CARD,borderRadius:14,padding:26,width:440,maxWidth:"95vw",
-        maxHeight:"80vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.15)"}}
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.4)",zIndex:200,
+      display:"flex",alignItems:"flex-end",justifyContent:"center",animation:"fadeIn .2s ease"}} onClick={onClose}>
+      <div className="sheet-in no-scrollbar" style={{background:CARD,borderRadius:"22px 22px 0 0",
+        padding:"10px 22px calc(24px + var(--safe-bottom))",width:"100%",maxWidth:460,
+        maxHeight:"88vh",overflowY:"auto",boxShadow:"0 -10px 40px rgba(0,0,0,.18)"}}
         onClick={e=>e.stopPropagation()}>
+        <div style={{width:38,height:4,borderRadius:2,background:BORDER,margin:"4px auto 14px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
-          <div style={{fontWeight:800,fontSize:16,color:TXT}}>Booking Checklist</div>
+          <div style={{fontWeight:800,fontSize:18,color:TXT}}>Booking Checklist</div>
           <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
         </div>
         <div style={{fontSize:11,color:MUT,marginBottom:16}}>Priority order — book top items first.</div>
@@ -949,6 +1064,11 @@ function BookingsOverlay({done,onToggle,onClose}){
 
 // ─── TAB CONTENT ──────────────────────────────────────────────────────────────
 function DaysTab({city}){
+  if(!city.dayPlan||city.dayPlan.length===0){
+    return <div style={{fontSize:12,color:MUT,lineHeight:1.7,padding:"8px 2px"}}>
+      No day-by-day plan yet for {city.name}. Use the <b>See</b>, <b>Eat</b> and <b>Notes</b> tabs to build out what you'll do here.
+    </div>;
+  }
   return <div>
     {city.dayPlan.map((dp,i)=>(
       <div key={i} style={{marginBottom:20}}>
@@ -1248,10 +1368,32 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
   </div>;
 }
 
-function BudgetTab({city,actualSpend,setActualSpend}){
+function BudgetTab({trip,city,actualSpend,setActualSpend}){
+  const cc2=cityColor(trip,city);
   const cc=city.cityCost;
-  const cc2=city.country==="pt"?PT:ES;
-  const maxCity=Math.max(...CITIES.map(c=>c.cityCost.total));
+
+  // DIY trips: cities have no cost estimate — show a simple "what did you spend" tracker.
+  if(!cc){
+    return <div>
+      <div style={{background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+        <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:10}}>Actual spend</div>
+        <div style={{display:"flex",alignItems:"center",gap:4,background:CARD,
+          borderRadius:7,border:`1px solid ${BORDER}`,padding:"6px 12px",width:"fit-content"}}>
+          <span style={{fontSize:13,color:MUT,fontWeight:600}}>$</span>
+          <input type="number" inputMode="decimal" placeholder="0"
+            value={actualSpend[city.id]??''}
+            onChange={ev=>{const v=ev.target.value;const next={...actualSpend,[city.id]:v===''?null:Number(v)};
+              setActualSpend(next); lsSet('actual-spend',next);}}
+            style={{width:90,border:"none",background:"transparent",fontSize:15,
+              fontWeight:700,color:TXT,outline:"none",WebkitAppearance:"none"}}/>
+        </div>
+        <div style={{fontSize:11,color:MUT,marginTop:8}}>Track what you actually spend in {city.name}.</div>
+      </div>
+    </div>;
+  }
+
+  const CITIES=trip.cities.filter(c=>c.cityCost);
+  const maxCity=Math.max(...CITIES.map(c=>c.cityCost.total),1);
   const sorted=[...CITIES].sort((a,b)=>a.cityCost.total-b.cityCost.total);
   const rank=sorted.findIndex(c=>c.id===city.id)+1; // 1 = cheapest
   const nights=parseInt(city.duration)||0;
@@ -1284,7 +1426,7 @@ function BudgetTab({city,actualSpend,setActualSpend}){
           <div style={{marginTop:8}}>
             <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:2}}>Route rank</div>
             <div style={{fontSize:13,fontWeight:700,color:rank<=3?GRN:rank>=8?ES:WRN}}>
-              {rank<=3?"💚":rank>=8?"🔴":"🟡"} #{rank} of 10 cities
+              {rank<=3?"💚":rank>=8?"🔴":"🟡"} #{rank} of {CITIES.length} cities
             </div>
             <div style={{fontSize:9,color:MUT}}>{rank<=3?"budget-friendly":rank>=8?"higher spend":"mid-range"}</div>
           </div>
@@ -1376,12 +1518,12 @@ function BudgetTab({city,actualSpend,setActualSpend}){
     </div>
 
     {/* Budget hack */}
-    <div style={{background:"#F0F7FF",border:`1px solid ${PT}33`,borderRadius:10,padding:14}}>
+    {(trip.budgetHacks||{})[city.id]&&<div style={{background:"#F0F7FF",border:`1px solid ${PT}33`,borderRadius:10,padding:14}}>
       <div style={{fontSize:10,fontWeight:700,color:PT,marginBottom:6,letterSpacing:.5}}>
         💡 BUDGET HACK
       </div>
-      <div style={{fontSize:12,color:"#444",lineHeight:1.65}}>{BUDGET_HACKS[city.id]}</div>
-    </div>
+      <div style={{fontSize:12,color:"#444",lineHeight:1.65}}>{trip.budgetHacks[city.id]}</div>
+    </div>}
   </div>;
 }
 
@@ -1525,16 +1667,18 @@ function NotesTab({city,customNotes,setCustomNotes}){
 
 // ─── MAIN APP ─────────────────────────────────────────────────────────────────
 const TABS=[
-  {id:"days",label:"Days"},
-  {id:"see",label:"See"},
-  {id:"eat",label:"Eat"},
-  {id:"logistics",label:"Stay & Move"},
-  {id:"budget",label:"Budget"},
-  {id:"notes",label:"Notes"},
+  {id:"days",label:"Days",icon:"days"},
+  {id:"see",label:"See",icon:"see"},
+  {id:"eat",label:"Eat",icon:"eat"},
+  {id:"logistics",label:"Stay",icon:"stay"},
+  {id:"budget",label:"Budget",icon:"budget"},
+  {id:"notes",label:"Notes",icon:"notes"},
 ];
 
-function SpainPortugal(){
-  const [sel,setSel]=useState("madrid");
+function TripView({trip,onHome}){
+  const CITIES=trip.cities, DAY_MAP=trip.dayMap||{}, BOOKINGS=trip.bookings||[];
+  const hasBookings=BOOKINGS.length>0, hasBudget=!!(trip.budget&&trip.budget.cats), hasPhrases=!!(trip.phrases&&Object.keys(trip.phrases).length);
+  const [sel,setSel]=useState(CITIES[0]?CITIES[0].id:"");
   const [tab,setTab]=useState("days");
   const [bkOpen,setBkOpen]=useState(false);
   const [bdOpen,setBdOpen]=useState(false);
@@ -1556,8 +1700,8 @@ function SpainPortugal(){
 
   const isMobile=useWindowWidth()<640;
 
-  const city=CITIES.find(c=>c.id===sel)||CITIES[0];
-  const cc2=city.country==="pt"?PT:ES;
+  const city=CITIES.find(c=>c.id===sel)||CITIES[0]||{name:"",id:""};
+  const cc2=cityColor(trip,city);
   const doneCount=Object.values(done).filter(Boolean).length;
 
   function toggleDone(id){
@@ -1568,157 +1712,418 @@ function SpainPortugal(){
     const cid=DAY_MAP[n]; if(cid){setSel(cid);setTab("days");}
   }
   useEffect(()=>{
+    if(!trip.startDate) return;
     const today=new Date();
-    const start=new Date(2026,7,2);
+    const start=new Date(trip.startDate+"T00:00:00");
     const day=Math.round((today-start)/86400000)+1;
-    if(day>=1&&day<=12) handleDayChange(day);
+    if(day>=1&&day<=trip.days) handleDayChange(day);
   },[]);
 
-  return(
-    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:BG,minHeight:"100vh",color:TXT}}>
+  const rbtn={width:38,height:38,borderRadius:12,display:"flex",alignItems:"center",
+    justifyContent:"center",fontSize:16,cursor:"pointer",position:"relative",flexShrink:0};
 
-      {/* TOP BAR */}
-      <div style={{background:CARD,borderBottom:`1px solid ${BORDER}`,
-        padding:isMobile?"10px 12px":"12px 20px",
-        display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,justifyContent:"space-between",
-        boxShadow:"0 1px 3px rgba(0,0,0,.05)"}}>
-        <div>
-          <div style={{fontWeight:800,fontSize:isMobile?15:16,letterSpacing:-.3}}>
-            <span style={{color:ES}}>Spain</span> <span style={{color:MUT,fontWeight:400,fontSize:13}}>+</span> <span style={{color:PT}}>Portugal</span>
+  return(
+    <div style={{fontFamily:"inherit",background:BG,minHeight:"100vh",color:TXT,
+      paddingBottom:"calc(72px + var(--safe-bottom))"}}>
+
+      {/* HEADER (sticky) */}
+      <div style={{position:"sticky",top:0,zIndex:50,background:"rgba(255,255,255,.86)",
+        backdropFilter:"saturate(180%) blur(12px)",WebkitBackdropFilter:"saturate(180%) blur(12px)",
+        borderBottom:`1px solid ${BORDER}`,
+        padding:"calc(10px + var(--safe-top)) 14px 10px"}}>
+        <div style={{display:"flex",alignItems:"center",gap:10}}>
+          <button onClick={onHome} title="All trips" style={{...rbtn,background:C2,border:`1px solid ${BORDER}`,color:TXT}}>
+            <Icon name="back" size={20} color={TXT}/>
+          </button>
+          <div style={{flex:1,minWidth:0}}>
+            <div style={{fontWeight:800,fontSize:17,letterSpacing:-.3,whiteSpace:"nowrap",
+              overflow:"hidden",textOverflow:"ellipsis"}}>
+              <span style={{marginRight:6}}>{trip.flags}</span>
+              <span style={{color:trip.color||ES}}>{trip.title}</span>
+            </div>
+            <div style={{fontSize:11,color:MUT,marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
+              {city.name}{cityDates(trip,city.id)?` · ${cityDates(trip,city.id)}`:""}
+            </div>
           </div>
-          {!isMobile&&<div style={{fontSize:10,color:MUT,marginTop:1}}>August 2026 · 12 days · 10 cities · Cairo ↔</div>}
+          {hasBookings&&<button onClick={()=>{setBkOpen(true);setBdOpen(false);setPhOpen(false);}}
+            style={{...rbtn,background:doneCount===BOOKINGS.length?GRN+"15":ES+"12",
+              border:`1px solid ${doneCount===BOOKINGS.length?GRN:ES}33`}}>📋
+            <span style={{position:"absolute",top:-5,right:-5,background:doneCount===BOOKINGS.length?GRN:ES,
+              color:"#fff",fontSize:8,fontWeight:800,borderRadius:8,padding:"1px 4px",lineHeight:1.3,
+              border:"1.5px solid #fff"}}>{doneCount}/{BOOKINGS.length}</span>
+          </button>}
+          {hasBudget&&<button onClick={()=>{setBdOpen(true);setBkOpen(false);setPhOpen(false);}}
+            style={{...rbtn,background:PT+"12",border:`1px solid ${PT}33`}}>💰</button>}
+          {hasPhrases&&<button onClick={()=>{setPhOpen(true);setBkOpen(false);setBdOpen(false);}}
+            style={{...rbtn,background:C2,border:`1px solid ${BORDER}`}}>🗣</button>}
         </div>
 
-        <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
-          {/* Day mode */}
-          <div style={{display:"flex",alignItems:"center",gap:5,background:dayMode?"#FFF8EE":C2,
-            border:`1px solid ${dayMode?WRN:BORDER}`,borderRadius:7,padding:"4px 10px"}}>
-            <span style={{fontSize:9,color:dayMode?WRN:MUT,fontWeight:600,textTransform:"uppercase",letterSpacing:.5}}>Day</span>
+        {/* Day jump pill */}
+        {trip.days>1&&<div style={{display:"flex",alignItems:"center",gap:6,marginTop:10}}>
+          <div style={{display:"inline-flex",alignItems:"center",gap:6,
+            background:dayMode?"#FFF4E5":C2,border:`1px solid ${dayMode?WRN+"66":BORDER}`,
+            borderRadius:20,padding:"5px 12px"}}>
+            <Icon name="days" size={14} color={dayMode?WRN:MUT}/>
+            <span style={{fontSize:11,color:dayMode?WRN:MUT,fontWeight:700}}>Day</span>
             <select value={activeDay} onChange={e=>handleDayChange(e.target.value)}
               style={{background:"transparent",border:"none",color:dayMode?WRN:TXT,
-                fontSize:12,fontWeight:700,cursor:"pointer",outline:"none",
-                WebkitAppearance:"none",appearance:"none"}}>
-              {Array.from({length:12},(_,i)=>i+1).map(d=>(
-                <option key={d} value={d}>{d}</option>
-              ))}
+                fontSize:13,fontWeight:800,cursor:"pointer",outline:"none",
+                WebkitAppearance:"none",appearance:"none",paddingRight:2}}>
+              {Array.from({length:trip.days},(_,i)=>i+1).map(d=><option key={d} value={d}>{d}</option>)}
             </select>
             {dayMode&&<button onClick={()=>setDayMode(false)}
-              style={{background:"none",border:"none",color:MUT,fontSize:12,cursor:"pointer",padding:0,lineHeight:1}}>✕</button>}
+              style={{background:"none",border:"none",color:WRN,fontSize:13,cursor:"pointer",padding:0,lineHeight:1}}>✕</button>}
           </div>
-
-          <button onClick={()=>{setBkOpen(true);setBdOpen(false);setPhOpen(false);}}
-            style={{background:doneCount===BOOKINGS.length?GRN+"15":ES+"12",
-              border:`1px solid ${doneCount===BOOKINGS.length?GRN:ES}33`,
-              color:doneCount===BOOKINGS.length?GRN:ES,
-              borderRadius:7,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>
-            📋 {isMobile?`${doneCount}/${BOOKINGS.length}`:`Bookings ${doneCount}/${BOOKINGS.length}`}
-          </button>
-          <button onClick={()=>{setBdOpen(true);setBkOpen(false);setPhOpen(false);}}
-            style={{background:PT+"12",border:`1px solid ${PT}33`,color:PT,
-              borderRadius:7,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>
-            💰{isMobile?'':' Budget'}
-          </button>
-          <button onClick={()=>{setPhOpen(true);setBkOpen(false);setBdOpen(false);}}
-            style={{background:C2,border:`1px solid ${BORDER}`,color:MUT,
-              borderRadius:7,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>
-            🗣{isMobile?'':' Phrases'}
-          </button>
-        </div>
-      </div>
-
-      {/* ROUTE STRIP */}
-      <div style={{padding:"14px 20px 0"}}>
-        <RouteStrip sel={sel} onSelect={id=>{setSel(id);setTab("days");}}
-          dayMode={dayMode} activeDay={activeDay}/>
-      </div>
-
-      {/* BODY */}
-      <div style={{display:"flex",padding:`0 ${isMobile?12:20}px 24px`,gap:12}}>
-
-        {/* SIDEBAR — desktop only */}
-        {!isMobile&&<div style={{width:148,flexShrink:0}}>
-          {CITIES.map(c=>{
-            const active=c.id===sel;
-            const cc3=c.country==="pt"?PT:ES;
-            return(
-              <button key={c.id} onClick={()=>{setSel(c.id);setTab("days");}}
-                style={{width:"100%",textAlign:"left",
-                  background:active?cc3+"12":CARD,
-                  border:`1px solid ${active?cc3:BORDER}`,
-                  borderRadius:7,padding:"8px 10px",marginBottom:4,
-                  cursor:"pointer",transition:"all .12s",
-                  boxShadow:active?`0 1px 6px ${cc3}22`:"none"}}>
-                <div style={{fontWeight:active?700:500,fontSize:12,
-                  color:active?cc3:TXT}}>{c.name}</div>
-                <div style={{fontSize:9,color:active?cc3:MUT,marginTop:1}}>{c.days}</div>
-                <div style={{fontSize:9,color:MUT,marginTop:2,lineHeight:1.3}}>
-                  {cityDates(c.id)}
-                </div>
-              </button>
-            );
-          })}
+          {dayMode&&DAY_MAP[activeDay]===city.id&&<span style={{fontSize:11,color:WRN,fontWeight:700}}>📍 today's stop</span>}
         </div>}
+      </div>
 
-        {/* DETAIL PANEL */}
-        <div style={{flex:1,minWidth:0}}>
-          {/* City header */}
-          <div style={{background:CARD,borderRadius:10,padding:"14px 16px",marginBottom:10,
-            border:`1px solid ${BORDER}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
-              <div style={{fontWeight:800,fontSize:22,color:cc2}}>{city.name}</div>
-              <Tag color={cc2}>{city.days}</Tag>
-              <Tag color={cc2}>{city.duration}</Tag>
-              <Tag color={city.heatColor}>{city.heatLabel}</Tag>
-              {city.warn&&<Tag color={WRN}>⚠ Action needed</Tag>}
-            </div>
-            <div style={{fontSize:10,color:MUT,marginTop:4}}>{cityDates(city.id)}</div>
-            {dayMode&&DAY_MAP[activeDay]===city.id&&(
-              <div style={{marginTop:6,fontSize:11,color:WRN,fontWeight:600,
-                background:"#FFF8EE",display:"inline-block",padding:"2px 8px",
-                borderRadius:4,border:`1px solid ${WRN}44`}}>
-                📍 You are here — Day {activeDay} of 12
-              </div>
-            )}
-          </div>
+      {/* SCROLLING CONTENT */}
+      <div style={{maxWidth:680,margin:"0 auto",padding:"14px 14px 0"}}>
+        <RouteStrip trip={trip} sel={sel} onSelect={id=>{setSel(id);setTab("days");}}
+          dayMode={dayMode} activeDay={activeDay}/>
 
-          {/* Tabs */}
-          <div style={{display:"flex",gap:3,marginBottom:10,overflowX:"auto",paddingBottom:2}}>
-            {TABS.map(t=>(
-              <button key={t.id} onClick={()=>setTab(t.id)}
-                style={{padding:"6px 13px",borderRadius:7,
-                  border:`1px solid ${tab===t.id?cc2:BORDER}`,
-                  background:tab===t.id?cc2:CARD,
-                  color:tab===t.id?"#fff":MUT,
-                  fontSize:11,fontWeight:tab===t.id?700:500,
-                  cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,
-                  transition:"all .1s",
-                  boxShadow:tab===t.id?`0 1px 4px ${cc2}44`:"none"}}>
-                {t.label}
-              </button>
-            ))}
+        {/* City hero */}
+        <div style={{background:`linear-gradient(180deg, ${cc2}0F, ${CARD} 60%)`,
+          borderRadius:16,padding:"16px 18px",marginBottom:14,
+          border:`1px solid ${BORDER}`,boxShadow:"0 2px 10px rgba(0,0,0,.04)"}}>
+          <div style={{fontWeight:900,fontSize:26,color:cc2,letterSpacing:-.5,lineHeight:1.1}}>{city.name}</div>
+          <div style={{display:"flex",alignItems:"center",gap:6,flexWrap:"wrap",marginTop:8}}>
+            <Tag color={cc2}>{city.days}</Tag>
+            {city.duration&&<Tag color={cc2}>{city.duration}</Tag>}
+            {city.heatLabel&&<Tag color={city.heatColor||cc2}>{city.heatLabel}</Tag>}
+            {city.warn&&<Tag color={WRN}>⚠ Action needed</Tag>}
           </div>
-
-          {/* Content */}
-          <div style={{background:CARD,borderRadius:10,padding:"16px",
-            border:`1px solid ${BORDER}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
-            {tab==="days"&&<DaysTab city={city}/>}
-            {tab==="see"&&<SeeTab city={city} customSee={customSee} setCustomSee={setCustomSee} seeDone={seeDone} setSeeDone={setSeeDone} seeHidden={seeHidden} setSeeHidden={setSeeHidden}/>}
-            {tab==="eat"&&<EatTab city={city} customDishes={customDishes} setCustomDishes={setCustomDishes} customVenues={customVenues} setCustomVenues={setCustomVenues} eatDone={eatDone} setEatDone={setEatDone} eatHidden={eatHidden} setEatHidden={setEatHidden}/>}
-            {tab==="logistics"&&<LogisticsTab city={city} stayDone={stayDone} setStayDone={setStayDone} stayHidden={stayHidden} setStayHidden={setStayHidden}/>}
-            {tab==="budget"&&<BudgetTab city={city} actualSpend={actualSpend} setActualSpend={setActualSpend}/>}
-            {tab==="notes"&&<NotesTab city={city} customNotes={customNotes} setCustomNotes={setCustomNotes}/>}
-          </div>
+          {cityDates(trip,city.id)&&<div style={{fontSize:11,color:MUT,marginTop:8}}>{cityDates(trip,city.id)}</div>}
         </div>
+
+        {/* Tab content */}
+        <div className="screen-in" key={tab} style={{background:CARD,borderRadius:16,padding:"18px",
+          border:`1px solid ${BORDER}`,boxShadow:"0 2px 10px rgba(0,0,0,.04)"}}>
+          {tab==="days"&&<DaysTab city={city}/>}
+          {tab==="see"&&<SeeTab city={city} customSee={customSee} setCustomSee={setCustomSee} seeDone={seeDone} setSeeDone={setSeeDone} seeHidden={seeHidden} setSeeHidden={setSeeHidden}/>}
+          {tab==="eat"&&<EatTab city={city} customDishes={customDishes} setCustomDishes={setCustomDishes} customVenues={customVenues} setCustomVenues={setCustomVenues} eatDone={eatDone} setEatDone={setEatDone} eatHidden={eatHidden} setEatHidden={setEatHidden}/>}
+          {tab==="logistics"&&<LogisticsTab city={city} stayDone={stayDone} setStayDone={setStayDone} stayHidden={stayHidden} setStayHidden={setStayHidden}/>}
+          {tab==="budget"&&<BudgetTab trip={trip} city={city} actualSpend={actualSpend} setActualSpend={setActualSpend}/>}
+          {tab==="notes"&&<NotesTab city={city} customNotes={customNotes} setCustomNotes={setCustomNotes}/>}
+        </div>
+      </div>
+
+      {/* BOTTOM TAB BAR */}
+      <div style={{position:"fixed",left:0,right:0,bottom:0,zIndex:50,
+        background:"rgba(255,255,255,.92)",backdropFilter:"saturate(180%) blur(12px)",
+        WebkitBackdropFilter:"saturate(180%) blur(12px)",borderTop:`1px solid ${BORDER}`,
+        display:"flex",justifyContent:"space-around",alignItems:"stretch",
+        padding:"8px 4px calc(8px + var(--safe-bottom))"}}>
+        {TABS.map(t=>{
+          const on=tab===t.id;
+          return(
+            <button key={t.id} onClick={()=>{setTab(t.id);window.scrollTo({top:0,behavior:"smooth"});}}
+              style={{flex:1,background:"none",border:"none",cursor:"pointer",
+                display:"flex",flexDirection:"column",alignItems:"center",gap:3,padding:"2px 0"}}>
+              <Icon name={t.icon} size={23} color={on?cc2:MUT} stroke={on?2.4:1.9}/>
+              <span style={{fontSize:10,fontWeight:on?800:600,color:on?cc2:MUT,letterSpacing:.1}}>{t.label}</span>
+            </button>
+          );
+        })}
       </div>
 
       {/* OVERLAYS */}
-      {bkOpen&&<BookingsOverlay done={done} onToggle={toggleDone} onClose={()=>setBkOpen(false)}/>}
-      {bdOpen&&<BudgetOverlay onClose={()=>setBdOpen(false)}/>}
-      {phOpen&&<PhrasesOverlay onClose={()=>setPhOpen(false)}/>}
+      {bkOpen&&<BookingsOverlay trip={trip} done={done} onToggle={toggleDone} onClose={()=>setBkOpen(false)}/>}
+      {bdOpen&&<BudgetOverlay trip={trip} onClose={()=>setBdOpen(false)}/>}
+      {phOpen&&<PhrasesOverlay trip={trip} onClose={()=>setPhOpen(false)}/>}
     </div>
   );
 }
-    ReactDOM.createRoot(document.getElementById('root')).render(<SpainPortugal />);
+
+// ─── TRIP HELPERS ──────────────────────────────────────────────────────────────
+function loadUserTrips(){ return ls('trips',[]); }
+function saveUserTrips(arr){ lsSet('trips',arr); }
+function allTrips(){ return [...BUILTIN_TRIPS, ...loadUserTrips()]; }
+function tripStatus(trip,overrides){
+  const ov=(overrides||{})[trip.id];
+  if(ov==="past"||ov==="upcoming") return ov;
+  if(!trip.startDate) return "upcoming";
+  const start=new Date(trip.startDate+"T00:00:00");
+  const end=new Date(start.getTime()+((trip.days||1)-1)*86400000);
+  const today=new Date(); today.setHours(0,0,0,0);
+  if(today>end) return "past";
+  if(today>=start&&today<=end) return "current";
+  return "upcoming";
+}
+function fmtRange(trip){
+  if(!trip.startDate) return "Dates not set";
+  const start=new Date(trip.startDate+"T00:00:00");
+  const end=new Date(start.getTime()+((trip.days||1)-1)*86400000);
+  const m1=MNAMES[start.getMonth()], m2=MNAMES[end.getMonth()];
+  if(m1===m2) return `${m1} ${start.getDate()}–${end.getDate()}, ${end.getFullYear()}`;
+  return `${m1} ${start.getDate()} – ${m2} ${end.getDate()}, ${end.getFullYear()}`;
+}
+
+// ─── HOME: LIST OF TRIPS ─────────────────────────────────────────────────────
+function TripCard({trip,status,onOpen,onArchiveToggle,onDelete}){
+  const accent=trip.color||ES;
+  const pill={current:["NOW",GRN],upcoming:["UPCOMING",PT],past:["PAST",MUT]}[status]||["",MUT];
+  const [menu,setMenu]=useState(false);
+  return(
+    <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:18,overflow:"hidden",
+      boxShadow:"0 4px 16px rgba(0,0,0,.06)",position:"relative",opacity:status==="past"?.9:1}}>
+      {/* Accent band */}
+      <div onClick={onOpen} style={{cursor:"pointer",
+        background:`linear-gradient(135deg, ${accent}, ${accent}CC)`,
+        padding:"16px 18px",position:"relative",minHeight:74}}>
+        <div style={{fontSize:30,lineHeight:1}}>{trip.flags||"🧳"}</div>
+        <span style={{position:"absolute",top:14,right:14,fontSize:8,fontWeight:800,letterSpacing:.8,
+          color:"#fff",background:"rgba(255,255,255,.22)",border:"1px solid rgba(255,255,255,.4)",
+          borderRadius:20,padding:"3px 9px"}}>{pill[0]}</span>
+      </div>
+      <div onClick={onOpen} style={{cursor:"pointer",padding:"13px 16px 15px"}}>
+        <div style={{fontWeight:800,fontSize:17,color:TXT,marginBottom:4,letterSpacing:-.3}}>{trip.title}</div>
+        <div style={{fontSize:12,color:MUT,display:"flex",alignItems:"center",gap:6}}>
+          <Icon name="days" size={13} color={MUT} stroke={1.8}/>
+          {fmtRange(trip)} · {trip.cities.length} {trip.cities.length===1?"city":"cities"}
+        </div>
+      </div>
+      <button onClick={()=>setMenu(m=>!m)} style={{position:"absolute",top:12,right:44,
+        background:"rgba(255,255,255,.22)",border:"1px solid rgba(255,255,255,.35)",color:"#fff",
+        width:26,height:26,borderRadius:13,fontSize:15,cursor:"pointer",lineHeight:1,
+        display:"flex",alignItems:"center",justifyContent:"center"}}>⋯</button>
+      {menu&&<div style={{position:"absolute",top:42,right:12,background:CARD,border:`1px solid ${BORDER}`,
+        borderRadius:12,boxShadow:"0 10px 30px rgba(0,0,0,.16)",zIndex:5,overflow:"hidden",minWidth:170,
+        animation:"popIn .14s ease"}}>
+        <button onClick={()=>{onArchiveToggle(status==="past"?"upcoming":"past");setMenu(false);}}
+          style={{display:"block",width:"100%",textAlign:"left",background:"none",border:"none",
+            padding:"11px 14px",fontSize:13,color:TXT,cursor:"pointer"}}>
+          {status==="past"?"↑ Move to upcoming":"↓ Mark as past"}</button>
+        {!trip.builtin&&<button onClick={()=>{if(confirm("Delete this trip? This can't be undone."))onDelete();setMenu(false);}}
+          style={{display:"block",width:"100%",textAlign:"left",background:"none",border:"none",
+            borderTop:`1px solid ${BORDER}`,padding:"11px 14px",fontSize:13,color:ES,cursor:"pointer"}}>
+          🗑 Delete trip</button>}
+      </div>}
+    </div>
+  );
+}
+function TripsHome({trips,overrides,onOpen,onNew,onSettings,onArchiveToggle,onDelete}){
+  const withStatus=trips.map(t=>({t,s:tripStatus(t,overrides)}));
+  const live=withStatus.filter(x=>x.s!=="past");
+  const past=withStatus.filter(x=>x.s==="past");
+  const isMobile=useWindowWidth()<640;
+  const grid={display:"grid",gridTemplateColumns:isMobile?"1fr":"1fr 1fr",gap:12,marginBottom:8};
+  const Section=({label,items})=>items.length>0&&<div style={{marginBottom:22}}>
+    <div style={{fontSize:10,fontWeight:700,letterSpacing:1,color:MUT,textTransform:"uppercase",marginBottom:10}}>{label}</div>
+    <div style={grid}>{items.map(({t,s})=>(
+      <TripCard key={t.id} trip={t} status={s} onOpen={()=>onOpen(t.id)}
+        onArchiveToggle={(st)=>onArchiveToggle(t.id,st)} onDelete={()=>onDelete(t.id)}/>
+    ))}</div>
+  </div>;
+  return(
+    <div className="screen-in" style={{fontFamily:"inherit",background:BG,minHeight:"100vh",color:TXT}}>
+      <div style={{position:"sticky",top:0,zIndex:50,background:"rgba(255,255,255,.86)",
+        backdropFilter:"saturate(180%) blur(12px)",WebkitBackdropFilter:"saturate(180%) blur(12px)",
+        borderBottom:`1px solid ${BORDER}`,padding:"calc(12px + var(--safe-top)) 18px 12px",
+        display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <div style={{fontWeight:900,fontSize:24,letterSpacing:-.6}}>My Trips</div>
+        <button onClick={onSettings} title="Settings" style={{width:38,height:38,borderRadius:12,
+          background:C2,border:`1px solid ${BORDER}`,color:MUT,cursor:"pointer",
+          display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <Icon name="gear" size={20} color={MUT}/>
+        </button>
+      </div>
+      <div style={{maxWidth:720,margin:"0 auto",padding:isMobile?"18px 16px 40px":"24px 24px 48px"}}>
+        <Section label="Current & Upcoming" items={live}/>
+        <Section label="Past Trips" items={past}/>
+        <button onClick={onNew} style={{width:"100%",background:CARD,border:`2px dashed ${BORDER}`,
+          borderRadius:16,padding:"20px",fontSize:15,fontWeight:700,color:MUT,cursor:"pointer",marginTop:4,
+          display:"flex",alignItems:"center",justifyContent:"center",gap:8}}>
+          <Icon name="plus" size={20} color={MUT}/> New trip
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── CREATE A TRIP (DIY) ──────────────────────────────────────────────────────
+function CreateTrip({onCancel,onCreate}){
+  const [title,setTitle]=useState("");
+  const [flags,setFlags]=useState("");
+  const [startDate,setStartDate]=useState("");
+  const [cities,setCities]=useState([{name:"",nights:2}]);
+  const isMobile=useWindowWidth()<640;
+  const inp={width:"100%",padding:"10px 12px",borderRadius:8,border:`1px solid ${BORDER}`,
+    fontSize:14,background:CARD,color:TXT,outline:"none",boxSizing:"border-box"};
+  const lbl={fontSize:10,fontWeight:700,letterSpacing:.6,color:MUT,textTransform:"uppercase",marginBottom:6,marginTop:16,display:"block"};
+
+  function setCity(i,patch){ setCities(cs=>cs.map((c,j)=>j===i?{...c,...patch}:c)); }
+  function addCity(){ setCities(cs=>[...cs,{name:"",nights:2}]); }
+  function removeCity(i){ setCities(cs=>cs.filter((_,j)=>j!==i)); }
+
+  const validCities=cities.filter(c=>c.name.trim());
+  const canSave=title.trim()&&startDate&&validCities.length>0;
+
+  function build(){
+    let day=0; const dayMap={}; const cityObjs=validCities.map((c,idx)=>{
+      const nights=Math.max(1,Number(c.nights)||1);
+      const id=c.name.trim().toLowerCase().replace(/[^a-z0-9]+/g,'-')+'-'+idx;
+      const startDay=day+1; for(let k=0;k<nights;k++){ day++; dayMap[day]=id; }
+      const endDay=day;
+      return {
+        id,name:c.name.trim(),country:"",
+        days:startDay===endDay?`Day ${startDay}`:`Days ${startDay}-${endDay}`,
+        duration:nights+(nights===1?" night":" nights"),
+        dayPlan:[], see:[],
+        eat:{headline:"",dishes:[],porkCompass:""},
+        stay:{area:"",note:"",options:[],tax:"None"},
+        move:{in:"",out:"",local:"",cost:""},
+        note:"",
+      };
+    });
+    return {
+      id:"trip-"+Date.now(), title:title.trim(), flags:flags.trim()||"🧳",
+      color:PT, startDate, days:day||1, builtin:false,
+      cities:cityObjs, dayMap, transitDay:{}, bookings:[], budget:null, budgetHacks:{}, phrases:null,
+    };
+  }
+
+  return(
+    <div className="screen-in" style={{fontFamily:"inherit",background:BG,minHeight:"100vh",color:TXT}}>
+      <div style={{position:"sticky",top:0,zIndex:50,background:"rgba(255,255,255,.86)",
+        backdropFilter:"saturate(180%) blur(12px)",WebkitBackdropFilter:"saturate(180%) blur(12px)",
+        borderBottom:`1px solid ${BORDER}`,padding:"calc(10px + var(--safe-top)) 14px 10px",
+        display:"flex",alignItems:"center",gap:10}}>
+        <button onClick={onCancel} style={{width:38,height:38,borderRadius:12,background:C2,
+          border:`1px solid ${BORDER}`,color:TXT,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <Icon name="back" size={20} color={TXT}/>
+        </button>
+        <div style={{fontWeight:800,fontSize:17}}>New trip</div>
+      </div>
+      <div style={{maxWidth:560,margin:"0 auto",padding:isMobile?"18px 16px 40px":"24px"}}>
+        <label style={{...lbl,marginTop:0}}>Trip name</label>
+        <input style={inp} value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Italy 2027"/>
+        <label style={lbl}>Flag emoji (optional)</label>
+        <input style={inp} value={flags} onChange={e=>setFlags(e.target.value)} placeholder="🇮🇹"/>
+        <label style={lbl}>Start date</label>
+        <input style={inp} type="date" value={startDate} onChange={e=>setStartDate(e.target.value)}/>
+
+        <label style={lbl}>Cities</label>
+        {cities.map((c,i)=>(
+          <div key={i} style={{display:"flex",gap:8,marginBottom:8,alignItems:"center"}}>
+            <input style={{...inp,flex:1}} value={c.name} onChange={e=>setCity(i,{name:e.target.value})}
+              placeholder={`City ${i+1}`}/>
+            <div style={{display:"flex",alignItems:"center",gap:4,background:CARD,border:`1px solid ${BORDER}`,
+              borderRadius:8,padding:"0 8px"}}>
+              <input style={{width:42,border:"none",background:"transparent",fontSize:14,color:TXT,outline:"none",padding:"10px 0"}}
+                type="number" min="1" value={c.nights} onChange={e=>setCity(i,{nights:e.target.value})}/>
+              <span style={{fontSize:10,color:MUT}}>nights</span>
+            </div>
+            {cities.length>1&&<button onClick={()=>removeCity(i)} style={{background:"none",border:"none",
+              color:MUT,fontSize:18,cursor:"pointer",lineHeight:1,padding:"0 2px"}}>×</button>}
+          </div>
+        ))}
+        <button onClick={addCity} style={{background:C2,border:`1px dashed ${BORDER}`,color:MUT,
+          borderRadius:8,padding:"9px",fontSize:12,fontWeight:600,cursor:"pointer",width:"100%",marginBottom:8}}>
+          + Add another city</button>
+
+        <div style={{fontSize:11,color:MUT,lineHeight:1.6,margin:"6px 0 18px"}}>
+          You'll fill in places to see, food, stays and notes from inside the trip using the + buttons.
+        </div>
+        <button disabled={!canSave} onClick={()=>onCreate(build())}
+          style={{width:"100%",background:canSave?GRN:BORDER,color:"#fff",border:"none",borderRadius:10,
+            padding:"13px",fontSize:14,fontWeight:800,cursor:canSave?"pointer":"default"}}>
+          Create trip
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// ─── SETTINGS: BACKUP & RESTORE ───────────────────────────────────────────────
+function SettingsView({onBack,onChanged}){
+  const isMobile=useWindowWidth()<640;
+  const [msg,setMsg]=useState("");
+  function backup(){
+    const data={}; for(let i=0;i<localStorage.length;i++){const k=localStorage.key(i); data[k]=localStorage.getItem(k);}
+    const blob=new Blob([JSON.stringify({app:"my-trips",exported:new Date().toISOString(),data},null,2)],{type:"application/json"});
+    const url=URL.createObjectURL(blob); const a=document.createElement("a");
+    a.href=url; a.download="my-trips-backup-"+new Date().toISOString().slice(0,10)+".json";
+    document.body.appendChild(a); a.click(); a.remove(); URL.revokeObjectURL(url);
+    setMsg("Backup downloaded.");
+  }
+  function restore(ev){
+    const file=ev.target.files[0]; if(!file) return;
+    const reader=new FileReader();
+    reader.onload=()=>{
+      try{
+        const parsed=JSON.parse(reader.result); const data=parsed.data||parsed;
+        Object.keys(data).forEach(k=>localStorage.setItem(k,data[k]));
+        setMsg("Restored. Reloading…"); onChanged&&onChanged();
+        setTimeout(()=>window.location.reload(),700);
+      }catch(e){ setMsg("That file couldn't be read."); }
+    };
+    reader.readAsText(file);
+  }
+  const card={background:CARD,border:`1px solid ${BORDER}`,borderRadius:16,padding:18,marginBottom:14,boxShadow:"0 2px 10px rgba(0,0,0,.04)"};
+  const btn={width:"100%",border:"none",borderRadius:11,padding:"13px",fontSize:14,fontWeight:700,cursor:"pointer"};
+  return(
+    <div className="screen-in" style={{fontFamily:"inherit",background:BG,minHeight:"100vh",color:TXT}}>
+      <div style={{position:"sticky",top:0,zIndex:50,background:"rgba(255,255,255,.86)",
+        backdropFilter:"saturate(180%) blur(12px)",WebkitBackdropFilter:"saturate(180%) blur(12px)",
+        borderBottom:`1px solid ${BORDER}`,padding:"calc(10px + var(--safe-top)) 14px 10px",
+        display:"flex",alignItems:"center",gap:10}}>
+        <button onClick={onBack} style={{width:38,height:38,borderRadius:12,background:C2,
+          border:`1px solid ${BORDER}`,color:TXT,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"center"}}>
+          <Icon name="back" size={20} color={TXT}/>
+        </button>
+        <div style={{fontWeight:800,fontSize:17}}>Settings</div>
+      </div>
+      <div style={{maxWidth:480,margin:"0 auto",padding:isMobile?"18px 16px 40px":"24px"}}>
+        <div style={card}>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>Backup your trips</div>
+          <div style={{fontSize:12,color:MUT,lineHeight:1.6,marginBottom:12}}>
+            Saves all your trips and progress to a file. Keep it safe — you can restore it on a new phone.
+          </div>
+          <button onClick={backup} style={{...btn,background:GRN,color:"#fff"}}>⬇ Backup to file</button>
+        </div>
+        <div style={card}>
+          <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>Restore from a backup</div>
+          <div style={{fontSize:12,color:MUT,lineHeight:1.6,marginBottom:12}}>
+            Loads a backup file. This replaces matching data on this device.
+          </div>
+          <label style={{...btn,background:PT,color:"#fff",display:"block",textAlign:"center"}}>
+            ⬆ Choose backup file
+            <input type="file" accept="application/json,.json" onChange={restore} style={{display:"none"}}/>
+          </label>
+        </div>
+        {msg&&<div style={{fontSize:12,color:GRN,fontWeight:600,textAlign:"center",marginTop:4}}>{msg}</div>}
+      </div>
+    </div>
+  );
+}
+
+// ─── ROOT APP (multi-trip shell) ────────────────────────────────────────────────
+function App(){
+  const [view,setView]=useState("home");      // "home" | "trip" | "create" | "settings"
+  const [tripId,setTripId]=useState(null);
+  const [overrides,setOverrides]=useState(()=>ls('trip-overrides',{}));
+  const [tick,setTick]=useState(0);            // bump to re-read user trips after create/restore
+
+  const trips=allTrips();
+  const current=trips.find(t=>t.id===tripId);
+
+  function openTrip(id){ ACTIVE_TRIP=id; lsSet('last-trip',id); setTripId(id); setView("trip"); }
+  function goHome(){ ACTIVE_TRIP=""; setView("home"); }
+
+  if(view==="trip"&&current){ ACTIVE_TRIP=current.id; return <TripView key={current.id} trip={current} onHome={goHome}/>; }
+  if(view==="create") return <CreateTrip onCancel={goHome} onCreate={(t)=>{
+    const arr=loadUserTrips(); arr.push(t); saveUserTrips(arr); setTick(tick+1); openTrip(t.id);
+  }}/>;
+  if(view==="settings") return <SettingsView onBack={goHome} onChanged={()=>setTick(tick+1)}/>;
+  return <TripsHome trips={trips} overrides={overrides}
+    onOpen={openTrip} onNew={()=>setView("create")} onSettings={()=>setView("settings")}
+    onArchiveToggle={(id,status)=>{const n={...overrides,[id]:status}; setOverrides(n); lsSet('trip-overrides',n);}}
+    onDelete={(id)=>{const arr=loadUserTrips().filter(t=>t.id!==id); saveUserTrips(arr); setTick(tick+1);}}/>;
+}
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
   </script>
 </body>
 </html>

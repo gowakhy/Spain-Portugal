@@ -1,7 +1,7 @@
 {
-  "name": "Spain + Portugal · Aug 2026",
-  "short_name": "ES+PT Trip",
-  "description": "Personal travel guide for Spain and Portugal, August 2026",
+  "name": "My Trips",
+  "short_name": "My Trips",
+  "description": "Personal travel guide — plan and remember your trips",
   "start_url": "./2026-08-spain-portugal-guide.html",
   "display": "standalone",
   "background_color": "#F7F6F2",
