@@ -90,7 +90,7 @@ function mapsUrl(name,addr){
   return 'https://maps.google.com/?q='+encodeURIComponent((addr||'')+' '+(name||''));
 }
 
-// ─── PALETTE (light theme) ───────────────────────────────────────────────────
+// âââ PALETTE (light theme) âââââââââââââââââââââââââââââââââââââââââââââââââââ
 const ES="#C84B31", PT="#1A5FA0";
 const BG="#F7F6F2", CARD="#FFFFFF", C2="#F0EFEb", BORDER="#E2E1DD";
 const TXT="#1A1918", MUT="#9A9890", WRN="#B8720A", GRN="#2D8653";
@@ -101,7 +101,7 @@ function cityColor(trip,c){
   return (trip&&trip.color)||ES;
 }
 
-// ─── ICONS (crisp inline SVG, stroke style) ───────────────────────────────────
+// âââ ICONS (crisp inline SVG, stroke style) âââââââââââââââââââââââââââââââââââ
 const ICON_PATHS={
   days:"M7 3v3M17 3v3M4 8h16M5 6h14a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1Z",
   see:"M2 12s3.5-6.5 10-6.5S22 12 22 12s-3.5 6.5-10 6.5S2 12 2 12Z M12 14.5a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z",
@@ -126,42 +126,42 @@ function Icon({name,size=22,color="currentColor",stroke=2,fill=false}){
   </svg>;
 }
 
-// ─── BOOKINGS ────────────────────────────────────────────────────────────────
+// âââ BOOKINGS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const BOOKINGS=[
-  {id:"alhambra",label:"Alhambra",detail:"Nasrid Palaces timed entry — sells out weeks ahead in August. General entry €14–19.",url:"https://www.alhambra-patronato.es",hot:true},
-  {id:"sagrada",label:"Sagrada Família",detail:"Centenary surcharge active through Dec 2026. ~€29–31. Sell out daily in August.",url:"https://www.sagradafamilia.org/en/tickets",hot:true},
-  {id:"bcn_opo",label:"BCN → OPO flight",detail:"Fly Tue/Thu/Sat/Sun ONLY (Groundforce strike). Ryanair/Vueling, ~€55.",url:"https://www.google.com/flights",hot:true},
-  {id:"bcn_stay",label:"Barcelona room",detail:"Full apartments avg $419/night in Aug. Book hostel private room (Generator/Casa Gràcia) 2–3 months out.",url:"https://www.hostelworld.com",hot:true},
-  {id:"passenger",label:"Passenger Hostel Porto",detail:"Private rooms inside São Bento Station. Free breakfast. Book early.",url:"https://www.thepassengerhostel.com",hot:false},
-  {id:"porto_lisbon",label:"Porto → Lisbon train",detail:"Alfa Pendular, 3h, €22–25. August trains sell out. Book at cp.pt.",url:"https://www.cp.pt",hot:false},
-  {id:"granada_stay",label:"Granada room",detail:"Book alongside Alhambra — both are date-locked. Albaicín for Alhambra views.",url:"https://www.booking.com",hot:false},
+  {id:"alhambra",label:"Alhambra",detail:"Nasrid Palaces timed entry â sells out weeks ahead in August. General entry â¬14â19.",url:"https://www.alhambra-patronato.es",hot:true},
+  {id:"sagrada",label:"Sagrada FamÃ­lia",detail:"Centenary surcharge active through Dec 2026. ~â¬29â31. Sell out daily in August.",url:"https://www.sagradafamilia.org/en/tickets",hot:true},
+  {id:"bcn_opo",label:"BCN â OPO flight",detail:"Fly Tue/Thu/Sat/Sun ONLY (Groundforce strike). Ryanair/Vueling, ~â¬55.",url:"https://www.google.com/flights",hot:true},
+  {id:"bcn_stay",label:"Barcelona room",detail:"Full apartments avg $419/night in Aug. Book hostel private room (Generator/Casa GrÃ cia) 2â3 months out.",url:"https://www.hostelworld.com",hot:true},
+  {id:"passenger",label:"Passenger Hostel Porto",detail:"Private rooms inside SÃ£o Bento Station. Free breakfast. Book early.",url:"https://www.thepassengerhostel.com",hot:false},
+  {id:"porto_lisbon",label:"Porto â Lisbon train",detail:"Alfa Pendular, 3h, â¬22â25. August trains sell out. Book at cp.pt.",url:"https://www.cp.pt",hot:false},
+  {id:"granada_stay",label:"Granada room",detail:"Book alongside Alhambra â both are date-locked. AlbaicÃ­n for Alhambra views.",url:"https://www.booking.com",hot:false},
 ];
 
-// ─── PHRASES ─────────────────────────────────────────────────────────────────
+// âââ PHRASES âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const PHRASES={
-  es:{label:"🇪🇸 Spanish",color:ES,items:[
-    {p:"¿Tiene jamón?",m:"Does it have ham? Ask before ordering anything."},
-    {p:"Sin jamón, por favor",m:"Without ham, please."},
-    {p:"¿De jamón o de bacalao?",m:"Ham or cod? (ask for croquetas specifically)"},
-    {p:"¿Me puede cambiar el tapa?",m:"Can you swap the tapa? (Granada free-tapa bars)"},
-    {p:"El menú, por favor",m:"The fixed-price lunch — €12–15, Mon–Sat 1:30–4:30pm."},
+  es:{label:"ðªð¸ Spanish",color:ES,items:[
+    {p:"Â¿Tiene jamÃ³n?",m:"Does it have ham? Ask before ordering anything."},
+    {p:"Sin jamÃ³n, por favor",m:"Without ham, please."},
+    {p:"Â¿De jamÃ³n o de bacalao?",m:"Ham or cod? (ask for croquetas specifically)"},
+    {p:"Â¿Me puede cambiar el tapa?",m:"Can you swap the tapa? (Granada free-tapa bars)"},
+    {p:"El menÃº, por favor",m:"The fixed-price lunch â â¬12â15, MonâSat 1:30â4:30pm."},
     {p:"Agua sin gas / con gas",m:"Still / sparkling water."},
     {p:"La cuenta, por favor",m:"The bill, please."},
-    {p:"¿Cuánto cuesta?",m:"How much does it cost?"},
-    {p:"Más despacio, por favor",m:"Slower, please — when they speak too fast."},
+    {p:"Â¿CuÃ¡nto cuesta?",m:"How much does it cost?"},
+    {p:"MÃ¡s despacio, por favor",m:"Slower, please â when they speak too fast."},
   ]},
-  pt:{label:"🇵🇹 Portuguese",color:PT,items:[
+  pt:{label:"ðµð¹ Portuguese",color:PT,items:[
     {p:"Tem porco?",m:"Does it have pork?"},
     {p:"Sem porco, por favor",m:"Without pork, please."},
-    {p:"Bacalhau",m:"Salt cod — look for this word on any menu. Always pork-free."},
-    {p:"Os pastéis de nata, por favor",m:"The custard tarts, please."},
+    {p:"Bacalhau",m:"Salt cod â look for this word on any menu. Always pork-free."},
+    {p:"Os pastÃ©is de nata, por favor",m:"The custard tarts, please."},
     {p:"A conta, por favor",m:"The bill, please."},
-    {p:"Faz favor",m:"Excuse me / please — to get a waiter's attention."},
-    {p:"Não falo português",m:"I don't speak Portuguese. (they'll switch to English)"},
+    {p:"Faz favor",m:"Excuse me / please â to get a waiter's attention."},
+    {p:"NÃ£o falo portuguÃªs",m:"I don't speak Portuguese. (they'll switch to English)"},
   ]},
 };
 
-// ─── BUDGET ───────────────────────────────────────────────────────────────────
+// âââ BUDGET âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const BUDGET={
   total:1683, onGround:1343, flights:340,
   summary:[["All-in","$1,683","incl. flights"],["On-ground","$1,343","12 days in Iberia"],["Daily avg","$111.90","pure daily $82"]],
@@ -177,536 +177,536 @@ const BUDGET={
   ],
 };
 
-// ─── CITY DATA ────────────────────────────────────────────────────────────────
+// âââ CITY DATA ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const CITIES=[
 {
   id:"madrid",name:"Madrid",country:"es",
   days:"Days 1-2",duration:"2 nights",
-  heat:35,heatLabel:"33–36°C",heatColor:"#FF9800",
+  heat:35,heatLabel:"33â36Â°C",heatColor:"#FF9800",
   cityCost:{accom:130,food:46,local:23,intercity:0,total:199},
   travelIn:"flight",// flight from Cairo
   dayPlan:[
-    {label:"Day 1 — Arrive",blocks:[
-      {time:"Land",note:"Metro Line 8 (T4) → Nuevos Ministerios → centre. ~€5, 25 min. Skip taxis."},
-      {time:"Afternoon",note:"Walk Gran Vía briefly then cut south into La Latina. Plaza de la Paja over Plaza Mayor — quieter, more genuinely medieval. Walk every lane."},
-      {time:"Evening",note:"Calle de la Cava Baja tapas crawl. For croquetas, ask '¿de jamón o de bacalao?' — order the cod. Gambas al ajillo, patatas bravas, ensaladilla rusa. Eat standing at the counter."},
+    {label:"Day 1 â Arrive",blocks:[
+      {time:"Land",note:"Metro Line 8 (T4) â Nuevos Ministerios â centre. ~â¬5, 25 min. Skip taxis."},
+      {time:"Afternoon",note:"Walk Gran VÃ­a briefly then cut south into La Latina. Plaza de la Paja over Plaza Mayor â quieter, more genuinely medieval. Walk every lane."},
+      {time:"Evening",note:"Calle de la Cava Baja tapas crawl. For croquetas, ask 'Â¿de jamÃ³n o de bacalao?' â order the cod. Gambas al ajillo, patatas bravas, ensaladilla rusa. Eat standing at the counter."},
     ]},
-    {label:"Day 2 — Full day",blocks:[
+    {label:"Day 2 â Full day",blocks:[
       {time:"7am",note:"Retiro Park. Crystal Palace (free), rowboats on the lake. At 7am: runners and dog walkers, no tourists."},
-      {time:"10am",note:"Chamberí → Plaza de Olavide. Walk Calle de Fuencarral. Belle Époque buildings, bar terraces, zero tourist infrastructure."},
-      {time:"Noon",note:"Malasaña — walk Calle del Pez + Plaza del Dos de Mayo. Tabacalera Cultural Centre (C/ Embajadores 51) Thurs–Sun, free."},
-      {time:"6–8pm",note:"⭐ Prado FREE entry window (Mon–Sat 6–8pm, Sun 5–7pm). Same Velázquez, Goya, Bosch. No queue, no cost."},
-      {time:"Evening",note:"Lavapiés for dinner — Madrid's cheapest, most interesting neighbourhood."},
+      {time:"10am",note:"ChamberÃ­ â Plaza de Olavide. Walk Calle de Fuencarral. Belle Ãpoque buildings, bar terraces, zero tourist infrastructure."},
+      {time:"Noon",note:"MalasaÃ±a â walk Calle del Pez + Plaza del Dos de Mayo. Tabacalera Cultural Centre (C/ Embajadores 51) ThursâSun, free."},
+      {time:"6â8pm",note:"â­ Prado FREE entry window (MonâSat 6â8pm, Sun 5â7pm). Same VelÃ¡zquez, Goya, Bosch. No queue, no cost."},
+      {time:"Evening",note:"LavapiÃ©s for dinner â Madrid's cheapest, most interesting neighbourhood."},
     ]},
   ],
   see:[
-    {t:"Retiro Park — 6am start",d:"350 acres, open from 6am. Crystal Palace (free), rowboats. Zero tourists at 7am."},
-    {t:"La Latina — Plaza de la Paja",d:"Oldest part of Madrid. More authentic than Plaza Mayor. Walk every lane off Calle de la Cava Baja."},
-    {t:"Chamberí — Plaza de Olavide",d:"Two metro stops north. Belle Époque buildings, oval square ringed with local bar terraces."},
-    {t:"Malasaña",d:"Madrid's creative neighbourhood. Walk Calle del Pez and around Plaza del Dos de Mayo."},
-    {t:"Tabacalera Cultural Centre",d:"C/ Embajadores 51. Former tobacco factory. Free cultural space Thurs–Sun. Walk in off the street."},
-    {t:"Prado — free entry window",d:"Mon–Sat 6–8pm, Sun 5–7pm. World-class Velázquez, Goya, Bosch. No queue, no cost."},
+    {t:"Retiro Park â 6am start",d:"350 acres, open from 6am. Crystal Palace (free), rowboats. Zero tourists at 7am."},
+    {t:"La Latina â Plaza de la Paja",d:"Oldest part of Madrid. More authentic than Plaza Mayor. Walk every lane off Calle de la Cava Baja."},
+    {t:"ChamberÃ­ â Plaza de Olavide",d:"Two metro stops north. Belle Ãpoque buildings, oval square ringed with local bar terraces."},
+    {t:"MalasaÃ±a",d:"Madrid's creative neighbourhood. Walk Calle del Pez and around Plaza del Dos de Mayo."},
+    {t:"Tabacalera Cultural Centre",d:"C/ Embajadores 51. Former tobacco factory. Free cultural space ThursâSun. Walk in off the street."},
+    {t:"Prado â free entry window",d:"MonâSat 6â8pm, Sun 5â7pm. World-class VelÃ¡zquez, Goya, Bosch. No queue, no cost."},
   ],
   eat:{
     headline:"Madrid invented two iconic foods: a squid sandwich eaten on the street and churros dunked in thick dark chocolate at 2am. Neither sounds like much. Both are unforgettable.",
     dishes:[
-      {name:"Bocadillo de calamares",story:"Fried squid rings in a crusty baguette — Madrid's street food identity. Order from a bar with a visible fryer and a queue of locals.",origin:"Madrid original",
+      {name:"Bocadillo de calamares",story:"Fried squid rings in a crusty baguette â Madrid's street food identity. Order from a bar with a visible fryer and a queue of locals.",origin:"Madrid original",
        venues:[{n:"C/ de Botoneras + C/ Ciudad Rodrigo",addr:"Streets north of Plaza Mayor",ctx:"Walk until you find a bar with a fryer and people eating outside."}]},
       {name:"Churros con chocolate",story:"Thicker than fairground churros, served with a cup of very thick dark chocolate for dipping. The correct Madrid breakfast and the correct 2am snack.",origin:"Madrid icon since 1894",
-       venues:[{n:"Chocolatería San Ginés",addr:"C/ Pasadizo de San Ginés (hidden alley off C/ Arenal)",ctx:"Open 24 hours since 1894. The queue at midnight is real. So is the chocolate."}]},
+       venues:[{n:"ChocolaterÃ­a San GinÃ©s",addr:"C/ Pasadizo de San GinÃ©s (hidden alley off C/ Arenal)",ctx:"Open 24 hours since 1894. The queue at midnight is real. So is the chocolate."}]},
       {name:"Gambas al ajillo",story:"Prawns sizzling in garlic-infused olive oil, brought to the table still bubbling in a clay dish. Simple; depends entirely on oil quality.",origin:"Andalusian roots, perfected in Madrid tapas bars",
        venues:[{n:"Calle de la Cava Baja (La Latina)",addr:"Walk the street, pick whichever bar has locals standing outside",ctx:"Any traditional bar on this street does a solid version."}]},
     ],
-    porkCompass:"Croquetas are almost always jamón-filled. Ask '¿de jamón o de bacalao?' before ordering. Cocido madrileño (Madrid's famous stew) = all pork. Skip it entirely.",
+    porkCompass:"Croquetas are almost always jamÃ³n-filled. Ask 'Â¿de jamÃ³n o de bacalao?' before ordering. Cocido madrileÃ±o (Madrid's famous stew) = all pork. Skip it entirely.",
   },
   stay:{
-    area:"Lavapiés or Sol/Centro",
-    note:"Lavapiés is the sweet spot — 10-min walk to Prado, Retiro, Gran Vía. Multicultural, cheap food everywhere.",
+    area:"LavapiÃ©s or Sol/Centro",
+    note:"LavapiÃ©s is the sweet spot â 10-min walk to Prado, Retiro, Gran VÃ­a. Multicultural, cheap food everywhere.",
     options:[
-      {n:"ibis Budget Madrid Centro Lavapiés",area:"Lavapiés",price:"€55–70/night",tip:"Book 6–8 weeks out"},
-      {n:"B&B Hotel Madrid Centro Puerta del Sol",area:"Sol",price:"€60–75/night",tip:"Directly central, everything walkable"},
-      {n:"Hostal Oliver",area:"Sol",price:"€45–65/night",tip:"More character, older property"},
+      {n:"ibis Budget Madrid Centro LavapiÃ©s",area:"LavapiÃ©s",price:"â¬55â70/night",tip:"Book 6â8 weeks out"},
+      {n:"B&B Hotel Madrid Centro Puerta del Sol",area:"Sol",price:"â¬60â75/night",tip:"Directly central, everything walkable"},
+      {n:"Hostal Oliver",area:"Sol",price:"â¬45â65/night",tip:"More character, older property"},
     ],
     tax:"None",
   },
   move:{
-    in:"Metro Line 8 (T4) → Nuevos Ministerios → centre. ~€5, 25 min.",
-    out:"Toledo: ALSA bus from Plaza Elíptica → Toledo, ~1h, €6. Return to Atocha → AVE → Seville Santa Justa, 2h20m, €50–70.",
-    local:"Tourist Transport Card Zone A: €10/day — all metro + bus + airport.",
+    in:"Metro Line 8 (T4) â Nuevos Ministerios â centre. ~â¬5, 25 min.",
+    out:"Toledo: ALSA bus from Plaza ElÃ­ptica â Toledo, ~1h, â¬6. Return to Atocha â AVE â Seville Santa Justa, 2h20m, â¬50â70.",
+    local:"Tourist Transport Card Zone A: â¬10/day â all metro + bus + airport.",
     cost:"~$23 local transport",
   },
-  note:"Locals leave Madrid in August — heat drives them to the coast. Sites are less crowded than spring. No tourist tax. Prado free window (6–8pm Mon–Sat) is the best art per euro on this trip.",
+  note:"Locals leave Madrid in August â heat drives them to the coast. Sites are less crowded than spring. No tourist tax. Prado free window (6â8pm MonâSat) is the best art per euro on this trip.",
 },
 {
   id:"toledo",name:"Toledo",country:"es",
-  days:"Day 3 morning",duration:"3–4 hour stop",
-  heat:39,heatLabel:"37–40°C",heatColor:"#FF5722",
+  days:"Day 3 morning",duration:"3â4 hour stop",
+  heat:39,heatLabel:"37â40Â°C",heatColor:"#FF5722",
   cityCost:{accom:0,food:15,local:0,intercity:7,total:22},
-  dayPlan:[{label:"Day 3 morning — 9am to 1pm",blocks:[
-    {time:"9am",note:"Arrive from Madrid. Leave bags at Toledo station coin lockers (~€3–5). Walk straight uphill to the old city."},
-    {time:"9:15",note:"Puerta de Bisagra — the ancient walled city entrance used for 1,000 years. Streets narrow to 1.5m. Walk uphill with no plan."},
-    {time:"9:45",note:"Synagogue del Tránsito (C/ del Ángel) — extraordinary 14th-century Mudéjar stucco work. One of three surviving medieval synagogues in Spain. ~€3."},
-    {time:"10:30",note:"Mosque of Cristo de la Luz — one of the oldest Islamic buildings in Spain. Exterior free; entry ~€2.80 if open."},
-    {time:"11:00",note:"⚠ HEAT: 39–40°C by 11am. Take taxi down to Mirador del Valle (€5) for the panoramic view of Toledo on its Tagus loop. Then back to station."},
-    {time:"12:30",note:"Buy mazapán from Confitería Santo Tomé (C/ Santo Tomé 3) for the train. ALSA bus back to Atocha, then AVE → Seville."},
+  dayPlan:[{label:"Day 3 morning â 9am to 1pm",blocks:[
+    {time:"9am",note:"Arrive from Madrid. Leave bags at Toledo station coin lockers (~â¬3â5). Walk straight uphill to the old city."},
+    {time:"9:15",note:"Puerta de Bisagra â the ancient walled city entrance used for 1,000 years. Streets narrow to 1.5m. Walk uphill with no plan."},
+    {time:"9:45",note:"Synagogue del TrÃ¡nsito (C/ del Ãngel) â extraordinary 14th-century MudÃ©jar stucco work. One of three surviving medieval synagogues in Spain. ~â¬3."},
+    {time:"10:30",note:"Mosque of Cristo de la Luz â one of the oldest Islamic buildings in Spain. Exterior free; entry ~â¬2.80 if open."},
+    {time:"11:00",note:"â  HEAT: 39â40Â°C by 11am. Take taxi down to Mirador del Valle (â¬5) for the panoramic view of Toledo on its Tagus loop. Then back to station."},
+    {time:"12:30",note:"Buy mazapÃ¡n from ConfiterÃ­a Santo TomÃ© (C/ Santo TomÃ© 3) for the train. ALSA bus back to Atocha, then AVE â Seville."},
   ]}],
   see:[
     {t:"Puerta de Bisagra + old city walk",d:"Same walls used for 1,000 years. Streets narrow to 1.5m. Walk uphill with no map needed."},
-    {t:"Synagogue del Tránsito",d:"C/ del Ángel. 14th-century Mudéjar stucco, one of three surviving medieval synagogues in Spain. ~€3."},
+    {t:"Synagogue del TrÃ¡nsito",d:"C/ del Ãngel. 14th-century MudÃ©jar stucco, one of three surviving medieval synagogues in Spain. ~â¬3."},
     {t:"Mosque of Cristo de la Luz",d:"One of the oldest Islamic buildings in Spain. Exterior free from the street."},
-    {t:"Mirador del Valle",d:"Taxi (€5) to the road below the city. Full panorama of Toledo on its rocky Tagus loop."},
+    {t:"Mirador del Valle",d:"Taxi (â¬5) to the road below the city. Full panorama of Toledo on its rocky Tagus loop."},
   ],
   eat:{
-    headline:"Toledo invented mazapán — almond marzipan made here since the Middle Ages. Denser, less sweet, more almond than any version you've tried. It's the one thing you buy here.",
+    headline:"Toledo invented mazapÃ¡n â almond marzipan made here since the Middle Ages. Denser, less sweet, more almond than any version you've tried. It's the one thing you buy here.",
     dishes:[
-      {name:"Mazapán",story:"Toledo's almond marzipan — on menus and in shops since the Middle Ages. Completely pork-free. Two sources: the nuns who make it by hand, and the commercial benchmark.",origin:"Toledo original since medieval times",
+      {name:"MazapÃ¡n",story:"Toledo's almond marzipan â on menus and in shops since the Middle Ages. Completely pork-free. Two sources: the nuns who make it by hand, and the commercial benchmark.",origin:"Toledo original since medieval times",
        venues:[
-         {n:"Convento de San Clemente",addr:"C/ del Ángel (Jewish quarter)",ctx:"Cloistered nuns sell through a wooden turntable window in the convent wall. The real, handmade version."},
-         {n:"Confitería Santo Tomé",addr:"C/ Santo Tomé 3",ctx:"Family business since the 19th century. Good quality, easy to find."},
+         {n:"Convento de San Clemente",addr:"C/ del Ãngel (Jewish quarter)",ctx:"Cloistered nuns sell through a wooden turntable window in the convent wall. The real, handmade version."},
+         {n:"ConfiterÃ­a Santo TomÃ©",addr:"C/ Santo TomÃ© 3",ctx:"Family business since the 19th century. Good quality, easy to find."},
        ]},
     ],
-    porkCompass:"Carcamusas (Toledo pork stew) — avoid. Everything else in Toledo is safe.",
+    porkCompass:"Carcamusas (Toledo pork stew) â avoid. Everything else in Toledo is safe.",
   },
-  stay:{area:"No overnight — day trip",note:"Leave bags at Toledo station coin lockers (~€3–5). Return to Atocha and connect to Seville.",options:[],tax:"N/A"},
+  stay:{area:"No overnight â day trip",note:"Leave bags at Toledo station coin lockers (~â¬3â5). Return to Atocha and connect to Seville.",options:[],tax:"N/A"},
   move:{
-    in:"ALSA bus from Madrid Plaza Elíptica → Toledo, ~1h, €6. First buses from 6:30am.",
-    out:"ALSA back to Atocha then AVE → Seville Santa Justa, 2h20m, €50–70.",
+    in:"ALSA bus from Madrid Plaza ElÃ­ptica â Toledo, ~1h, â¬6. First buses from 6:30am.",
+    out:"ALSA back to Atocha then AVE â Seville Santa Justa, 2h20m, â¬50â70.",
     local:"Entirely walkable once in the old city. Leave bags at the station.",
     cost:"~$7 RT bus",
   },
-  note:"Toledo sat at the intersection of Visigoth, Muslim, Jewish, and Catholic civilisation — sometimes simultaneously. More layers of history per square metre than almost anywhere in Spain. The walled hilltop city on a loop of the Tagus is one of the most dramatically positioned sites you'll see on this trip.",
+  note:"Toledo sat at the intersection of Visigoth, Muslim, Jewish, and Catholic civilisation â sometimes simultaneously. More layers of history per square metre than almost anywhere in Spain. The walled hilltop city on a loop of the Tagus is one of the most dramatically positioned sites you'll see on this trip.",
 },
 {
   id:"seville",name:"Seville",country:"es",
   days:"Days 3-4",duration:"2 nights",
-  heat:40,heatLabel:"38–42°C",heatColor:"#F44336",
+  heat:40,heatLabel:"38â42Â°C",heatColor:"#F44336",
   cityCost:{accom:110,food:40,local:6,intercity:46,total:202},
   dayPlan:[
-    {label:"Day 3 — Evening arrival",blocks:[
-      {time:"Arrive",note:"Drop bags. Heat is 38–42°C by day — plan arrivals for late afternoon."},
-      {time:"Evening",note:"Walk Barrio Santa Cruz at dusk — old Moorish quarter adjacent to the Cathedral. Narrow lanes, tiled patios, bougainvillea. Best after 8pm when the temperature drops."},
+    {label:"Day 3 â Evening arrival",blocks:[
+      {time:"Arrive",note:"Drop bags. Heat is 38â42Â°C by day â plan arrivals for late afternoon."},
+      {time:"Evening",note:"Walk Barrio Santa Cruz at dusk â old Moorish quarter adjacent to the Cathedral. Narrow lanes, tiled patios, bougainvillea. Best after 8pm when the temperature drops."},
     ]},
-    {label:"Day 4 — Heat-smart full day",blocks:[
-      {time:"7–11am",note:"Metropol Parasol (Las Setas, Plaza de la Encarnación) for panoramic views (~€5). Then Triana — walk the Mercado de Triana (free), ceramics workshops open to the street."},
-      {time:"11am–6pm",note:"⚠ HARD STOP. 42°C is genuinely dangerous outdoors. Find AC. Menú del día at 2–4pm. Order gazpacho as starter — it's a meal in itself here."},
-      {time:"6pm",note:"Real Fábrica de Tabacos (C/ San Fernando) — the Carmen building. Free courtyard. Largest baroque building in Spain after El Escorial."},
-      {time:"7pm",note:"⭐ Plaza de España at golden hour. Built for 1929 exhibition, semicircular canal with tiled alcoves. Filmed in Star Wars. Free. The light at this hour is extraordinary."},
-      {time:"9pm",note:"⭐ Dinner at Las Golondrinas (C/ Antillano Campos 5, Triana). No English menu, local clientele, old-school. Be there by 9pm."},
+    {label:"Day 4 â Heat-smart full day",blocks:[
+      {time:"7â11am",note:"Metropol Parasol (Las Setas, Plaza de la EncarnaciÃ³n) for panoramic views (~â¬5). Then Triana â walk the Mercado de Triana (free), ceramics workshops open to the street."},
+      {time:"11amâ6pm",note:"â  HARD STOP. 42Â°C is genuinely dangerous outdoors. Find AC. MenÃº del dÃ­a at 2â4pm. Order gazpacho as starter â it's a meal in itself here."},
+      {time:"6pm",note:"Real FÃ¡brica de Tabacos (C/ San Fernando) â the Carmen building. Free courtyard. Largest baroque building in Spain after El Escorial."},
+      {time:"7pm",note:"â­ Plaza de EspaÃ±a at golden hour. Built for 1929 exhibition, semicircular canal with tiled alcoves. Filmed in Star Wars. Free. The light at this hour is extraordinary."},
+      {time:"9pm",note:"â­ Dinner at Las Golondrinas (C/ Antillano Campos 5, Triana). No English menu, local clientele, old-school. Be there by 9pm."},
     ]},
   ],
   see:[
-    {t:"Metropol Parasol (Las Setas) — early morning",d:"Mushroom-shaped wooden structure the size of a city block. Walkway-level panoramic views. ~€5. Before 9am or you'll cook."},
-    {t:"Triana — cross the river",d:"Walk the Isabel II bridge. Mercado de Triana (free), ceramics workshops open to street. More authentic than Santa Cruz."},
-    {t:"Real Fábrica de Tabacos (University)",d:"The Carmen building. Free courtyard. Astonishing baroque scale."},
-    {t:"Plaza de España — golden hour",d:"1929 exhibition masterpiece. Tiled alcoves for all 50 Spanish provinces. Filmed in Star Wars. Go at 7pm. Free."},
-    {t:"Barrio Santa Cruz — dusk only",d:"Old Moorish quarter. Walk after 8pm when it cools and the light turns golden."},
-    {t:"Alameda de Hércules",d:"Seville's main local boulevard. Roman columns at each end, bar terraces down the middle. Where Seville actually socialises in summer."},
+    {t:"Metropol Parasol (Las Setas) â early morning",d:"Mushroom-shaped wooden structure the size of a city block. Walkway-level panoramic views. ~â¬5. Before 9am or you'll cook."},
+    {t:"Triana â cross the river",d:"Walk the Isabel II bridge. Mercado de Triana (free), ceramics workshops open to street. More authentic than Santa Cruz."},
+    {t:"Real FÃ¡brica de Tabacos (University)",d:"The Carmen building. Free courtyard. Astonishing baroque scale."},
+    {t:"Plaza de EspaÃ±a â golden hour",d:"1929 exhibition masterpiece. Tiled alcoves for all 50 Spanish provinces. Filmed in Star Wars. Go at 7pm. Free."},
+    {t:"Barrio Santa Cruz â dusk only",d:"Old Moorish quarter. Walk after 8pm when it cools and the light turns golden."},
+    {t:"Alameda de HÃ©rcules",d:"Seville's main local boulevard. Roman columns at each end, bar terraces down the middle. Where Seville actually socialises in summer."},
   ],
   eat:{
     headline:"Two things define Seville: pescado frito (fried fish) eaten on the street, and the Moorish vegetable dishes that have been on menus here for 800 years.",
     dishes:[
-      {name:"Pescado frito",story:"Mixed fried fish in a paper cone. Seville's street food identity. Order 'surtido mixto' from a freiduría where the oil is fresh and the queue is local.",origin:"Seville signature",
+      {name:"Pescado frito",story:"Mixed fried fish in a paper cone. Seville's street food identity. Order 'surtido mixto' from a freidurÃ­a where the oil is fresh and the queue is local.",origin:"Seville signature",
        venues:[
-         {n:"Freiduría Puerta de la Carne",addr:"C/ Castelar 2 (near Barrio Santa Cruz)",ctx:"Classic Sevillano freiduría. Counter service, local, queue moves fast."},
-         {n:"Any freiduría in Triana",addr:"Walk Triana's main street, find the frying smell",ctx:"Triana does this better than the tourist centre."},
+         {n:"FreidurÃ­a Puerta de la Carne",addr:"C/ Castelar 2 (near Barrio Santa Cruz)",ctx:"Classic Sevillano freidurÃ­a. Counter service, local, queue moves fast."},
+         {n:"Any freidurÃ­a in Triana",addr:"Walk Triana's main street, find the frying smell",ctx:"Triana does this better than the tourist centre."},
        ]},
-      {name:"Espinacas con garbanzos",story:"Spinach and chickpeas with cumin and paprika — on Andalusian menus since the Moorish period. Vegetarian, deeply flavoured.",origin:"Moorish Andalusia, Seville staple",
+      {name:"Espinacas con garbanzos",story:"Spinach and chickpeas with cumin and paprika â on Andalusian menus since the Moorish period. Vegetarian, deeply flavoured.",origin:"Moorish Andalusia, Seville staple",
        venues:[{n:"Bar El Rinconcillo",addr:"C/ Gerona 40",ctx:"Spain's oldest bar (1670). They mark your tab on the wall in chalk. Benchmark espinacas."}]},
     ],
-    porkCompass:"Salmorejo is always pork-free — say 'sin jamón' to skip the ham topping. Montaditos (small sandwiches) are often jamón-based. Ask first.",
+    porkCompass:"Salmorejo is always pork-free â say 'sin jamÃ³n' to skip the ham topping. Montaditos (small sandwiches) are often jamÃ³n-based. Ask first.",
   },
   stay:{
-    area:"Santa Cruz / Centro Histórico",
-    note:"August = Seville low season. 38–42°C keeps tourists away, prices drop 30–40% vs spring. Critical: confirm AC is in the ROOM, not just the lobby.",
+    area:"Santa Cruz / Centro HistÃ³rico",
+    note:"August = Seville low season. 38â42Â°C keeps tourists away, prices drop 30â40% vs spring. Critical: confirm AC is in the ROOM, not just the lobby.",
     options:[
-      {n:"Hotel Goya",area:"Santa Cruz",price:"€50–65/night",tip:"Solid value in August"},
-      {n:"Hotel Doña Lina",area:"Santa Cruz",price:"€55–70/night",tip:"Most atmospheric part of the city"},
-      {n:"Hotel Becquer",area:"Centro",price:"€60–75/night",tip:"Reliable AC, walkable to everything"},
+      {n:"Hotel Goya",area:"Santa Cruz",price:"â¬50â65/night",tip:"Solid value in August"},
+      {n:"Hotel DoÃ±a Lina",area:"Santa Cruz",price:"â¬55â70/night",tip:"Most atmospheric part of the city"},
+      {n:"Hotel Becquer",area:"Centro",price:"â¬60â75/night",tip:"Reliable AC, walkable to everything"},
     ],
     tax:"None",
   },
   move:{
-    in:"AVE from Toledo (via Atocha) → Seville Santa Justa, 2h20m, €50–70.",
-    out:"Take the EARLIEST AVE → Córdoba (~45 min, €15–20). Depart 6:30–7am to catch the free Mezquita window.",
+    in:"AVE from Toledo (via Atocha) â Seville Santa Justa, 2h20m, â¬50â70.",
+    out:"Take the EARLIEST AVE â CÃ³rdoba (~45 min, â¬15â20). Depart 6:30â7am to catch the free Mezquita window.",
     local:"Almost entirely walkable from any central hotel.",
     cost:"~$6 local transport",
   },
-  note:"Best evening atmosphere on the entire route. Locals eat dinner at 9:30pm — showing up at 7pm means eating with other tourists. Day 4 outdoor activity ONLY 7–11am. The 42°C heat is real and dangerous.",
+  note:"Best evening atmosphere on the entire route. Locals eat dinner at 9:30pm â showing up at 7pm means eating with other tourists. Day 4 outdoor activity ONLY 7â11am. The 42Â°C heat is real and dangerous.",
 },
 {
-  id:"cordoba",name:"Córdoba",country:"es",
+  id:"cordoba",name:"CÃ³rdoba",country:"es",
   days:"Day 5 morning",duration:"4 hour stop",
-  heat:42,heatLabel:"40–43°C",heatColor:"#B71C1C",
+  heat:42,heatLabel:"40â43Â°C",heatColor:"#B71C1C",
   cityCost:{accom:0,food:12,local:0,intercity:32,total:44},
-  dayPlan:[{label:"Day 5 morning — 8:15am to 12:30pm",blocks:[
-    {time:"8:15am",note:"Walk from station (~20 min) or taxi (€5). Be at the Mezquita door by 8:15am."},
-    {time:"8:30am",note:"⭐ Mezquita FREE window opens. A mosque built in 784AD with a full cathedral inserted through it in 1523 without demolishing it. 40 minutes inside. After 9:30am it costs €13."},
-    {time:"9:30am",note:"Synagogue of Córdoba (C/ Judíos) — one of three surviving medieval synagogues in Spain, 1315. Entry ~€0.30. Tiny, perfect, almost no visitors."},
-    {time:"10:00am",note:"Calleja de las Flores — the famous flower-lined alley. 2 minutes. Then Alcázar gardens (~€4.50 or free Tues afternoon). 45 minutes."},
-    {time:"11:30am",note:"Early lunch at Taberna Salinas (C/ Tundidores 3) — open since 1879, benchmark for salmorejo. Say 'sin jamón' for the topping."},
-    {time:"12:30pm",note:"⚠ HEAT: 43°C. Train or bus to Granada by 1pm at the latest."},
+  dayPlan:[{label:"Day 5 morning â 8:15am to 12:30pm",blocks:[
+    {time:"8:15am",note:"Walk from station (~20 min) or taxi (â¬5). Be at the Mezquita door by 8:15am."},
+    {time:"8:30am",note:"â­ Mezquita FREE window opens. A mosque built in 784AD with a full cathedral inserted through it in 1523 without demolishing it. 40 minutes inside. After 9:30am it costs â¬13."},
+    {time:"9:30am",note:"Synagogue of CÃ³rdoba (C/ JudÃ­os) â one of three surviving medieval synagogues in Spain, 1315. Entry ~â¬0.30. Tiny, perfect, almost no visitors."},
+    {time:"10:00am",note:"Calleja de las Flores â the famous flower-lined alley. 2 minutes. Then AlcÃ¡zar gardens (~â¬4.50 or free Tues afternoon). 45 minutes."},
+    {time:"11:30am",note:"Early lunch at Taberna Salinas (C/ Tundidores 3) â open since 1879, benchmark for salmorejo. Say 'sin jamÃ³n' for the topping."},
+    {time:"12:30pm",note:"â  HEAT: 43Â°C. Train or bus to Granada by 1pm at the latest."},
   ]}],
   see:[
-    {t:"Mezquita-Catedral — FREE 8:30–9:30am",d:"A mosque built in 784AD with a Christian cathedral inserted through it in 1523. 856 horseshoe arches meeting a gothic nave. One of the most extraordinary buildings on earth. FREE Mon–Sat 8:30–9:30am."},
-    {t:"Synagogue of Córdoba",d:"C/ Judíos. One of three surviving medieval synagogues in Spain, 1315. Entry ~€0.30. Tiny, perfect."},
+    {t:"Mezquita-Catedral â FREE 8:30â9:30am",d:"A mosque built in 784AD with a Christian cathedral inserted through it in 1523. 856 horseshoe arches meeting a gothic nave. One of the most extraordinary buildings on earth. FREE MonâSat 8:30â9:30am."},
+    {t:"Synagogue of CÃ³rdoba",d:"C/ JudÃ­os. One of three surviving medieval synagogues in Spain, 1315. Entry ~â¬0.30. Tiny, perfect."},
     {t:"Calleja de las Flores",d:"Famous flower-lined alley. Two minutes. Worth it."},
-    {t:"Alcázar gardens",d:"Islamic-tradition water gardens. Entry ~€4.50, free Tues afternoon. 45 minutes."},
+    {t:"AlcÃ¡zar gardens",d:"Islamic-tradition water gardens. Entry ~â¬4.50, free Tues afternoon. 45 minutes."},
   ],
   eat:{
-    headline:"Salmorejo was invented in Córdoba — richer and thicker than anywhere else in Andalusia. Berenjenas con miel (fried aubergine with honey) is Moorish-origin and unique to this region.",
+    headline:"Salmorejo was invented in CÃ³rdoba â richer and thicker than anywhere else in Andalusia. Berenjenas con miel (fried aubergine with honey) is Moorish-origin and unique to this region.",
     dishes:[
-      {name:"Salmorejo (the original)",story:"Córdoba invented this — thicker and richer than Seville's because it has more bread and less water. The benchmark version is at Taberna Salinas.",origin:"Invented in Córdoba",
-       venues:[{n:"Taberna Salinas",addr:"C/ Tundidores 3",ctx:"Open since 1879. The benchmark. Say 'sin jamón' for the topping."}]},
+      {name:"Salmorejo (the original)",story:"CÃ³rdoba invented this â thicker and richer than Seville's because it has more bread and less water. The benchmark version is at Taberna Salinas.",origin:"Invented in CÃ³rdoba",
+       venues:[{n:"Taberna Salinas",addr:"C/ Tundidores 3",ctx:"Open since 1879. The benchmark. Say 'sin jamÃ³n' for the topping."}]},
       {name:"Berenjenas con miel",story:"Fried aubergine slices drizzled with cane honey. Vegan, Moorish origin, unique to this region. Don't leave without trying it.",origin:"Moorish Andalusia",
-       venues:[{n:"Bodega Guzmán",addr:"C/ de los Judíos 7 (Jewish quarter, next to the synagogue)",ctx:"Old wine bodega. Berenjenas con miel is their signature."}]},
+       venues:[{n:"Bodega GuzmÃ¡n",addr:"C/ de los JudÃ­os 7 (Jewish quarter, next to the synagogue)",ctx:"Old wine bodega. Berenjenas con miel is their signature."}]},
     ],
-    porkCompass:"Flamenquín = pork loin wrapped in jamón, breaded and fried. All pork. The name sounds harmless. Skip it.",
+    porkCompass:"FlamenquÃ­n = pork loin wrapped in jamÃ³n, breaded and fried. All pork. The name sounds harmless. Skip it.",
   },
-  stay:{area:"No overnight — transit stop",note:"The morning window is the whole game. Be gone by 1pm.",options:[],tax:"N/A"},
+  stay:{area:"No overnight â transit stop",note:"The morning window is the whole game. Be gone by 1pm.",options:[],tax:"N/A"},
   move:{
-    in:"AVE from Seville → Córdoba, ~45 min, €15–20. Walk from station to Mezquita ~20 min.",
-    out:"Regional train or ALSA bus → Granada, 2–2.5h, €15–20. Depart by 12:30–1pm maximum.",
+    in:"AVE from Seville â CÃ³rdoba, ~45 min, â¬15â20. Walk from station to Mezquita ~20 min.",
+    out:"Regional train or ALSA bus â Granada, 2â2.5h, â¬15â20. Depart by 12:30â1pm maximum.",
     local:"Walkable. ~20 min on foot from station to Mezquita.",
-    cost:"~$32 intercity (Seville→Córdoba + Córdoba→Granada)",
+    cost:"~$32 intercity (SevilleâCÃ³rdoba + CÃ³rdobaâGranada)",
   },
-  note:"The Mezquita free window (8:30–9:30am Mon–Sat) is the tactical core of this stop. Arrive at 8:15, be first through. Stand at the crossing point where 856 horseshoe arches meet the gothic nave. Córdoba is the hottest city in mainland Europe in summer. Do not stay past 1pm.",
+  note:"The Mezquita free window (8:30â9:30am MonâSat) is the tactical core of this stop. Arrive at 8:15, be first through. Stand at the crossing point where 856 horseshoe arches meet the gothic nave. CÃ³rdoba is the hottest city in mainland Europe in summer. Do not stay past 1pm.",
 },
 {
   id:"granada",name:"Granada",country:"es",
   days:"Days 5-6",duration:"2 nights",
-  heat:36,heatLabel:"34–37°C",heatColor:"#FF9800",
-  warn:"⚠ Book Alhambra NOW — sells out months ahead in August. Only at alhambra-patronato.es",
+  heat:36,heatLabel:"34â37Â°C",heatColor:"#FF9800",
+  warn:"â  Book Alhambra NOW â sells out months ahead in August. Only at alhambra-patronato.es",
   cityCost:{accom:120,food:36,local:9,intercity:23,total:188},
   dayPlan:[
-    {label:"Day 5 — Evening arrival",blocks:[
+    {label:"Day 5 â Evening arrival",blocks:[
       {time:"Arrive",note:"Drop bags. Wait out afternoon heat if arriving early."},
-      {time:"Evening",note:"Walk Realejo — Granada's old Jewish quarter, less visited than Albaicín, beautiful and quiet."},
-      {time:"Night",note:"Albaicín at dusk. Walk up as the temperature drops. Order any drink at any traditional bar — a free tapa arrives. Order a second. This is how Granada operates."},
+      {time:"Evening",note:"Walk Realejo â Granada's old Jewish quarter, less visited than AlbaicÃ­n, beautiful and quiet."},
+      {time:"Night",note:"AlbaicÃ­n at dusk. Walk up as the temperature drops. Order any drink at any traditional bar â a free tapa arrives. Order a second. This is how Granada operates."},
     ]},
-    {label:"Day 6 — Alhambra day",blocks:[
-      {time:"Morning",note:"⭐ Alhambra — arrive at your exact Nasrid Palaces timed entry slot. No exceptions or late admissions. The plasterwork in Comares Hall is at a level of craft modern tools can barely replicate. Budget 2.5–3 hours total."},
-      {time:"Midday",note:"Walk DOWN through Albaicín from the Alhambra. Walk Calle del Agua. Whitewashed houses, cobbled lanes, street cats."},
-      {time:"Golden hour",note:"⭐ Mirador de San Nicolás — the single best free view in Spain. The Alhambra against the Sierra Nevada at dusk. Get there early for a position."},
-      {time:"Dusk",note:"Sacromonte cave district above Albaicín. Walk the hillside paths. Informal street music sometimes happens. No ticket."},
+    {label:"Day 6 â Alhambra day",blocks:[
+      {time:"Morning",note:"â­ Alhambra â arrive at your exact Nasrid Palaces timed entry slot. No exceptions or late admissions. The plasterwork in Comares Hall is at a level of craft modern tools can barely replicate. Budget 2.5â3 hours total."},
+      {time:"Midday",note:"Walk DOWN through AlbaicÃ­n from the Alhambra. Walk Calle del Agua. Whitewashed houses, cobbled lanes, street cats."},
+      {time:"Golden hour",note:"â­ Mirador de San NicolÃ¡s â the single best free view in Spain. The Alhambra against the Sierra Nevada at dusk. Get there early for a position."},
+      {time:"Dusk",note:"Sacromonte cave district above AlbaicÃ­n. Walk the hillside paths. Informal street music sometimes happens. No ticket."},
       {time:"Evening",note:"Free tapas again. Calle Navas or Plaza Bib-Rambla. Two drinks = a full meal. The free tapa system does not sleep."},
     ]},
   ],
   see:[
-    {t:"Alhambra — pre-booked timed entry",d:"14th-century Nasrid Palaces — the greatest surviving Moorish palace in the world. Arrive at your EXACT time slot. Book only at alhambra-patronato.es."},
-    {t:"Generalife gardens",d:"The Alhambra's summer palace — water channels, cypress hedges. Move through in the morning heat."},
-    {t:"Mirador de San Nicolás",d:"The single best free view in Spain. The Alhambra against the Sierra Nevada at dusk. Arrive early."},
-    {t:"Albaicín neighbourhood",d:"UNESCO hillside Moorish quarter. Walk Calle del Agua. The city below was Christian after 1492; Albaicín remained Muslim for decades after."},
-    {t:"Sacromonte cave district",d:"Above Albaicín. Walk the hillside paths at dusk. Informal flamenco sometimes happens. No ticket."},
-    {t:"Realejo — old Jewish quarter",d:"Less visited than Albaicín. Local bars, traditional architecture. Good for the first evening."},
+    {t:"Alhambra â pre-booked timed entry",d:"14th-century Nasrid Palaces â the greatest surviving Moorish palace in the world. Arrive at your EXACT time slot. Book only at alhambra-patronato.es."},
+    {t:"Generalife gardens",d:"The Alhambra's summer palace â water channels, cypress hedges. Move through in the morning heat."},
+    {t:"Mirador de San NicolÃ¡s",d:"The single best free view in Spain. The Alhambra against the Sierra Nevada at dusk. Arrive early."},
+    {t:"AlbaicÃ­n neighbourhood",d:"UNESCO hillside Moorish quarter. Walk Calle del Agua. The city below was Christian after 1492; AlbaicÃ­n remained Muslim for decades after."},
+    {t:"Sacromonte cave district",d:"Above AlbaicÃ­n. Walk the hillside paths at dusk. Informal flamenco sometimes happens. No ticket."},
+    {t:"Realejo â old Jewish quarter",d:"Less visited than AlbaicÃ­n. Local bars, traditional architecture. Good for the first evening."},
   ],
   eat:{
-    headline:"Granada has a rule that changes everything: every drink — including juice, water, or soft drinks — comes with a free tapa. Not a promotion. It's the local bar economy.",
+    headline:"Granada has a rule that changes everything: every drink â including juice, water, or soft drinks â comes with a free tapa. Not a promotion. It's the local bar economy.",
     dishes:[
-      {name:"The free tapa system",story:"Order any drink at any traditional bar. A tapa arrives. If it has jamón, say '¿me puede cambiar el tapa?' and they'll swap it. Two drinks at two different bars = a full meal.",origin:"Granada's defining food culture",
+      {name:"The free tapa system",story:"Order any drink at any traditional bar. A tapa arrives. If it has jamÃ³n, say 'Â¿me puede cambiar el tapa?' and they'll swap it. Two drinks at two different bars = a full meal.",origin:"Granada's defining food culture",
        venues:[
-         {n:"Bodegas Castañeda",addr:"C/ Almireceros 1 (corner with C/ Elvira)",ctx:"Historic wine shop turned bar. The free tapa here is consistently better than average. Tiles on the barrels, locals at the counter."},
+         {n:"Bodegas CastaÃ±eda",addr:"C/ Almireceros 1 (corner with C/ Elvira)",ctx:"Historic wine shop turned bar. The free tapa here is consistently better than average. Tiles on the barrels, locals at the counter."},
          {n:"Bar Los Diamantes",addr:"C/ Navas 28",ctx:"Local institution for fresh seafood tapas. The pescado frito tapa that arrives is excellent."},
        ]},
-      {name:"Remojón granadino",story:"Shredded salt cod with orange, olives, and spring onion in olive oil. A Granada original — completely pork-free and unlike anything else in Andalusia.",origin:"Granada original",
-       venues:[{n:"Any traditional tasca in Albaicín",addr:"Albaicín neighbourhood bars",ctx:"Ask for it specifically. Not on every menu but any good traditional bar will have it."}]},
+      {name:"RemojÃ³n granadino",story:"Shredded salt cod with orange, olives, and spring onion in olive oil. A Granada original â completely pork-free and unlike anything else in Andalusia.",origin:"Granada original",
+       venues:[{n:"Any traditional tasca in AlbaicÃ­n",addr:"AlbaicÃ­n neighbourhood bars",ctx:"Ask for it specifically. Not on every menu but any good traditional bar will have it."}]},
     ],
-    porkCompass:"Free tapas sometimes arrive with jamón — say '¿me puede cambiar el tapa?' and they swap without drama. Plato alpujarreño = all pork and sausage. Skip it.",
+    porkCompass:"Free tapas sometimes arrive with jamÃ³n â say 'Â¿me puede cambiar el tapa?' and they swap without drama. Plato alpujarreÃ±o = all pork and sausage. Skip it.",
   },
   stay:{
-    area:"Albaicín or Centro/Realejo",
-    note:"Book alongside Alhambra tickets — both are date-locked. Albaicín gives rooftop views of the Alhambra worth the cobblestone hills.",
+    area:"AlbaicÃ­n or Centro/Realejo",
+    note:"Book alongside Alhambra tickets â both are date-locked. AlbaicÃ­n gives rooftop views of the Alhambra worth the cobblestone hills.",
     options:[
-      {n:"Hostal Casa del Aljarife",area:"Albaicín",price:"€55–70/night",tip:"Rooftop Alhambra views. Book early."},
-      {n:"Hostal Sierpes",area:"Centro",price:"€50–65/night",tip:"Flat and central"},
-      {n:"Booking.com — filter Albaicín",area:"Albaicín",price:"€60–75/night",tip:"Sort by location score, look for terrace"},
+      {n:"Hostal Casa del Aljarife",area:"AlbaicÃ­n",price:"â¬55â70/night",tip:"Rooftop Alhambra views. Book early."},
+      {n:"Hostal Sierpes",area:"Centro",price:"â¬50â65/night",tip:"Flat and central"},
+      {n:"Booking.com â filter AlbaicÃ­n",area:"AlbaicÃ­n",price:"â¬60â75/night",tip:"Sort by location score, look for terrace"},
     ],
     tax:"None",
   },
   move:{
-    in:"Regional train or ALSA bus from Córdoba, 2–2.5h, €15–20.",
-    out:"ALSA bus → Málaga, 1.5–2h, ~€10. Bus is better than train — more direct.",
-    local:"Walk Albaicín and city centre. Bus or Uber to the Alhambra.",
+    in:"Regional train or ALSA bus from CÃ³rdoba, 2â2.5h, â¬15â20.",
+    out:"ALSA bus â MÃ¡laga, 1.5â2h, ~â¬10. Bus is better than train â more direct.",
+    local:"Walk AlbaicÃ­n and city centre. Bus or Uber to the Alhambra.",
     cost:"~$9 local transport",
   },
-  note:"Alhambra timed entry for the Nasrid Palaces: miss your slot and they will not admit you. No exceptions. Book before anything else on this trip. First entry slot (8:30am) beats heat and crowds. General entry (€14–19) is sufficient.",
+  note:"Alhambra timed entry for the Nasrid Palaces: miss your slot and they will not admit you. No exceptions. Book before anything else on this trip. First entry slot (8:30am) beats heat and crowds. General entry (â¬14â19) is sufficient.",
 },
 {
-  id:"malaga",name:"Málaga",country:"es",
+  id:"malaga",name:"MÃ¡laga",country:"es",
   days:"Day 7",duration:"Afternoon + 1 night",
-  heat:31,heatLabel:"29–32°C (sea breeze)",heatColor:"#FFC107",
+  heat:31,heatLabel:"29â32Â°C (sea breeze)",heatColor:"#FFC107",
   cityCost:{accom:0,food:10,local:3.5,intercity:13,total:26.5},
-  dayPlan:[{label:"Day 7 — Arrive midday, depart next morning",blocks:[
+  dayPlan:[{label:"Day 7 â Arrive midday, depart next morning",blocks:[
     {time:"Arrive",note:"ALSA bus from Granada. Drop bags, head to Mercado Atarazanas before it closes at 3pm."},
-    {time:"1pm",note:"⭐ Mercado Central de Atarazanas (C/ Atarazanas 10) — 14th-century Moorish arch as entrance. Iron-and-glass interior. Local lunch counters. Buy and eat espetos here."},
-    {time:"3pm",note:"Alcazaba fortress — €3.50. Views over the port. Gardens better than expected. 45 minutes."},
-    {time:"4:30pm",note:"El Soho street art district — south of Alameda Principal. Walk it. Some of the best murals in Spain."},
-    {time:"Sunset",note:"Muelle Uno port promenade. Walk it, sit on the pier. Don't eat here — tourist prices."},
-    {time:"Morning",note:"⚠ Check flight AGP → VLC against Groundforce strike calendar. Fly Tue/Thu/Sat/Sun only."},
+    {time:"1pm",note:"â­ Mercado Central de Atarazanas (C/ Atarazanas 10) â 14th-century Moorish arch as entrance. Iron-and-glass interior. Local lunch counters. Buy and eat espetos here."},
+    {time:"3pm",note:"Alcazaba fortress â â¬3.50. Views over the port. Gardens better than expected. 45 minutes."},
+    {time:"4:30pm",note:"El Soho street art district â south of Alameda Principal. Walk it. Some of the best murals in Spain."},
+    {time:"Sunset",note:"Muelle Uno port promenade. Walk it, sit on the pier. Don't eat here â tourist prices."},
+    {time:"Morning",note:"â  Check flight AGP â VLC against Groundforce strike calendar. Fly Tue/Thu/Sat/Sun only."},
   ]}],
   see:[
     {t:"Mercado Central de Atarazanas",d:"C/ Atarazanas 10. 14th-century Moorish arch as entrance, iron-and-glass interior. Busy with locals until 3pm."},
-    {t:"Alcazaba fortress",d:"€3.50. Views over the port, gardens inside. 45 minutes."},
-    {t:"El Soho street art district",d:"South of Alameda Principal. Walk it — some of the best murals in Spain."},
+    {t:"Alcazaba fortress",d:"â¬3.50. Views over the port, gardens inside. 45 minutes."},
+    {t:"El Soho street art district",d:"South of Alameda Principal. Walk it â some of the best murals in Spain."},
     {t:"La Malagueta beach",d:"10-min walk from centre. Sea breeze makes August here the most comfortable on the Andalusian leg."},
   ],
   eat:{
-    headline:"Málaga has one dish that is its total identity: espetos de sardinas, grilled on bamboo skewers over burning embers in converted fishing boats on the beach. Non-negotiable.",
+    headline:"MÃ¡laga has one dish that is its total identity: espetos de sardinas, grilled on bamboo skewers over burning embers in converted fishing boats on the beach. Non-negotiable.",
     dishes:[
-      {name:"Espetos de sardinas",story:"Fresh sardines on bamboo skewers grilled over burning embers in a converted fishing boat on the beach. Exists nowhere else in this form. Find a chiringuito with a working espeto rig.",origin:"Málaga original",
+      {name:"Espetos de sardinas",story:"Fresh sardines on bamboo skewers grilled over burning embers in a converted fishing boat on the beach. Exists nowhere else in this form. Find a chiringuito with a working espeto rig.",origin:"MÃ¡laga original",
        venues:[
-         {n:"Chiringuitos on La Malagueta beach",addr:"La Malagueta beach, east end — find the smoke",ctx:"The rig is unmistakable. Eat standing on the beach."},
-         {n:"El Tintero",addr:"Playa del Palo (taxi €8 east of city)",ctx:"Legendary local institution. Waiters walk around with plates shouting what they have."},
+         {n:"Chiringuitos on La Malagueta beach",addr:"La Malagueta beach, east end â find the smoke",ctx:"The rig is unmistakable. Eat standing on the beach."},
+         {n:"El Tintero",addr:"Playa del Palo (taxi â¬8 east of city)",ctx:"Legendary local institution. Waiters walk around with plates shouting what they have."},
        ]},
-      {name:"Ajoblanco",story:"Málaga's cold almond-garlic soup — invented here. Served cold in August, completely pork-free. Overlooked because everyone focuses on gazpacho.",origin:"Invented in Málaga",
-       venues:[{n:"Any traditional Málaga bar in the historic centre",addr:"Calle Granada area",ctx:"Ask for it specifically. Any good bar will have it."}]},
+      {name:"Ajoblanco",story:"MÃ¡laga's cold almond-garlic soup â invented here. Served cold in August, completely pork-free. Overlooked because everyone focuses on gazpacho.",origin:"Invented in MÃ¡laga",
+       venues:[{n:"Any traditional MÃ¡laga bar in the historic centre",addr:"Calle Granada area",ctx:"Ask for it specifically. Any good bar will have it."}]},
     ],
-    porkCompass:"Standard croqueta risk — ask if they're bacalao or jamón. Muelle Uno restaurants: overpriced tourist food, walk past.",
+    porkCompass:"Standard croqueta risk â ask if they're bacalao or jamÃ³n. Muelle Uno restaurants: overpriced tourist food, walk past.",
   },
   stay:{
     area:"Historic centre",
-    note:"Optional 1 night as transit hub before flying to Valencia. Prioritise central — early departure from AGP in the morning.",
+    note:"Optional 1 night as transit hub before flying to Valencia. Prioritise central â early departure from AGP in the morning.",
     options:[
-      {n:"ibis Málaga Centro",area:"Centro",price:"€55–70/night",tip:"Reliable, central, easy AGP access"},
-      {n:"Budget guesthouse near Alcazaba",area:"Centro",price:"€45–65/night",tip:"More character, neighbourhood feel"},
+      {n:"ibis MÃ¡laga Centro",area:"Centro",price:"â¬55â70/night",tip:"Reliable, central, easy AGP access"},
+      {n:"Budget guesthouse near Alcazaba",area:"Centro",price:"â¬45â65/night",tip:"More character, neighbourhood feel"},
     ],
     tax:"None",
   },
   move:{
-    in:"ALSA bus from Granada, 1.5–2h, ~€10.",
-    out:"⚠ Morning flight AGP → VLC. Tue/Thu/Sat/Sun ONLY (Groundforce strike). Or train ~5.5h, €35–50.",
+    in:"ALSA bus from Granada, 1.5â2h, ~â¬10.",
+    out:"â  Morning flight AGP â VLC. Tue/Thu/Sat/Sun ONLY (Groundforce strike). Or train ~5.5h, â¬35â50.",
     local:"Walk the historic centre and beach. Entirely walkable.",
     cost:"~$3.50 local transport",
   },
-  note:"Most underrated city on this route. The historic centre is beautiful and comparatively uncrowded. Picasso was born here. El Soho street art is the only scene in Spain that rivals Barcelona's. If you have schedule slack, Málaga earns more than a half day.",
+  note:"Most underrated city on this route. The historic centre is beautiful and comparatively uncrowded. Picasso was born here. El Soho street art is the only scene in Spain that rivals Barcelona's. If you have schedule slack, MÃ¡laga earns more than a half day.",
 },
 {
   id:"valencia",name:"Valencia",country:"es",
   days:"Day 8",duration:"1 full day + night",
-  heat:32,heatLabel:"30–33°C",heatColor:"#FFC107",
+  heat:32,heatLabel:"30â33Â°C",heatColor:"#FFC107",
   cityCost:{accom:60,food:22,local:9,intercity:49,total:140},
-  dayPlan:[{label:"Day 8 — Full day",blocks:[
-    {time:"Morning",note:"City of Arts and Sciences — walk the full complex along the dry Turia riverbed. Do NOT pay to enter the Oceanogràfic — the exterior walk is free and is the entire show."},
-    {time:"Late morning",note:"Mercado Central (Plaza del Mercado) — arrive before 1pm. 1928 modernist masterpiece. Buy and eat immediately."},
-    {time:"Lunch",note:"⭐ Horchatería de Santa Catalina (Plaza de Santa Catalina 6) for horchata y fartons. Menú del día in El Carmen. Or book La Pepica 30 min in advance."},
-    {time:"Afternoon",note:"El Carmen neighbourhood — walk Calle dels Cavallers and the lanes around it. Bohemian, local, tile work on every doorway."},
-    {time:"Evening",note:"Ruzafa neighbourhood — walk Calle de Sueca. Best evening bar density in Valencia."},
+  dayPlan:[{label:"Day 8 â Full day",blocks:[
+    {time:"Morning",note:"City of Arts and Sciences â walk the full complex along the dry Turia riverbed. Do NOT pay to enter the OceanogrÃ fic â the exterior walk is free and is the entire show."},
+    {time:"Late morning",note:"Mercado Central (Plaza del Mercado) â arrive before 1pm. 1928 modernist masterpiece. Buy and eat immediately."},
+    {time:"Lunch",note:"â­ HorchaterÃ­a de Santa Catalina (Plaza de Santa Catalina 6) for horchata y fartons. MenÃº del dÃ­a in El Carmen. Or book La Pepica 30 min in advance."},
+    {time:"Afternoon",note:"El Carmen neighbourhood â walk Calle dels Cavallers and the lanes around it. Bohemian, local, tile work on every doorway."},
+    {time:"Evening",note:"Ruzafa neighbourhood â walk Calle de Sueca. Best evening bar density in Valencia."},
   ]}],
   see:[
-    {t:"City of Arts and Sciences — exterior",d:"Calatrava's futuristic complex along the dry Turia riverbed. The exterior walk is free. Do not pay to enter the Oceanogràfic."},
+    {t:"City of Arts and Sciences â exterior",d:"Calatrava's futuristic complex along the dry Turia riverbed. The exterior walk is free. Do not pay to enter the OceanogrÃ fic."},
     {t:"Mercado Central",d:"1928 modernist masterpiece. Arrive before 1pm."},
     {t:"El Carmen neighbourhood",d:"Valencia's old quarter. Walk Calle dels Cavallers. Bohemian, local, tile work on every doorway."},
     {t:"Ruzafa neighbourhood",d:"Creative district south of old town. Walk Calle de Sueca. Best evening bar density."},
-    {t:"Valencia Cathedral — Holy Grail",d:"The cathedral claims to hold the actual Holy Grail — a genuine medieval chalice. 5 minutes inside, free."},
+    {t:"Valencia Cathedral â Holy Grail",d:"The cathedral claims to hold the actual Holy Grail â a genuine medieval chalice. 5 minutes inside, free."},
   ],
   eat:{
-    headline:"Valencia invented paella. The real version has chicken, rabbit, green beans, and garrofón beans. Chorizo in paella = wrong restaurant. Walk away immediately.",
+    headline:"Valencia invented paella. The real version has chicken, rabbit, green beans, and garrofÃ³n beans. Chorizo in paella = wrong restaurant. Walk away immediately.",
     dishes:[
-      {name:"Paella Valenciana",story:"Chicken + rabbit + ferraura beans + garrofón beans. No pork, no chorizo. 30–40 minutes to cook properly. The rice should have socarrat — caramelised bottom layer.",origin:"Invented in Valencia — the actual original",
+      {name:"Paella Valenciana",story:"Chicken + rabbit + ferraura beans + garrofÃ³n beans. No pork, no chorizo. 30â40 minutes to cook properly. The rice should have socarrat â caramelised bottom layer.",origin:"Invented in Valencia â the actual original",
        venues:[
-         {n:"La Pepica",addr:"Paseo Neptuno 6 (beachfront, La Malvarrosa)",ctx:"Open since 1898. Hemingway ate here. Touristy but the real paella. Book ahead — minimum 2 people, 30-min lead."},
-         {n:"La Riuà",addr:"C/ del Mar 27 (El Carmen)",ctx:"Local choice for authentic Valencian rice. Smaller, less famous, consistently excellent."},
+         {n:"La Pepica",addr:"Paseo Neptuno 6 (beachfront, La Malvarrosa)",ctx:"Open since 1898. Hemingway ate here. Touristy but the real paella. Book ahead â minimum 2 people, 30-min lead."},
+         {n:"La RiuÃ ",addr:"C/ del Mar 27 (El Carmen)",ctx:"Local choice for authentic Valencian rice. Smaller, less famous, consistently excellent."},
        ]},
-      {name:"Horchata y fartons",story:"Horchata: cold tiger nut milk — slightly sweet, nothing like anything else. Fartons: soft elongated pastry sticks for dipping. This combination was invented here.",origin:"Valencia original",
-       venues:[{n:"Horchatería de Santa Catalina",addr:"Plaza de Santa Catalina 6",ctx:"Open since 1836. Stone interior, marble counters. Nothing has changed."}]},
+      {name:"Horchata y fartons",story:"Horchata: cold tiger nut milk â slightly sweet, nothing like anything else. Fartons: soft elongated pastry sticks for dipping. This combination was invented here.",origin:"Valencia original",
+       venues:[{n:"HorchaterÃ­a de Santa Catalina",addr:"Plaza de Santa Catalina 6",ctx:"Open since 1836. Stone interior, marble counters. Nothing has changed."}]},
     ],
-    porkCompass:"Chorizo in paella = walk away from that restaurant. In menú del día, ask for the fish second course.",
+    porkCompass:"Chorizo in paella = walk away from that restaurant. In menÃº del dÃ­a, ask for the fish second course.",
   },
   stay:{
     area:"Barrio del Carmen",
     note:"No tourist tax. Valencia is the best budget win on the Spain leg. One night: location above all.",
     options:[
-      {n:"Hostal Venecia",area:"Carmen/Centro",price:"€55–65/night",tip:"Best value, genuinely central"},
-      {n:"Ad Hoc Monumental",area:"Carmen",price:"€65–80/night",tip:"More boutique, good breakfast"},
+      {n:"Hostal Venecia",area:"Carmen/Centro",price:"â¬55â65/night",tip:"Best value, genuinely central"},
+      {n:"Ad Hoc Monumental",area:"Carmen",price:"â¬65â80/night",tip:"More boutique, good breakfast"},
     ],
     tax:"None",
   },
   move:{
-    in:"⚠ Morning flight AGP → VLC (check strike calendar — Tue/Thu/Sat/Sun only). Or train from Málaga ~5.5h, €35–50.",
-    out:"Renfe or Iryo high-speed → Barcelona Sants, 3h, €25–40. Book at renfe.com or iryo.eu.",
+    in:"â  Morning flight AGP â VLC (check strike calendar â Tue/Thu/Sat/Sun only). Or train from MÃ¡laga ~5.5h, â¬35â50.",
+    out:"Renfe or Iryo high-speed â Barcelona Sants, 3h, â¬25â40. Book at renfe.com or iryo.eu.",
     local:"Centre walkable. Tram to Malvarrosa beach. Metro for longer distances.",
     cost:"~$9 local transport",
   },
-  note:"Consistently one of the trip highlights for people who weren't expecting much. The City of Arts and Sciences at dusk is one of the most architecturally striking things in Spain. Eating bad tourist paella in Valencia is a specific kind of waste — ask for socarrat, order from a kitchen you can see.",
+  note:"Consistently one of the trip highlights for people who weren't expecting much. The City of Arts and Sciences at dusk is one of the most architecturally striking things in Spain. Eating bad tourist paella in Valencia is a specific kind of waste â ask for socarrat, order from a kitchen you can see.",
 },
 {
   id:"barcelona",name:"Barcelona",country:"es",
   days:"Days 9-10",duration:"2 nights",
-  heat:30,heatLabel:"28–31°C",heatColor:"#FFC107",
-  warn:"⚠ Book Sagrada Família NOW at sagradafamilia.org — sold out day-of every day in August.",
+  heat:30,heatLabel:"28â31Â°C",heatColor:"#FFC107",
+  warn:"â  Book Sagrada FamÃ­lia NOW at sagradafamilia.org â sold out day-of every day in August.",
   cityCost:{accom:155,food:50,local:15,intercity:35,total:255},
   dayPlan:[
-    {label:"Day 9 — Arrive + explore",blocks:[
-      {time:"Arrive",note:"Metro from Sants → El Born (10 min). Drop bags."},
-      {time:"Afternoon",note:"El Born immediately. Basílica de Santa Maria del Mar (14th-century Gothic, built by the people of the Ribera neighbourhood, not the nobility) — free during non-mass hours."},
+    {label:"Day 9 â Arrive + explore",blocks:[
+      {time:"Arrive",note:"Metro from Sants â El Born (10 min). Drop bags."},
+      {time:"Afternoon",note:"El Born immediately. BasÃ­lica de Santa Maria del Mar (14th-century Gothic, built by the people of the Ribera neighbourhood, not the nobility) â free during non-mass hours."},
       {time:"Evening",note:"Barceloneta waterfront for sunset. Don't eat on the seafront. Walk one block inland for neighbourhood prices."},
-      {time:"Night",note:"Gràcia neighbourhood — Plaza del Sol, local bars. Where young Barcelona actually lives."},
+      {time:"Night",note:"GrÃ cia neighbourhood â Plaza del Sol, local bars. Where young Barcelona actually lives."},
     ]},
-    {label:"Day 10 — Architecture day",blocks:[
-      {time:"Morning",note:"⭐ Sagrada Família — QR code, walk straight in. 90 minutes inside. The most ambitious building under construction in the world. ~€29–31."},
-      {time:"Mid-morning",note:"Hospital de Sant Pau (walk south on Avinguda de Gaudí) — UNESCO modernist complex. Usually uncrowded. Walk the exterior + gardens free."},
-      {time:"Noon",note:"Walk the full Passeig de Gràcia — Casa Batlló, Casa Amatller, La Pedrera. The facades are the show. Don't pay to go inside any of them."},
-      {time:"Lunch",note:"Mercat del Ninot (C/ Mallorca 133, Eixample) — where Barcelona people shop. No tourist markup. Eat at a counter inside."},
-      {time:"Afternoon",note:"Montjuïc by Funicular del Port (metro-priced). Jardins de Laribal (free), Castell de Montjuïc (€5, 360° views). Walk down through Poble Sec."},
-      {time:"Evening",note:"⭐ Carrer de Blai, Poble Sec — pintxos. Walk the whole street, eat from multiple bars. €1–2 each."},
+    {label:"Day 10 â Architecture day",blocks:[
+      {time:"Morning",note:"â­ Sagrada FamÃ­lia â QR code, walk straight in. 90 minutes inside. The most ambitious building under construction in the world. ~â¬29â31."},
+      {time:"Mid-morning",note:"Hospital de Sant Pau (walk south on Avinguda de GaudÃ­) â UNESCO modernist complex. Usually uncrowded. Walk the exterior + gardens free."},
+      {time:"Noon",note:"Walk the full Passeig de GrÃ cia â Casa BatllÃ³, Casa Amatller, La Pedrera. The facades are the show. Don't pay to go inside any of them."},
+      {time:"Lunch",note:"Mercat del Ninot (C/ Mallorca 133, Eixample) â where Barcelona people shop. No tourist markup. Eat at a counter inside."},
+      {time:"Afternoon",note:"MontjuÃ¯c by Funicular del Port (metro-priced). Jardins de Laribal (free), Castell de MontjuÃ¯c (â¬5, 360Â° views). Walk down through Poble Sec."},
+      {time:"Evening",note:"â­ Carrer de Blai, Poble Sec â pintxos. Walk the whole street, eat from multiple bars. â¬1â2 each."},
     ]},
   ],
   see:[
-    {t:"Sagrada Família — pre-booked",d:"The most ambitious building under construction in the world. ~€29–31 with centenary surcharge. Book at sagradafamilia.org only."},
+    {t:"Sagrada FamÃ­lia â pre-booked",d:"The most ambitious building under construction in the world. ~â¬29â31 with centenary surcharge. Book at sagradafamilia.org only."},
     {t:"El Born + Santa Maria del Mar",d:"One of Europe's most beautiful medieval neighbourhoods. The 14th-century basilica was built by the people of the Ribera, not the church or nobility. Free."},
-    {t:"Passeig de Gràcia facades",d:"Walk the full length. Casa Batlló, Casa Amatller, La Pedrera. The facades are the experience. Don't pay to go inside."},
-    {t:"Gràcia neighbourhood",d:"Former independent village. Plaza del Sol, great bars. Where young Barcelona actually lives."},
+    {t:"Passeig de GrÃ cia facades",d:"Walk the full length. Casa BatllÃ³, Casa Amatller, La Pedrera. The facades are the experience. Don't pay to go inside."},
+    {t:"GrÃ cia neighbourhood",d:"Former independent village. Plaza del Sol, great bars. Where young Barcelona actually lives."},
     {t:"Hospital de Sant Pau",d:"UNESCO World Heritage modernist complex. Usually uncrowded. Walk exterior and gardens free."},
-    {t:"Carrer de Blai — pintxos (Poble Sec)",d:"Barcelona's pintxos street. Walk the whole street, graze multiple bars. €1–2 each."},
+    {t:"Carrer de Blai â pintxos (Poble Sec)",d:"Barcelona's pintxos street. Walk the whole street, graze multiple bars. â¬1â2 each."},
   ],
   eat:{
-    headline:"Barcelona has the best food culture on this trip — market-driven, neighbourhood-focused. The Boqueria is a tourist trap. The local market system is the real show.",
+    headline:"Barcelona has the best food culture on this trip â market-driven, neighbourhood-focused. The Boqueria is a tourist trap. The local market system is the real show.",
     dishes:[
-      {name:"Pintxos on Carrer de Blai",story:"Basque-style small bites on bread, €1–2 each. Walk the entire Poble Sec street and eat from multiple bars. Most are naturally pork-free (anchovy, prawn, smoked fish).",origin:"Basque tradition, best Barcelona execution on this street",
-       venues:[{n:"Carrer de Blai (multiple bars)",addr:"C/ de Blai, Poble Sec (metro: Paral·lel)",ctx:"Walk from the Paral·lel end to the far end. Don't stop at the first bar — the middle stretch has the best variety."}]},
-      {name:"Menú del día in Gràcia",story:"Barcelona is the best city in Spain for the fixed-price lunch. €12–14 for 3 courses + drink at genuinely good restaurants. Walk 2 streets off any tourist zone.",origin:"Catalan lunch tradition",
-       venues:[{n:"Any restaurant with a handwritten chalkboard in Gràcia",addr:"Gràcia neighbourhood, 2+ streets off Passeig de Gràcia",ctx:"Laminated photo menu outside = walk past. Handwritten board = go in."}]},
+      {name:"Pintxos on Carrer de Blai",story:"Basque-style small bites on bread, â¬1â2 each. Walk the entire Poble Sec street and eat from multiple bars. Most are naturally pork-free (anchovy, prawn, smoked fish).",origin:"Basque tradition, best Barcelona execution on this street",
+       venues:[{n:"Carrer de Blai (multiple bars)",addr:"C/ de Blai, Poble Sec (metro: ParalÂ·lel)",ctx:"Walk from the ParalÂ·lel end to the far end. Don't stop at the first bar â the middle stretch has the best variety."}]},
+      {name:"MenÃº del dÃ­a in GrÃ cia",story:"Barcelona is the best city in Spain for the fixed-price lunch. â¬12â14 for 3 courses + drink at genuinely good restaurants. Walk 2 streets off any tourist zone.",origin:"Catalan lunch tradition",
+       venues:[{n:"Any restaurant with a handwritten chalkboard in GrÃ cia",addr:"GrÃ cia neighbourhood, 2+ streets off Passeig de GrÃ cia",ctx:"Laminated photo menu outside = walk past. Handwritten board = go in."}]},
     ],
-    porkCompass:"Fuet (thin white Catalan sausage) looks harmless — all pork. It's in pintxos, sandwiches, charcuterie. La Boqueria: walk through, do not eat. Las Ramblas: worst value in Spain.",
+    porkCompass:"Fuet (thin white Catalan sausage) looks harmless â all pork. It's in pintxos, sandwiches, charcuterie. La Boqueria: walk through, do not eat. Las Ramblas: worst value in Spain.",
   },
   stay:{
-    area:"Gràcia or Eixample",
-    note:"⚠ Full apartments average $419/night in August. Book hostel private room or Airbnb 'private room' (NOT 'entire place'). Book 2–3 months out.",
+    area:"GrÃ cia or Eixample",
+    note:"â  Full apartments average $419/night in August. Book hostel private room or Airbnb 'private room' (NOT 'entire place'). Book 2â3 months out.",
     options:[
-      {n:"Generator Barcelona (private room)",area:"Gràcia",price:"€65–85/night",tip:"Good design hostel. Book 2–3 months out."},
-      {n:"Casa Gràcia (private room)",area:"Eixample/Gràcia border",price:"€60–80/night",tip:"More boutique, slightly quieter"},
-      {n:"Airbnb private room",area:"Gràcia or Eixample",price:"€50–75/night",tip:"Filter: 'private room' NOT 'entire place'"},
+      {n:"Generator Barcelona (private room)",area:"GrÃ cia",price:"â¬65â85/night",tip:"Good design hostel. Book 2â3 months out."},
+      {n:"Casa GrÃ cia (private room)",area:"Eixample/GrÃ cia border",price:"â¬60â80/night",tip:"More boutique, slightly quieter"},
+      {n:"Airbnb private room",area:"GrÃ cia or Eixample",price:"â¬50â75/night",tip:"Filter: 'private room' NOT 'entire place'"},
     ],
-    tax:"€6.60/night (hostel) or €9.50/night (apartment). 2 nights = €13.20–19.",
+    tax:"â¬6.60/night (hostel) or â¬9.50/night (apartment). 2 nights = â¬13.20â19.",
   },
   move:{
-    in:"Renfe or Iryo from Valencia, 3h, €25–40.",
-    out:"⚠ Fly BCN → OPO — Ryanair/Vueling, ~2h, €30–80. TUE/THU/SAT/SUN ONLY (Groundforce strike). Book 2–3 weeks ahead.",
-    local:"T-Casual 10-trip card: €11.35. Gràcia funicular OPEN (April 30 2026).",
+    in:"Renfe or Iryo from Valencia, 3h, â¬25â40.",
+    out:"â  Fly BCN â OPO â Ryanair/Vueling, ~2h, â¬30â80. TUE/THU/SAT/SUN ONLY (Groundforce strike). Book 2â3 weeks ahead.",
+    local:"T-Casual 10-trip card: â¬11.35. GrÃ cia funicular OPEN (April 30 2026).",
     cost:"~$15 local transport",
   },
-  note:"Sagrada Família: sold out day-of every day in August. Book before you fly. Standard entry (~€29) is enough. Skip the tower add-on — the interior is the spectacle.",
+  note:"Sagrada FamÃ­lia: sold out day-of every day in August. Book before you fly. Standard entry (~â¬29) is enough. Skip the tower add-on â the interior is the spectacle.",
 },
 {
   id:"porto",name:"Porto",country:"pt",
   days:"Day 11",duration:"1 full day + night",
-  heat:26,heatLabel:"24–27°C (cool & perfect)",heatColor:"#4CAF50",
+  heat:26,heatLabel:"24â27Â°C (cool & perfect)",heatColor:"#4CAF50",
   travelIn:"flight",
   cityCost:{accom:63.5,food:20,local:9,intercity:64,total:156.5},
-  dayPlan:[{label:"Day 11 — Full day",blocks:[
-    {time:"Arrive",note:"Metro Linha E (Violet) from airport → city centre, ~€2.10. Go directly to Ribeira."},
-    {time:"Afternoon",note:"Walk the entire Ribeira waterfront quay. Free. Then cross Dom Luís I Bridge on the UPPER pedestrian level — full panorama over terracotta rooftops and the Douro."},
-    {time:"3–4pm",note:"⭐ Vintage Tram Line 1 from Infante stop → Foz do Douro, 40 min on 1872 rolling stock, €6. Walk Foz beach. Return on next tram."},
-    {time:"Late afternoon",note:"São Bento train station — 20,000 azulejo tiles depicting Portuguese history. Walk in even if not catching a train. Free."},
-    {time:"7–8pm",note:"⭐ Vila Nova de Gaia — cross back to the port wine cave side. Walk the terrace at sunset. South bank blazes orange at 8pm. Best photograph of the trip."},
-    {time:"Evening",note:"Jardim das Virtudes — terraced gardens, locals sit here at dusk. Then dinner near Mercado do Bolhão area."},
+  dayPlan:[{label:"Day 11 â Full day",blocks:[
+    {time:"Arrive",note:"Metro Linha E (Violet) from airport â city centre, ~â¬2.10. Go directly to Ribeira."},
+    {time:"Afternoon",note:"Walk the entire Ribeira waterfront quay. Free. Then cross Dom LuÃ­s I Bridge on the UPPER pedestrian level â full panorama over terracotta rooftops and the Douro."},
+    {time:"3â4pm",note:"â­ Vintage Tram Line 1 from Infante stop â Foz do Douro, 40 min on 1872 rolling stock, â¬6. Walk Foz beach. Return on next tram."},
+    {time:"Late afternoon",note:"SÃ£o Bento train station â 20,000 azulejo tiles depicting Portuguese history. Walk in even if not catching a train. Free."},
+    {time:"7â8pm",note:"â­ Vila Nova de Gaia â cross back to the port wine cave side. Walk the terrace at sunset. South bank blazes orange at 8pm. Best photograph of the trip."},
+    {time:"Evening",note:"Jardim das Virtudes â terraced gardens, locals sit here at dusk. Then dinner near Mercado do BolhÃ£o area."},
   ]}],
   see:[
     {t:"Ribeira waterfront",d:"UNESCO-listed medieval waterfront along the Douro. Walk the entire length. Most visually dramatic waterfront on the whole trip."},
-    {t:"Dom Luís I Bridge — upper deck",d:"Cross on the UPPER pedestrian level. Full panorama over terracotta rooftops, the Douro, and Vila Nova de Gaia."},
-    {t:"Vintage Tram Line 1 to Foz",d:"Board at Infante stop. 40 min on 1872 rolling stock, €6. How Porto commuted to the coast for 150 years."},
-    {t:"São Bento train station",d:"One of the world's most beautiful stations. 20,000 azulejo tiles. Walk in even if not taking a train. Free."},
-    {t:"Vila Nova de Gaia — sunset terrace",d:"Cross the bridge to the port wine cave side. Walk the terrace at 8pm. The Douro reflection is the best photograph of the trip."},
+    {t:"Dom LuÃ­s I Bridge â upper deck",d:"Cross on the UPPER pedestrian level. Full panorama over terracotta rooftops, the Douro, and Vila Nova de Gaia."},
+    {t:"Vintage Tram Line 1 to Foz",d:"Board at Infante stop. 40 min on 1872 rolling stock, â¬6. How Porto commuted to the coast for 150 years."},
+    {t:"SÃ£o Bento train station",d:"One of the world's most beautiful stations. 20,000 azulejo tiles. Walk in even if not taking a train. Free."},
+    {t:"Vila Nova de Gaia â sunset terrace",d:"Cross the bridge to the port wine cave side. Walk the terrace at 8pm. The Douro reflection is the best photograph of the trip."},
   ],
   eat:{
-    headline:"Porto runs on salt cod and the Atlantic. Bacalhau has 365 recipes here — all pork-free. The city's most famous dish (francesinha) is entirely pork-based. Learn the name so you can skip it.",
+    headline:"Porto runs on salt cod and the Atlantic. Bacalhau has 365 recipes here â all pork-free. The city's most famous dish (francesinha) is entirely pork-based. Learn the name so you can skip it.",
     dishes:[
-      {name:"Polvo à lagareiro",story:"Roasted octopus with crushed potatoes, olive oil, and garlic — the tentacles caramelised. One of the great dishes of Portuguese cooking. Completely pork-free.",origin:"Traditional Porto",
-       venues:[{n:"Adega São Nicolau",addr:"Rua São Nicolau 1 (Ribeira)",ctx:"Right in Ribeira, a local institution. The real version."}]},
-      {name:"Bacalhau à Gomes de Sá",story:"Flaked salt cod baked with potatoes, eggs, onion, and olives. Invented here by a Porto cod merchant in the 19th century.",origin:"Invented in Porto, 19th century",
+      {name:"Polvo Ã  lagareiro",story:"Roasted octopus with crushed potatoes, olive oil, and garlic â the tentacles caramelised. One of the great dishes of Portuguese cooking. Completely pork-free.",origin:"Traditional Porto",
+       venues:[{n:"Adega SÃ£o Nicolau",addr:"Rua SÃ£o Nicolau 1 (Ribeira)",ctx:"Right in Ribeira, a local institution. The real version."}]},
+      {name:"Bacalhau Ã  Gomes de SÃ¡",story:"Flaked salt cod baked with potatoes, eggs, onion, and olives. Invented here by a Porto cod merchant in the 19th century.",origin:"Invented in Porto, 19th century",
        venues:[{n:"Taberna dos Mercadores",addr:"C/ dos Mercadores 36 (near Ribeira)",ctx:"Traditional tasca. The bacalhau is done properly here."}]},
-      {name:"Conservas (take-home)",story:"Tins of sardines in spiced olive oil — Portuguese conservas are a serious food category. The best souvenir on this trip.",origin:"Portuguese tradition",
-       venues:[{n:"Mercado do Bolhão",addr:"Rua Formosa (restored 1914 market)",ctx:"Go in the morning. Buy from multiple vendors."}]},
+      {name:"Conservas (take-home)",story:"Tins of sardines in spiced olive oil â Portuguese conservas are a serious food category. The best souvenir on this trip.",origin:"Portuguese tradition",
+       venues:[{n:"Mercado do BolhÃ£o",addr:"Rua Formosa (restored 1914 market)",ctx:"Go in the morning. Buy from multiple vendors."}]},
     ],
-    porkCompass:"Francesinha = every layer is pork. Learn the name. Alheira sausage: ask 'tem porco?' — modern versions often contain pork.",
+    porkCompass:"Francesinha = every layer is pork. Learn the name. Alheira sausage: ask 'tem porco?' â modern versions often contain pork.",
   },
   stay:{
     area:"Baixa / Ribeira",
-    note:"One night central near the river. The Passenger Hostel is the standout: private rooms inside São Bento Station with free breakfast.",
+    note:"One night central near the river. The Passenger Hostel is the standout: private rooms inside SÃ£o Bento Station with free breakfast.",
     options:[
-      {n:"The Passenger Hostel (São Bento Station)",area:"Baixa",price:"€55–70/night",tip:"⭐ Private rooms in a UNESCO heritage station. Free breakfast. Book early."},
-      {n:"Onefam Ribeira",area:"Ribeira",price:"€50–65/night",tip:"Social hostel, strong location"},
-      {n:"The House Ribeira Porto Hotel",area:"Ribeira/Baixa",price:"€65–75/night",tip:"More hotel-style"},
+      {n:"The Passenger Hostel (SÃ£o Bento Station)",area:"Baixa",price:"â¬55â70/night",tip:"â­ Private rooms in a UNESCO heritage station. Free breakfast. Book early."},
+      {n:"Onefam Ribeira",area:"Ribeira",price:"â¬50â65/night",tip:"Social hostel, strong location"},
+      {n:"The House Ribeira Porto Hotel",area:"Ribeira/Baixa",price:"â¬65â75/night",tip:"More hotel-style"},
     ],
-    tax:"€3/person/night",
+    tax:"â¬3/person/night",
   },
   move:{
-    in:"⚠ Fly BCN → OPO on Tue/Thu/Sat/Sun only. ~2h, €30–80. Metro Linha E (Violet) from airport, ~€2.10.",
-    out:"Alfa Pendular → Lisboa Oriente, 3h, €20–25. Depart Porto Campanhã at 7am. Book at cp.pt.",
-    local:"Ribeira is flat and walkable. Uber for the hills. Vintage Tram 1 to Foz (€6, worth it).",
+    in:"â  Fly BCN â OPO on Tue/Thu/Sat/Sun only. ~2h, â¬30â80. Metro Linha E (Violet) from airport, ~â¬2.10.",
+    out:"Alfa Pendular â Lisboa Oriente, 3h, â¬20â25. Depart Porto CampanhÃ£ at 7am. Book at cp.pt.",
+    local:"Ribeira is flat and walkable. Uber for the hills. Vintage Tram 1 to Foz (â¬6, worth it).",
     cost:"~$9 local transport",
   },
-  note:"Porto is one of the most visually spectacular cities in Europe. Getting lost here is a feature. The tonal shift from Baroque Andalusia to this older, Atlantic, granite city is one of the best moments of the whole trip. 24–27°C after two weeks of Andalusian heat will feel miraculous.",
+  note:"Porto is one of the most visually spectacular cities in Europe. Getting lost here is a feature. The tonal shift from Baroque Andalusia to this older, Atlantic, granite city is one of the best moments of the whole trip. 24â27Â°C after two weeks of Andalusian heat will feel miraculous.",
 },
 {
   id:"lisbon",name:"Lisboa",country:"pt",
-  days:"Day 12",duration:"4–5 hours then fly",
-  heat:29,heatLabel:"27–30°C",heatColor:"#8BC34A",
+  days:"Day 12",duration:"4â5 hours then fly",
+  heat:29,heatLabel:"27â30Â°C",heatColor:"#8BC34A",
   cityCost:{accom:0,food:12,local:8,intercity:25,total:45},
-  dayPlan:[{label:"Day 12 — Arrive 10am, fly evening",blocks:[
-    {time:"10am",note:"Arrive Lisboa Oriente. Drop bags at luggage storage (~€4–5). Head straight to Alfama."},
-    {time:"10:30",note:"⭐ Alfama via Tram 12E (NOT Tram 28 — overcrowded, pickpockets). Walk up through the oldest district in Lisbon."},
-    {time:"11:30",note:"Miradouro da Graça via Graça funicular (OPEN since April 30 2026). Best viewpoint in Alfama, no entry fee."},
-    {time:"12:00",note:"Walk down through Mouraria — the Moorish quarter that remained Muslim after the Reconquista. Walk Largo do Intendente, Rua do Benformoso. Where fado originated."},
-    {time:"12:30",note:"Museu do Aljube (Rua de Augusta 33) — former Salazar-era political prison, free museum. One of the most quietly powerful spaces in Europe. 45 minutes."},
-    {time:"1:30",note:"⭐ Tram 15E west to Belém (30 min) for Pastéis de Belém. Buy and eat hot with cinnamon. Buy a box for the flight. Return by tram."},
-    {time:"3pm",note:"Lunch at Mercado de Campo de Ourique — neighbourhood market hall where actual Lisboetas eat. Not Time Out Market."},
+  dayPlan:[{label:"Day 12 â Arrive 10am, fly evening",blocks:[
+    {time:"10am",note:"Arrive Lisboa Oriente. Drop bags at luggage storage (~â¬4â5). Head straight to Alfama."},
+    {time:"10:30",note:"â­ Alfama via Tram 12E (NOT Tram 28 â overcrowded, pickpockets). Walk up through the oldest district in Lisbon."},
+    {time:"11:30",note:"Miradouro da GraÃ§a via GraÃ§a funicular (OPEN since April 30 2026). Best viewpoint in Alfama, no entry fee."},
+    {time:"12:00",note:"Walk down through Mouraria â the Moorish quarter that remained Muslim after the Reconquista. Walk Largo do Intendente, Rua do Benformoso. Where fado originated."},
+    {time:"12:30",note:"Museu do Aljube (Rua de Augusta 33) â former Salazar-era political prison, free museum. One of the most quietly powerful spaces in Europe. 45 minutes."},
+    {time:"1:30",note:"â­ Tram 15E west to BelÃ©m (30 min) for PastÃ©is de BelÃ©m. Buy and eat hot with cinnamon. Buy a box for the flight. Return by tram."},
+    {time:"3pm",note:"Lunch at Mercado de Campo de Ourique â neighbourhood market hall where actual Lisboetas eat. Not Time Out Market."},
     {time:"4:30",note:"Metro to Humberto Delgado Airport. Allow 90 minutes minimum from central Lisbon."},
   ]}],
   see:[
-    {t:"Alfama — Tram 12E (not 28)",d:"Oldest district in Lisbon. Same route as Tram 28, fraction of the crowd, far fewer pickpockets."},
-    {t:"Miradouro da Graça (funicular OPEN)",d:"Graça funicular reopened April 30 2026. Best viewpoint in Alfama. Free."},
+    {t:"Alfama â Tram 12E (not 28)",d:"Oldest district in Lisbon. Same route as Tram 28, fraction of the crowd, far fewer pickpockets."},
+    {t:"Miradouro da GraÃ§a (funicular OPEN)",d:"GraÃ§a funicular reopened April 30 2026. Best viewpoint in Alfama. Free."},
     {t:"Mouraria neighbourhood",d:"The Moorish quarter that remained Muslim after 1147. Walk Largo do Intendente and Rua do Benformoso. Where fado originated."},
     {t:"Museu do Aljube (free)",d:"Rua de Augusta 33. Former Salazar prison. One of the most quietly powerful spaces in Europe."},
-    {t:"Pastéis de Belém",d:"Rua de Belém 84–92. Original since 1837, secret recipe. Tram 15E west. Buy a box for the flight."},
+    {t:"PastÃ©is de BelÃ©m",d:"Rua de BelÃ©m 84â92. Original since 1837, secret recipe. Tram 15E west. Buy a box for the flight."},
   ],
   eat:{
-    headline:"August in Lisbon means peak sardine season — charcoal grills appear in Mouraria. One bakery has been making the original custard tart since 1837. The recipe has never been shared.",
+    headline:"August in Lisbon means peak sardine season â charcoal grills appear in Mouraria. One bakery has been making the original custard tart since 1837. The recipe has never been shared.",
     dishes:[
-      {name:"Pastel de nata — the original",story:"Developed by monks at the Jerónimos Monastery and sold from this bakery since 1837. The recipe has never been shared. Every other 'pastel de nata' in Lisbon is an approximation.",origin:"Created at Jerónimos Monastery, sold here since 1837",
-       venues:[{n:"Fábrica de Pastéis de Belém",addr:"Rua de Belém 84–92 (take Tram 15E)",ctx:"The only place making the original recipe. The queue moves. Eat 4 on the spot — hot with cinnamon. Buy a box for the flight home."}]},
-      {name:"Sardines grelhadas (August only)",story:"August is peak sardine season in Lisbon. Street grills appear throughout Alfama and Mouraria — charcoal, whole sardines, bread underneath to catch the juices.",origin:"Lisbon summer tradition",
-       venues:[{n:"Street grills in Mouraria (Rua do Capelão area)",addr:"Walk Mouraria streets in early evening, follow the smoke",ctx:"Informal, unscheduled. Every time you see a grill in August, stop."}]},
+      {name:"Pastel de nata â the original",story:"Developed by monks at the JerÃ³nimos Monastery and sold from this bakery since 1837. The recipe has never been shared. Every other 'pastel de nata' in Lisbon is an approximation.",origin:"Created at JerÃ³nimos Monastery, sold here since 1837",
+       venues:[{n:"FÃ¡brica de PastÃ©is de BelÃ©m",addr:"Rua de BelÃ©m 84â92 (take Tram 15E)",ctx:"The only place making the original recipe. The queue moves. Eat 4 on the spot â hot with cinnamon. Buy a box for the flight home."}]},
+      {name:"Sardines grelhadas (August only)",story:"August is peak sardine season in Lisbon. Street grills appear throughout Alfama and Mouraria â charcoal, whole sardines, bread underneath to catch the juices.",origin:"Lisbon summer tradition",
+       venues:[{n:"Street grills in Mouraria (Rua do CapelÃ£o area)",addr:"Walk Mouraria streets in early evening, follow the smoke",ctx:"Informal, unscheduled. Every time you see a grill in August, stop."}]},
     ],
-    porkCompass:"Alheira sausage: ask 'tem porco?' — modern versions often contain pork. Time Out Market: good food, tourist prices — go to Campo de Ourique instead.",
+    porkCompass:"Alheira sausage: ask 'tem porco?' â modern versions often contain pork. Time Out Market: good food, tourist prices â go to Campo de Ourique instead.",
   },
   stay:{
-    area:"No overnight — fly out",
-    note:"Book an evening flight to keep the full day. Airport is 20 min by metro. Allow 90 min from Alfama. If overnight needed: Alfama/Mouraria guesthouses €65–80.",
-    options:[{n:"If overnight needed — Alfama/Mouraria",area:"Alfama",price:"€65–80/night",tip:"30–40% cheaper than Chiado/Baixa, more atmospheric"}],
-    tax:"€4/person/night if overnight needed",
+    area:"No overnight â fly out",
+    note:"Book an evening flight to keep the full day. Airport is 20 min by metro. Allow 90 min from Alfama. If overnight needed: Alfama/Mouraria guesthouses â¬65â80.",
+    options:[{n:"If overnight needed â Alfama/Mouraria",area:"Alfama",price:"â¬65â80/night",tip:"30â40% cheaper than Chiado/Baixa, more atmospheric"}],
+    tax:"â¬4/person/night if overnight needed",
   },
   move:{
-    in:"Alfa Pendular from Porto Campanhã → Lisboa Oriente, 3h, €20–25. Depart 7am, arrive 10am.",
-    out:"Metro to Humberto Delgado Airport (LIS), ~20 min, ~€2. Allow 90 min from central Lisbon. EgyptAir LIS→CAI.",
-    local:"⚠ Tram 12E (NOT Tram 28). Graça funicular OPEN. Glória + Bica SUSPENDED. Navegante Occasional day card: €7.",
+    in:"Alfa Pendular from Porto CampanhÃ£ â Lisboa Oriente, 3h, â¬20â25. Depart 7am, arrive 10am.",
+    out:"Metro to Humberto Delgado Airport (LIS), ~20 min, ~â¬2. Allow 90 min from central Lisbon. EgyptAir LISâCAI.",
+    local:"â  Tram 12E (NOT Tram 28). GraÃ§a funicular OPEN. GlÃ³ria + Bica SUSPENDED. Navegante Occasional day card: â¬7.",
     cost:"~$8 local transport",
   },
-  note:"The 90-min airport window is non-negotiable — do not miss the 7am Alfa Pendular from Porto. Museu do Aljube (free) is the most quietly powerful hour on the whole trip. Factor the Belém detour carefully against your departure time.",
+  note:"The 90-min airport window is non-negotiable â do not miss the 7am Alfa Pendular from Porto. Museu do Aljube (free) is the most quietly powerful hour on the whole trip. Factor the BelÃ©m detour carefully against your departure time.",
 },
 ];
 
-// ─── BUDGET HACKS PER CITY ───────────────────────────────────────────────────
+// âââ BUDGET HACKS PER CITY âââââââââââââââââââââââââââââââââââââââââââââââââââ
 const BUDGET_HACKS={
-  madrid:"Prado free Mon–Sat 6–8pm, Sun 5–7pm — saves ~€15 per person. Metro Zone A day pass €10 covers the airport, every metro line, and all buses.",
-  toledo:"Mezquita of Cristo de la Luz entry is €2.80 — one of the oldest Islamic buildings in Spain. Station coin locker ~€3 so you're not lugging bags uphill in 39°C.",
-  seville:"August = Seville's low season. 38–42°C keeps tourists away, accommodation drops 30–40% vs spring. Menú del día €12–15 Mon–Sat 1:30–4:30pm is always the right call over à la carte.",
-  cordoba:"Mezquita free Mon–Sat 8:30–9:30am saves €13 per person. Alcázar free Tuesday afternoons. The whole Córdoba stop costs ~$44 if you time the free windows.",
-  granada:"Two drinks at two different bars ≈ one full dinner on the free-tapa system. Budget €8–10 for a complete meal this way. Order drinks, don't order food — the food arrives.",
+  madrid:"Prado free MonâSat 6â8pm, Sun 5â7pm â saves ~â¬15 per person. Metro Zone A day pass â¬10 covers the airport, every metro line, and all buses.",
+  toledo:"Mezquita of Cristo de la Luz entry is â¬2.80 â one of the oldest Islamic buildings in Spain. Station coin locker ~â¬3 so you're not lugging bags uphill in 39Â°C.",
+  seville:"August = Seville's low season. 38â42Â°C keeps tourists away, accommodation drops 30â40% vs spring. MenÃº del dÃ­a â¬12â15 MonâSat 1:30â4:30pm is always the right call over Ã  la carte.",
+  cordoba:"Mezquita free MonâSat 8:30â9:30am saves â¬13 per person. AlcÃ¡zar free Tuesday afternoons. The whole CÃ³rdoba stop costs ~$44 if you time the free windows.",
+  granada:"Two drinks at two different bars â one full dinner on the free-tapa system. Budget â¬8â10 for a complete meal this way. Order drinks, don't order food â the food arrives.",
   malaga:"No tourist tax, no Alhambra surcharge. Cheapest major city on the Andalusian leg. If you stay one night, it's the best value overnighter on the route.",
-  valencia:"No tourist tax. City of Arts and Sciences exterior walk: entirely free. Renfe/Iryo Valencia→Barcelona booked 2 weeks out: €25–40. Left it late: €80+.",
-  barcelona:"Book hostel private room to avoid €419/night August apartment prices. T-Casual 10-trip metro card €11.35. Tourist tax bites: €6.60 (hostel) to €9.50/night (apartment). 2-night stay = €13–19 extra.",
-  porto:"Metro from airport: €2.10. Vintage Tram Line 1: €6 — worth doing once. Skip port wine cave tours (€15–25) unless you drink wine. Passenger Hostel includes breakfast: knocks ~€8–10 off daily food spend.",
-  lisbon:"Tram 12E = same route as Tram 28, none of the pickpockets. Graça funicular metro-priced. Pastel de nata at Belém: buy 4, eat 2 on the bench, box 2 for the flight home.",
+  valencia:"No tourist tax. City of Arts and Sciences exterior walk: entirely free. Renfe/Iryo ValenciaâBarcelona booked 2 weeks out: â¬25â40. Left it late: â¬80+.",
+  barcelona:"Book hostel private room to avoid â¬419/night August apartment prices. T-Casual 10-trip metro card â¬11.35. Tourist tax bites: â¬6.60 (hostel) to â¬9.50/night (apartment). 2-night stay = â¬13â19 extra.",
+  porto:"Metro from airport: â¬2.10. Vintage Tram Line 1: â¬6 â worth doing once. Skip port wine cave tours (â¬15â25) unless you drink wine. Passenger Hostel includes breakfast: knocks ~â¬8â10 off daily food spend.",
+  lisbon:"Tram 12E = same route as Tram 28, none of the pickpockets. GraÃ§a funicular metro-priced. Pastel de nata at BelÃ©m: buy 4, eat 2 on the bench, box 2 for the flight home.",
 };
 
-// ─── HELPERS ─────────────────────────────────────────────────────────────────
+// âââ HELPERS âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const DAY_MAP={1:"madrid",2:"madrid",3:"seville",4:"seville",5:"granada",
                6:"granada",7:"malaga",8:"valencia",9:"barcelona",10:"barcelona",
                11:"porto",12:"lisbon"};
 
 const DNAMES=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 const MNAMES=["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-// Transit cities share a day with the next stop — not in DAY_MAP
+// Transit cities share a day with the next stop â not in DAY_MAP
 const TRANSIT_DAY={toledo:3, cordoba:5};
 function cityDates(trip,cityId){
   if(!trip||!trip.startDate||!trip.dayMap) return "";
@@ -719,21 +719,21 @@ function cityDates(trip,cityId){
   const date1=new Date(start.getTime()+(d1-1)*86400000);
   const date2=new Date(start.getTime()+(d2-1)*86400000);
   const m1=MNAMES[date1.getMonth()], m2=MNAMES[date2.getMonth()];
-  if(d1===d2) return `${DNAMES[date1.getDay()]} · ${m1} ${date1.getDate()}`;
-  if(m1===m2) return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} · ${m1} ${date1.getDate()}-${date2.getDate()}`;
-  return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} · ${m1} ${date1.getDate()}-${m2} ${date2.getDate()}`;
+  if(d1===d2) return `${DNAMES[date1.getDay()]} Â· ${m1} ${date1.getDate()}`;
+  if(m1===m2) return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} Â· ${m1} ${date1.getDate()}-${date2.getDate()}`;
+  return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} Â· ${m1} ${date1.getDate()}-${m2} ${date2.getDate()}`;
 }
 
-// ─── TRIP ASSEMBLY ─────────────────────────────────────────────────────────────
+// âââ TRIP ASSEMBLY âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 // The Spain+Portugal trip is built-in (lives in the code, present on every device).
 const spainTrip={
   id:"spain-portugal-2026",
   title:"Spain + Portugal",
-  flags:"🇪🇸🇵🇹",
+  flags:"ðªð¸ðµð¹",
   color:ES,
   startDate:"2026-08-02",
   days:12,
-  subtitle:"August 2026 · 12 days · 10 cities · Cairo ↔",
+  subtitle:"August 2026 Â· 12 days Â· 10 cities Â· Cairo â",
   homeAirport:"CAI",
   flightCities:["porto"], // cities arrived at by flight (besides the initial hop)
   cities:CITIES,
@@ -747,7 +747,7 @@ const spainTrip={
 };
 const BUILTIN_TRIPS=[spainTrip];
 
-// ─── SMALL UI PIECES ─────────────────────────────────────────────────────────
+// âââ SMALL UI PIECES âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function Tag({children,color}){
   return <span style={{background:color+"18",color,border:`1px solid ${color}33`,
     borderRadius:4,padding:"2px 7px",fontSize:11,fontWeight:600,letterSpacing:.3,
@@ -765,7 +765,7 @@ function Row({t,d}){
   </div>;
 }
 
-// ─── HORIZONTAL ROUTE STRIP ───────────────────────────────────────────────────
+// âââ HORIZONTAL ROUTE STRIP âââââââââââââââââââââââââââââââââââââââââââââââââââ
 function RouteStrip({trip,sel,onSelect,dayMode,activeDay}){
   const CITIES=trip.cities, DAY_MAP=trip.dayMap||{};
   const home=trip.homeAirport, flightCities=trip.flightCities||[];
@@ -780,7 +780,7 @@ function RouteStrip({trip,sel,onSelect,dayMode,activeDay}){
 
           {/* Home airport start */}
           {home&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
-            <div style={{fontSize:14}}>✈</div>
+            <div style={{fontSize:14}}>â</div>
             <div style={{width:10,height:10,borderRadius:"50%",background:"#ccc"}}/>
             <div style={{fontSize:9,color:MUT,fontWeight:600}}>{home}</div>
           </div>}
@@ -839,29 +839,29 @@ function RouteStrip({trip,sel,onSelect,dayMode,activeDay}){
 
           {/* Home airport end */}
           {home&&<div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
-            <div style={{fontSize:14}}>✈</div>
+            <div style={{fontSize:14}}>â</div>
             <div style={{width:10,height:10,borderRadius:"50%",background:"#ccc"}}/>
             <div style={{fontSize:9,color:MUT,fontWeight:600}}>{home}</div>
           </div>}
         </div>
       </div>
 
-      {/* Dynamic legend bar — only when cities carry heat data (built-in trips) */}
+      {/* Dynamic legend bar â only when cities carry heat data (built-in trips) */}
       {(()=>{
         const sc=CITIES.find(c=>c.id===sel)||CITIES[0];
         if(!sc||!sc.heatLabel) return null;
         const scColor=cityColor(trip,sc);
-        const scFlag=sc.country==="pt"?"🇵🇹 Portugal":sc.country==="es"?"🇪🇸 Spain":(trip.flags||"");
+        const scFlag=sc.country==="pt"?"ðµð¹ Portugal":sc.country==="es"?"ðªð¸ Spain":(trip.flags||"");
         return(
           <div style={{display:"flex",alignItems:"center",borderTop:`1px solid ${BORDER}`,
             fontSize:9,fontWeight:600,letterSpacing:.4,textTransform:"uppercase"}}>
             <div style={{flex:"0 0 auto",padding:"5px 14px",color:scColor,
               borderRight:`1px solid ${BORDER}`,whiteSpace:"nowrap"}}>{scFlag}</div>
             <div style={{flex:1,padding:"5px 0",color:MUT,fontSize:8,textAlign:"center",letterSpacing:.3}}>
-              Heat: <span style={{color:"#4CAF50"}}>●</span> ≤27°C &nbsp;
-              <span style={{color:"#FFC107"}}>●</span> 28–34°C &nbsp;
-              <span style={{color:"#FF9800"}}>●</span> 35–40°C &nbsp;
-              <span style={{color:"#F44336"}}>●</span> 41°C+
+              Heat: <span style={{color:"#4CAF50"}}>â</span> â¤27Â°C &nbsp;
+              <span style={{color:"#FFC107"}}>â</span> 28â34Â°C &nbsp;
+              <span style={{color:"#FF9800"}}>â</span> 35â40Â°C &nbsp;
+              <span style={{color:"#F44336"}}>â</span> 41Â°C+
             </div>
             <div style={{flex:"0 0 auto",padding:"5px 14px",borderLeft:`1px solid ${BORDER}`,
               color:sc.heatColor,fontWeight:700,fontSize:9,whiteSpace:"nowrap"}}>
@@ -886,13 +886,13 @@ function FlightConnector(){
   return(
     <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,
       padding:"0 3px",marginTop:-18}}>
-      <div style={{fontSize:9,color:MUT}}>✈</div>
+      <div style={{fontSize:9,color:MUT}}>â</div>
       <div style={{width:22,height:1,borderTop:`1.5px dashed ${BORDER}`}}/>
     </div>
   );
 }
 
-// ─── BUDGET OVERLAY ───────────────────────────────────────────────────────────
+// âââ BUDGET OVERLAY âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function BudgetOverlay({trip,onClose}){
   const BUDGET=trip.budget, CITIES=trip.cities;
   const C=2*Math.PI*52;
@@ -916,7 +916,7 @@ function BudgetOverlay({trip,onClose}){
         <div style={{width:38,height:4,borderRadius:2,background:BORDER,margin:"4px auto 14px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div style={{fontWeight:800,fontSize:18,color:TXT}}>Trip Budget</div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>Ã</button>
         </div>
 
         {/* Totals */}
@@ -990,7 +990,7 @@ function BudgetOverlay({trip,onClose}){
   );
 }
 
-// ─── PHRASES OVERLAY ──────────────────────────────────────────────────────────
+// âââ PHRASES OVERLAY ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function PhrasesOverlay({trip,onClose}){
   const PHRASES=trip.phrases||{};
   return(
@@ -1003,7 +1003,7 @@ function PhrasesOverlay({trip,onClose}){
         <div style={{width:38,height:4,borderRadius:2,background:BORDER,margin:"4px auto 14px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
           <div style={{fontWeight:800,fontSize:18,color:TXT}}>Phrase Book</div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>Ã</button>
         </div>
         {Object.values(PHRASES).map(lang=>(
           <div key={lang.label} style={{marginBottom:24}}>
@@ -1023,7 +1023,7 @@ function PhrasesOverlay({trip,onClose}){
   );
 }
 
-// ─── BOOKINGS OVERLAY ─────────────────────────────────────────────────────────
+// âââ BOOKINGS OVERLAY âââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function BookingsOverlay({trip,done,onToggle,onClose}){
   const BOOKINGS=trip.bookings||[];
   return(
@@ -1036,9 +1036,9 @@ function BookingsOverlay({trip,done,onToggle,onClose}){
         <div style={{width:38,height:4,borderRadius:2,background:BORDER,margin:"4px auto 14px"}}/>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
           <div style={{fontWeight:800,fontSize:18,color:TXT}}>Booking Checklist</div>
-          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>Ã</button>
         </div>
-        <div style={{fontSize:11,color:MUT,marginBottom:16}}>Priority order — book top items first.</div>
+        <div style={{fontSize:11,color:MUT,marginBottom:16}}>Priority order â book top items first.</div>
         {BOOKINGS.map(b=>(
           <div key={b.id} style={{display:"flex",gap:12,marginBottom:12,paddingBottom:12,
             borderBottom:`1px solid ${BORDER}`,alignItems:"flex-start"}}>
@@ -1053,7 +1053,7 @@ function BookingsOverlay({trip,done,onToggle,onClose}){
               </div>
               <div style={{fontSize:11,color:"#777",marginBottom:4}}>{b.detail}</div>
               <a href={b.url} target="_blank" rel="noreferrer"
-                style={{fontSize:10,color:PT,textDecoration:"none"}}>→ {b.url.replace("https://","")}</a>
+                style={{fontSize:10,color:PT,textDecoration:"none"}}>â {b.url.replace("https://","")}</a>
             </div>
           </div>
         ))}
@@ -1062,7 +1062,7 @@ function BookingsOverlay({trip,done,onToggle,onClose}){
   );
 }
 
-// ─── TAB CONTENT ──────────────────────────────────────────────────────────────
+// âââ TAB CONTENT ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function DaysTab({city}){
   if(!city.dayPlan||city.dayPlan.length===0){
     return <div style={{fontSize:12,color:MUT,lineHeight:1.7,padding:"8px 2px"}}>
@@ -1125,7 +1125,7 @@ function SeeTab({city,customSee,setCustomSee,seeDone,setSeeDone,seeHidden,setSee
           <button onClick={()=>hideItem(k)}
             style={{background:"none",border:"none",color:BORDER,cursor:"pointer",
               fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}
-            title="Remove">×</button>
+            title="Remove">Ã</button>
         </div>
       );
     })}
@@ -1141,7 +1141,7 @@ function SeeTab({city,customSee,setCustomSee,seeDone,setSeeDone,seeHidden,setSee
           </div>
           <button onClick={()=>removePlace(idx)}
             style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,
-              lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+              lineHeight:1,padding:"0 4px",flexShrink:0}}>Ã</button>
         </div>
       ))}
     </div>}
@@ -1164,7 +1164,7 @@ function SeeTab({city,customSee,setCustomSee,seeDone,setSeeDone,seeHidden,setSee
           style={{display:"flex",justifyContent:"space-between",alignItems:"center",
             width:"100%",background:C2,border:`1px solid ${BORDER}`,borderRadius:8,
             padding:"8px 12px",cursor:"pointer",fontSize:12,color:MUT,fontWeight:600}}>
-          <span>Removed places ({hidden.length})</span><span>{showRemovedSee?'▲':'▼'}</span>
+          <span>Removed places ({hidden.length})</span><span>{showRemovedSee?'â²':'â¼'}</span>
         </button>
         {showRemovedSee&&<div style={{marginTop:6,background:C2,borderRadius:10,padding:12,border:`1px solid ${BORDER}`}}>
           {hidden.map(({k,label})=>(
@@ -1266,11 +1266,11 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
               <div style={{fontWeight:600,fontSize:12,color:tried?MUT:TXT,textDecoration:tried?"line-through":"none"}}>{v.n}</div>
               <div style={{display:"flex",alignItems:"center",gap:8,marginTop:1,flexWrap:"wrap"}}>
                 <span style={{fontSize:11,color:MUT}}>{v.addr}</span>
-                {v.addr&&<a href={mapsUrl(v.n,v.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>↗ Maps</a>}
+                {v.addr&&<a href={mapsUrl(v.n,v.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>â Maps</a>}
               </div>
               <div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{v.ctx}</div>
             </div>
-            <button onClick={()=>hideVenue(k)} style={{background:"none",border:"none",color:BORDER,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}} title="Remove">×</button>
+            <button onClick={()=>hideVenue(k)} style={{background:"none",border:"none",color:BORDER,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}} title="Remove">Ã</button>
           </div>;
         })}
         {cvs.map((cv,j)=>(
@@ -1279,11 +1279,11 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
               <div style={{fontWeight:600,fontSize:12,color:TXT}}>{cv.n}</div>
               {cv.addr&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:1}}>
                 <span style={{fontSize:11,color:MUT}}>{cv.addr}</span>
-                <a href={mapsUrl(cv.n,cv.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>↗ Maps</a>
+                <a href={mapsUrl(cv.n,cv.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>â Maps</a>
               </div>}
               {cv.note&&<div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{cv.note}</div>}
             </div>
-            <button onClick={()=>removeCustomVenue(vfKey,j)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+            <button onClick={()=>removeCustomVenue(vfKey,j)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>Ã</button>
           </div>
         ))}
         {showVF[vfKey]?<VenueForm k={vfKey}/>:(
@@ -1295,7 +1295,7 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
 
     {/* Pork compass */}
     <div style={{background:"#FFF8EE",border:`1px solid ${WRN}44`,borderRadius:10,padding:12,marginTop:4}}>
-      <div style={{fontSize:10,fontWeight:700,color:WRN,marginBottom:5,letterSpacing:.5}}>🧭 PORK COMPASS</div>
+      <div style={{fontSize:10,fontWeight:700,color:WRN,marginBottom:5,letterSpacing:.5}}>ð§­ PORK COMPASS</div>
       <div style={{fontSize:12,color:"#666",lineHeight:1.55}}>{e.porkCompass}</div>
     </div>
 
@@ -1305,7 +1305,7 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
       return <div key={di} style={{marginTop:14,background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
         <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:5}}>
           <div style={{fontWeight:700,fontSize:14,color:TXT}}>{d.name}</div>
-          <button onClick={()=>removeDish(di)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>×</button>
+          <button onClick={()=>removeDish(di)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>Ã</button>
         </div>
         {d.desc&&<div style={{fontSize:12,color:"#555",marginBottom:10,lineHeight:1.65,fontStyle:"italic"}}>{d.desc}</div>}
         {d.venues.length>0&&<SH label="Venues"/>}
@@ -1315,11 +1315,11 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
               <div style={{fontWeight:600,fontSize:12,color:TXT}}>{v.n}</div>
               {v.addr&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:1}}>
                 <span style={{fontSize:11,color:MUT}}>{v.addr}</span>
-                <a href={mapsUrl(v.n,v.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>↗ Maps</a>
+                <a href={mapsUrl(v.n,v.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>â Maps</a>
               </div>}
               {v.note&&<div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{v.note}</div>}
             </div>
-            <button onClick={()=>removeDishVenue(di,vi)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>×</button>
+            <button onClick={()=>removeDishVenue(di,vi)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>Ã</button>
           </div>
         ))}
         {showVF[vfKey]?<VenueForm k={vfKey}/>:(
@@ -1351,7 +1351,7 @@ function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,
     {hiddenItems.length>0&&<div style={{marginTop:14}}>
       <button onClick={()=>setShowRemoved(!showRemoved)}
         style={{width:"100%",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,padding:"8px 12px",fontSize:11,color:MUT,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <span>Removed venues ({hiddenItems.length})</span><span>{showRemoved?'▲':'▼'}</span>
+        <span>Removed venues ({hiddenItems.length})</span><span>{showRemoved?'â²':'â¼'}</span>
       </button>
       {showRemoved&&<div style={{marginTop:6,background:C2,borderRadius:10,padding:12,border:`1px solid ${BORDER}`}}>
         {hiddenItems.map(({k,label,dish})=>(
@@ -1372,7 +1372,7 @@ function BudgetTab({trip,city,actualSpend,setActualSpend}){
   const cc2=cityColor(trip,city);
   const cc=city.cityCost;
 
-  // DIY trips: cities have no cost estimate — show a simple "what did you spend" tracker.
+  // DIY trips: cities have no cost estimate â show a simple "what did you spend" tracker.
   if(!cc){
     return <div>
       <div style={{background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
@@ -1426,7 +1426,7 @@ function BudgetTab({trip,city,actualSpend,setActualSpend}){
           <div style={{marginTop:8}}>
             <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:2}}>Route rank</div>
             <div style={{fontSize:13,fontWeight:700,color:rank<=3?GRN:rank>=8?ES:WRN}}>
-              {rank<=3?"💚":rank>=8?"🔴":"🟡"} #{rank} of {CITIES.length} cities
+              {rank<=3?"ð":rank>=8?"ð´":"ð¡"} #{rank} of {CITIES.length} cities
             </div>
             <div style={{fontSize:9,color:MUT}}>{rank<=3?"budget-friendly":rank>=8?"higher spend":"mid-range"}</div>
           </div>
@@ -1457,7 +1457,7 @@ function BudgetTab({trip,city,actualSpend,setActualSpend}){
           const over=diff>0;
           return <div style={{display:"flex",alignItems:"center",gap:5}}>
             <span style={{fontSize:14,fontWeight:800,color:over?ES:GRN}}>
-              {over?'▲':'▼'} ${Math.abs(diff).toFixed(0)}
+              {over?'â²':'â¼'} ${Math.abs(diff).toFixed(0)}
             </span>
             <span style={{fontSize:10,color:MUT}}>{over?'over':'under'} estimate</span>
           </div>;
@@ -1520,7 +1520,7 @@ function BudgetTab({trip,city,actualSpend,setActualSpend}){
     {/* Budget hack */}
     {(trip.budgetHacks||{})[city.id]&&<div style={{background:"#F0F7FF",border:`1px solid ${PT}33`,borderRadius:10,padding:14}}>
       <div style={{fontSize:10,fontWeight:700,color:PT,marginBottom:6,letterSpacing:.5}}>
-        💡 BUDGET HACK
+        ð¡ BUDGET HACK
       </div>
       <div style={{fontSize:12,color:"#444",lineHeight:1.65}}>{trip.budgetHacks[city.id]}</div>
     </div>}
@@ -1559,17 +1559,17 @@ function LogisticsTab({city,stayDone,setStayDone,stayHidden,setStayHidden}){
                 {booked&&<span style={{fontSize:9,background:GRN+"15",color:GRN,
                   padding:"1px 6px",borderRadius:3,fontWeight:700,border:`1px solid ${GRN}33`}}>BOOKED</span>}
               </div>
-              <div style={{fontSize:11,color:MUT,marginTop:2}}>{o.area} · {o.price}</div>
+              <div style={{fontSize:11,color:MUT,marginTop:2}}>{o.area} Â· {o.price}</div>
               <div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{o.tip}</div>
             </div>
             <button onClick={()=>hideStay(key)}
               style={{background:"none",border:"none",color:BORDER,cursor:"pointer",
                 fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}
-              title="Remove">×</button>
+              title="Remove">Ã</button>
           </div>
         );
       })}
-      {s.tax!=="None"&&<div style={{fontSize:11,color:WRN,marginTop:4,fontWeight:600}}>⚠ Tourist tax: {s.tax}</div>}
+      {s.tax!=="None"&&<div style={{fontSize:11,color:WRN,marginTop:4,fontWeight:600}}>â  Tourist tax: {s.tax}</div>}
     </> : <div style={{fontSize:12,color:"#666",lineHeight:1.65,marginBottom:4}}>{s.note}</div>}
     {(()=>{
       const hidden=s.options.map((o,i)=>({k:city.id+'-stay-'+i,label:o.n})).filter(x=>stayHidden[x.k]);
@@ -1579,7 +1579,7 @@ function LogisticsTab({city,stayDone,setStayDone,stayHidden,setStayHidden}){
           style={{display:"flex",justifyContent:"space-between",alignItems:"center",
             width:"100%",background:C2,border:`1px solid ${BORDER}`,borderRadius:8,
             padding:"8px 12px",cursor:"pointer",fontSize:12,color:MUT,fontWeight:600}}>
-          <span>Removed stays ({hidden.length})</span><span>{showRemovedStay?'▲':'▼'}</span>
+          <span>Removed stays ({hidden.length})</span><span>{showRemovedStay?'â²':'â¼'}</span>
         </button>
         {showRemovedStay&&<div style={{marginTop:6,background:C2,borderRadius:10,padding:12,border:`1px solid ${BORDER}`}}>
           {hidden.map(({k,label})=>(
@@ -1597,7 +1597,7 @@ function LogisticsTab({city,stayDone,setStayDone,stayHidden,setStayHidden}){
 
     {/* Move */}
     <SH label="Getting around"/>
-    {[["→ Getting in",m.in],["→ Moving on",m.out],["Local transport",m.local],["Estimated cost",m.cost]].map(([l,v])=>(
+    {[["â Getting in",m.in],["â Moving on",m.out],["Local transport",m.local],["Estimated cost",m.cost]].map(([l,v])=>(
       <div key={l} style={{marginBottom:12,paddingBottom:12,borderBottom:`1px solid ${BORDER}`}}>
         <div style={{fontSize:10,fontWeight:700,color:MUT,marginBottom:4,textTransform:"uppercase",letterSpacing:.5}}>{l}</div>
         <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>{v}</div>
@@ -1642,7 +1642,7 @@ function NotesTab({city,customNotes,setCustomNotes}){
           <div style={{flex:1,fontSize:12,color:TXT,lineHeight:1.65,whiteSpace:"pre-wrap"}}>{n}</div>
           <button onClick={()=>removeNote(idx)}
             style={{background:"none",border:"none",color:MUT,cursor:"pointer",
-              fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+              fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>Ã</button>
         </div>
       ))}
       {myNotes.length===0&&<div style={{fontSize:12,color:MUT,marginBottom:12,fontStyle:"italic"}}>
@@ -1652,7 +1652,7 @@ function NotesTab({city,customNotes,setCustomNotes}){
         <div style={{fontSize:10,fontWeight:700,color:cc2,textTransform:"uppercase",
           letterSpacing:.5,marginBottom:10}}>+ Add a note</div>
         <textarea value={text} onChange={e=>setText(e.target.value)}
-          placeholder="Type anything — a tip, a reminder, a reservation number…"
+          placeholder="Type anything â a tip, a reminder, a reservation numberâ¦"
           rows={3}
           style={{width:"100%",padding:"8px 10px",borderRadius:7,border:`1px solid ${BORDER}`,
             fontSize:12,background:CARD,color:TXT,outline:"none",resize:"vertical",
@@ -1665,7 +1665,7 @@ function NotesTab({city,customNotes,setCustomNotes}){
   </div>;
 }
 
-// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+// âââ MAIN APP âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 const TABS=[
   {id:"days",label:"Days",icon:"days"},
   {id:"see",label:"See",icon:"see"},
@@ -1742,20 +1742,20 @@ function TripView({trip,onHome}){
               <span style={{color:trip.color||ES}}>{trip.title}</span>
             </div>
             <div style={{fontSize:11,color:MUT,marginTop:1,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}}>
-              {city.name}{cityDates(trip,city.id)?` · ${cityDates(trip,city.id)}`:""}
+              {city.name}{cityDates(trip,city.id)?` Â· ${cityDates(trip,city.id)}`:""}
             </div>
           </div>
           {hasBookings&&<button onClick={()=>{setBkOpen(true);setBdOpen(false);setPhOpen(false);}}
             style={{...rbtn,background:doneCount===BOOKINGS.length?GRN+"15":ES+"12",
-              border:`1px solid ${doneCount===BOOKINGS.length?GRN:ES}33`}}>📋
+              border:`1px solid ${doneCount===BOOKINGS.length?GRN:ES}33`}}>ð
             <span style={{position:"absolute",top:-5,right:-5,background:doneCount===BOOKINGS.length?GRN:ES,
               color:"#fff",fontSize:8,fontWeight:800,borderRadius:8,padding:"1px 4px",lineHeight:1.3,
               border:"1.5px solid #fff"}}>{doneCount}/{BOOKINGS.length}</span>
           </button>}
           {hasBudget&&<button onClick={()=>{setBdOpen(true);setBkOpen(false);setPhOpen(false);}}
-            style={{...rbtn,background:PT+"12",border:`1px solid ${PT}33`}}>💰</button>}
+            style={{...rbtn,background:PT+"12",border:`1px solid ${PT}33`}}>ð°</button>}
           {hasPhrases&&<button onClick={()=>{setPhOpen(true);setBkOpen(false);setBdOpen(false);}}
-            style={{...rbtn,background:C2,border:`1px solid ${BORDER}`}}>🗣</button>}
+            style={{...rbtn,background:C2,border:`1px solid ${BORDER}`}}>ð£</button>}
         </div>
 
         {/* Day jump pill */}
@@ -1772,9 +1772,9 @@ function TripView({trip,onHome}){
               {Array.from({length:trip.days},(_,i)=>i+1).map(d=><option key={d} value={d}>{d}</option>)}
             </select>
             {dayMode&&<button onClick={()=>setDayMode(false)}
-              style={{background:"none",border:"none",color:WRN,fontSize:13,cursor:"pointer",padding:0,lineHeight:1}}>✕</button>}
+              style={{background:"none",border:"none",color:WRN,fontSize:13,cursor:"pointer",padding:0,lineHeight:1}}>â</button>}
           </div>
-          {dayMode&&DAY_MAP[activeDay]===city.id&&<span style={{fontSize:11,color:WRN,fontWeight:700}}>📍 today's stop</span>}
+          {dayMode&&DAY_MAP[activeDay]===city.id&&<span style={{fontSize:11,color:WRN,fontWeight:700}}>ð today's stop</span>}
         </div>}
       </div>
 
@@ -1792,7 +1792,7 @@ function TripView({trip,onHome}){
             <Tag color={cc2}>{city.days}</Tag>
             {city.duration&&<Tag color={cc2}>{city.duration}</Tag>}
             {city.heatLabel&&<Tag color={city.heatColor||cc2}>{city.heatLabel}</Tag>}
-            {city.warn&&<Tag color={WRN}>⚠ Action needed</Tag>}
+            {city.warn&&<Tag color={WRN}>â  Action needed</Tag>}
           </div>
           {cityDates(trip,city.id)&&<div style={{fontSize:11,color:MUT,marginTop:8}}>{cityDates(trip,city.id)}</div>}
         </div>
@@ -1836,7 +1836,7 @@ function TripView({trip,onHome}){
   );
 }
 
-// ─── TRIP HELPERS ──────────────────────────────────────────────────────────────
+// âââ TRIP HELPERS ââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function loadUserTrips(){ return ls('trips',[]); }
 function saveUserTrips(arr){ lsSet('trips',arr); }
 function allTrips(){ return [...BUILTIN_TRIPS, ...loadUserTrips()]; }
@@ -1856,11 +1856,11 @@ function fmtRange(trip){
   const start=new Date(trip.startDate+"T00:00:00");
   const end=new Date(start.getTime()+((trip.days||1)-1)*86400000);
   const m1=MNAMES[start.getMonth()], m2=MNAMES[end.getMonth()];
-  if(m1===m2) return `${m1} ${start.getDate()}–${end.getDate()}, ${end.getFullYear()}`;
-  return `${m1} ${start.getDate()} – ${m2} ${end.getDate()}, ${end.getFullYear()}`;
+  if(m1===m2) return `${m1} ${start.getDate()}â${end.getDate()}, ${end.getFullYear()}`;
+  return `${m1} ${start.getDate()} â ${m2} ${end.getDate()}, ${end.getFullYear()}`;
 }
 
-// ─── HOME: LIST OF TRIPS ─────────────────────────────────────────────────────
+// âââ HOME: LIST OF TRIPS âââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function TripCard({trip,status,onOpen,onArchiveToggle,onDelete}){
   const accent=trip.color||ES;
   const pill={current:["NOW",GRN],upcoming:["UPCOMING",PT],past:["PAST",MUT]}[status]||["",MUT];
@@ -1872,7 +1872,7 @@ function TripCard({trip,status,onOpen,onArchiveToggle,onDelete}){
       <div onClick={onOpen} style={{cursor:"pointer",
         background:`linear-gradient(135deg, ${accent}, ${accent}CC)`,
         padding:"16px 18px",position:"relative",minHeight:74}}>
-        <div style={{fontSize:30,lineHeight:1}}>{trip.flags||"🧳"}</div>
+        <div style={{fontSize:30,lineHeight:1}}>{trip.flags||"ð§³"}</div>
         <span style={{position:"absolute",top:14,right:14,fontSize:8,fontWeight:800,letterSpacing:.8,
           color:"#fff",background:"rgba(255,255,255,.22)",border:"1px solid rgba(255,255,255,.4)",
           borderRadius:20,padding:"3px 9px"}}>{pill[0]}</span>
@@ -1881,24 +1881,24 @@ function TripCard({trip,status,onOpen,onArchiveToggle,onDelete}){
         <div style={{fontWeight:800,fontSize:17,color:TXT,marginBottom:4,letterSpacing:-.3}}>{trip.title}</div>
         <div style={{fontSize:12,color:MUT,display:"flex",alignItems:"center",gap:6}}>
           <Icon name="days" size={13} color={MUT} stroke={1.8}/>
-          {fmtRange(trip)} · {trip.cities.length} {trip.cities.length===1?"city":"cities"}
+          {fmtRange(trip)} Â· {trip.cities.length} {trip.cities.length===1?"city":"cities"}
         </div>
       </div>
       <button onClick={()=>setMenu(m=>!m)} style={{position:"absolute",top:12,right:44,
         background:"rgba(255,255,255,.22)",border:"1px solid rgba(255,255,255,.35)",color:"#fff",
         width:26,height:26,borderRadius:13,fontSize:15,cursor:"pointer",lineHeight:1,
-        display:"flex",alignItems:"center",justifyContent:"center"}}>⋯</button>
+        display:"flex",alignItems:"center",justifyContent:"center"}}>â¯</button>
       {menu&&<div style={{position:"absolute",top:42,right:12,background:CARD,border:`1px solid ${BORDER}`,
         borderRadius:12,boxShadow:"0 10px 30px rgba(0,0,0,.16)",zIndex:5,overflow:"hidden",minWidth:170,
         animation:"popIn .14s ease"}}>
         <button onClick={()=>{onArchiveToggle(status==="past"?"upcoming":"past");setMenu(false);}}
           style={{display:"block",width:"100%",textAlign:"left",background:"none",border:"none",
             padding:"11px 14px",fontSize:13,color:TXT,cursor:"pointer"}}>
-          {status==="past"?"↑ Move to upcoming":"↓ Mark as past"}</button>
+          {status==="past"?"â Move to upcoming":"â Mark as past"}</button>
         {!trip.builtin&&<button onClick={()=>{if(confirm("Delete this trip? This can't be undone."))onDelete();setMenu(false);}}
           style={{display:"block",width:"100%",textAlign:"left",background:"none",border:"none",
             borderTop:`1px solid ${BORDER}`,padding:"11px 14px",fontSize:13,color:ES,cursor:"pointer"}}>
-          🗑 Delete trip</button>}
+          ð Delete trip</button>}
       </div>}
     </div>
   );
@@ -1922,7 +1922,7 @@ function TripsHome({trips,overrides,onOpen,onNew,onSettings,onArchiveToggle,onDe
         backdropFilter:"saturate(180%) blur(12px)",WebkitBackdropFilter:"saturate(180%) blur(12px)",
         borderBottom:`1px solid ${BORDER}`,padding:"calc(12px + var(--safe-top)) 18px 12px",
         display:"flex",alignItems:"center",justifyContent:"space-between"}}>
-        <div style={{fontWeight:900,fontSize:24,letterSpacing:-.6}}>My Trips</div>
+        <div style={{fontWeight:900,fontSize:24,letterSpacing:-.6}}>My Trips <span style={{fontWeight:400,fontSize:12,color:MUT,letterSpacing:0}}>· updated Jun 26</span></div>
         <button onClick={onSettings} title="Settings" style={{width:38,height:38,borderRadius:12,
           background:C2,border:`1px solid ${BORDER}`,color:MUT,cursor:"pointer",
           display:"flex",alignItems:"center",justifyContent:"center"}}>
@@ -1942,7 +1942,7 @@ function TripsHome({trips,overrides,onOpen,onNew,onSettings,onArchiveToggle,onDe
   );
 }
 
-// ─── CREATE A TRIP (DIY) ──────────────────────────────────────────────────────
+// âââ CREATE A TRIP (DIY) ââââââââââââââââââââââââââââââââââââââââââââââââââââââ
 function CreateTrip({onCancel,onCreate}){
   const [title,setTitle]=useState("");
   const [flags,setFlags]=useState("");
@@ -1978,7 +1978,7 @@ function CreateTrip({onCancel,onCreate}){
       };
     });
     return {
-      id:"trip-"+Date.now(), title:title.trim(), flags:flags.trim()||"🧳",
+      id:"trip-"+Date.now(), title:title.trim(), flags:flags.trim()||"ð§³",
       color:PT, startDate, days:day||1, builtin:false,
       cities:cityObjs, dayMap, transitDay:{}, bookings:[], budget:null, budgetHacks:{}, phrases:null,
     };
@@ -2000,7 +2000,7 @@ function CreateTrip({onCancel,onCreate}){
         <label style={{...lbl,marginTop:0}}>Trip name</label>
         <input style={inp} value={title} onChange={e=>setTitle(e.target.value)} placeholder="e.g. Italy 2027"/>
         <label style={lbl}>Flag emoji (optional)</label>
-        <input style={inp} value={flags} onChange={e=>setFlags(e.target.value)} placeholder="🇮🇹"/>
+        <input style={inp} value={flags} onChange={e=>setFlags(e.target.value)} placeholder="ð®ð¹"/>
         <label style={lbl}>Start date</label>
         <input style={inp} type="date" value={startDate} onChange={e=>setStartDate(e.target.value)}/>
 
@@ -2016,7 +2016,7 @@ function CreateTrip({onCancel,onCreate}){
               <span style={{fontSize:10,color:MUT}}>nights</span>
             </div>
             {cities.length>1&&<button onClick={()=>removeCity(i)} style={{background:"none",border:"none",
-              color:MUT,fontSize:18,cursor:"pointer",lineHeight:1,padding:"0 2px"}}>×</button>}
+              color:MUT,fontSize:18,cursor:"pointer",lineHeight:1,padding:"0 2px"}}>Ã</button>}
           </div>
         ))}
         <button onClick={addCity} style={{background:C2,border:`1px dashed ${BORDER}`,color:MUT,
@@ -2036,7 +2036,7 @@ function CreateTrip({onCancel,onCreate}){
   );
 }
 
-// ─── SETTINGS: BACKUP & RESTORE ───────────────────────────────────────────────
+// âââ SETTINGS: BACKUP & RESTORE âââââââââââââââââââââââââââââââââââââââââââââââ
 function SettingsView({onBack,onChanged}){
   const isMobile=useWindowWidth()<640;
   const [msg,setMsg]=useState("");
@@ -2055,7 +2055,7 @@ function SettingsView({onBack,onChanged}){
       try{
         const parsed=JSON.parse(reader.result); const data=parsed.data||parsed;
         Object.keys(data).forEach(k=>localStorage.setItem(k,data[k]));
-        setMsg("Restored. Reloading…"); onChanged&&onChanged();
+        setMsg("Restored. Reloadingâ¦"); onChanged&&onChanged();
         setTimeout(()=>window.location.reload(),700);
       }catch(e){ setMsg("That file couldn't be read."); }
     };
@@ -2079,9 +2079,9 @@ function SettingsView({onBack,onChanged}){
         <div style={card}>
           <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>Backup your trips</div>
           <div style={{fontSize:12,color:MUT,lineHeight:1.6,marginBottom:12}}>
-            Saves all your trips and progress to a file. Keep it safe — you can restore it on a new phone.
+            Saves all your trips and progress to a file. Keep it safe â you can restore it on a new phone.
           </div>
-          <button onClick={backup} style={{...btn,background:GRN,color:"#fff"}}>⬇ Backup to file</button>
+          <button onClick={backup} style={{...btn,background:GRN,color:"#fff"}}>â¬ Backup to file</button>
         </div>
         <div style={card}>
           <div style={{fontWeight:700,fontSize:14,marginBottom:6}}>Restore from a backup</div>
@@ -2089,7 +2089,7 @@ function SettingsView({onBack,onChanged}){
             Loads a backup file. This replaces matching data on this device.
           </div>
           <label style={{...btn,background:PT,color:"#fff",display:"block",textAlign:"center"}}>
-            ⬆ Choose backup file
+            â¬ Choose backup file
             <input type="file" accept="application/json,.json" onChange={restore} style={{display:"none"}}/>
           </label>
         </div>
@@ -2099,7 +2099,7 @@ function SettingsView({onBack,onChanged}){
   );
 }
 
-// ─── ROOT APP (multi-trip shell) ────────────────────────────────────────────────
+// âââ ROOT APP (multi-trip shell) ââââââââââââââââââââââââââââââââââââââââââââââââ
 function App(){
   const [view,setView]=useState("home");      // "home" | "trip" | "create" | "settings"
   const [tripId,setTripId]=useState(null);
