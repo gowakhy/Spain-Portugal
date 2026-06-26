@@ -1,0 +1,1724 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+  <title>Spain + Portugal · Aug 2026</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ES+PT Trip">
+  <link rel="apple-touch-icon" href="icon-192.png">
+  <meta name="theme-color" content="#C84B31">
+  <script>
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.getRegistrations().then(regs=>regs.forEach(r=>r.unregister()));
+      caches.keys().then(keys=>keys.forEach(k=>caches.delete(k)));
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/react@18/umd/react.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@babel/standalone@7/babel.min.js"></script>
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Inter', system-ui, -apple-system, sans-serif; -webkit-text-size-adjust: 100%; }
+    select { font-family: inherit; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+function useWindowWidth(){
+  const [w,setW]=useState(window.innerWidth);
+  useEffect(()=>{
+    const fn=()=>setW(window.innerWidth);
+    window.addEventListener('resize',fn);
+    return ()=>window.removeEventListener('resize',fn);
+  },[]);
+  return w;
+}
+function ls(key,def){
+  try{const v=localStorage.getItem(key);return v?JSON.parse(v):def;}catch(e){return def;}
+}
+function lsSet(key,val){
+  try{localStorage.setItem(key,JSON.stringify(val));}catch(e){}
+}
+function mapsUrl(name,addr){
+  return 'https://maps.google.com/?q='+encodeURIComponent((addr||'')+' '+(name||''));
+}
+
+// ─── PALETTE (light theme) ───────────────────────────────────────────────────
+const ES="#C84B31", PT="#1A5FA0";
+const BG="#F7F6F2", CARD="#FFFFFF", C2="#F0EFEb", BORDER="#E2E1DD";
+const TXT="#1A1918", MUT="#9A9890", WRN="#B8720A", GRN="#2D8653";
+
+// ─── BOOKINGS ────────────────────────────────────────────────────────────────
+const BOOKINGS=[
+  {id:"alhambra",label:"Alhambra",detail:"Nasrid Palaces timed entry — sells out weeks ahead in August. General entry €14–19.",url:"https://www.alhambra-patronato.es",hot:true},
+  {id:"sagrada",label:"Sagrada Família",detail:"Centenary surcharge active through Dec 2026. ~€29–31. Sell out daily in August.",url:"https://www.sagradafamilia.org/en/tickets",hot:true},
+  {id:"bcn_opo",label:"BCN → OPO flight",detail:"Fly Tue/Thu/Sat/Sun ONLY (Groundforce strike). Ryanair/Vueling, ~€55.",url:"https://www.google.com/flights",hot:true},
+  {id:"bcn_stay",label:"Barcelona room",detail:"Full apartments avg $419/night in Aug. Book hostel private room (Generator/Casa Gràcia) 2–3 months out.",url:"https://www.hostelworld.com",hot:true},
+  {id:"passenger",label:"Passenger Hostel Porto",detail:"Private rooms inside São Bento Station. Free breakfast. Book early.",url:"https://www.thepassengerhostel.com",hot:false},
+  {id:"porto_lisbon",label:"Porto → Lisbon train",detail:"Alfa Pendular, 3h, €22–25. August trains sell out. Book at cp.pt.",url:"https://www.cp.pt",hot:false},
+  {id:"granada_stay",label:"Granada room",detail:"Book alongside Alhambra — both are date-locked. Albaicín for Alhambra views.",url:"https://www.booking.com",hot:false},
+];
+
+// ─── PHRASES ─────────────────────────────────────────────────────────────────
+const PHRASES={
+  es:{label:"🇪🇸 Spanish",color:ES,items:[
+    {p:"¿Tiene jamón?",m:"Does it have ham? Ask before ordering anything."},
+    {p:"Sin jamón, por favor",m:"Without ham, please."},
+    {p:"¿De jamón o de bacalao?",m:"Ham or cod? (ask for croquetas specifically)"},
+    {p:"¿Me puede cambiar el tapa?",m:"Can you swap the tapa? (Granada free-tapa bars)"},
+    {p:"El menú, por favor",m:"The fixed-price lunch — €12–15, Mon–Sat 1:30–4:30pm."},
+    {p:"Agua sin gas / con gas",m:"Still / sparkling water."},
+    {p:"La cuenta, por favor",m:"The bill, please."},
+    {p:"¿Cuánto cuesta?",m:"How much does it cost?"},
+    {p:"Más despacio, por favor",m:"Slower, please — when they speak too fast."},
+  ]},
+  pt:{label:"🇵🇹 Portuguese",color:PT,items:[
+    {p:"Tem porco?",m:"Does it have pork?"},
+    {p:"Sem porco, por favor",m:"Without pork, please."},
+    {p:"Bacalhau",m:"Salt cod — look for this word on any menu. Always pork-free."},
+    {p:"Os pastéis de nata, por favor",m:"The custard tarts, please."},
+    {p:"A conta, por favor",m:"The bill, please."},
+    {p:"Faz favor",m:"Excuse me / please — to get a waiter's attention."},
+    {p:"Não falo português",m:"I don't speak Portuguese. (they'll switch to English)"},
+  ]},
+};
+
+// ─── BUDGET ───────────────────────────────────────────────────────────────────
+const BUDGET={
+  total:1683, onGround:1343, flights:340,
+  note:"Pure daily spend (accommodation + food + local transport) = $82/day. The $111.90 average includes intercity transport and attractions spread across the trip.",
+  cats:[
+    {label:"Accommodation",amount:638.75,pct:47.6,color:"#4A90E2"},
+    {label:"Intercity transport",amount:279,pct:20.8,color:"#E07B39"},
+    {label:"Food",amount:263,pct:19.6,color:GRN},
+    {label:"Local transport",amount:82.50,pct:6.1,color:"#9B59B6"},
+    {label:"Attractions",amount:50,pct:3.7,color:"#E74C3C"},
+    {label:"Misc / buffer",amount:30,pct:2.2,color:MUT},
+  ],
+};
+
+// ─── CITY DATA ────────────────────────────────────────────────────────────────
+const CITIES=[
+{
+  id:"madrid",name:"Madrid",country:"es",
+  days:"Days 1-2",duration:"2 nights",
+  heat:35,heatLabel:"33–36°C",heatColor:"#FF9800",
+  cityCost:{accom:130,food:46,local:23,intercity:0,total:199},
+  travelIn:"flight",// flight from Cairo
+  dayPlan:[
+    {label:"Day 1 — Arrive",blocks:[
+      {time:"Land",note:"Metro Line 8 (T4) → Nuevos Ministerios → centre. ~€5, 25 min. Skip taxis."},
+      {time:"Afternoon",note:"Walk Gran Vía briefly then cut south into La Latina. Plaza de la Paja over Plaza Mayor — quieter, more genuinely medieval. Walk every lane."},
+      {time:"Evening",note:"Calle de la Cava Baja tapas crawl. For croquetas, ask '¿de jamón o de bacalao?' — order the cod. Gambas al ajillo, patatas bravas, ensaladilla rusa. Eat standing at the counter."},
+    ]},
+    {label:"Day 2 — Full day",blocks:[
+      {time:"7am",note:"Retiro Park. Crystal Palace (free), rowboats on the lake. At 7am: runners and dog walkers, no tourists."},
+      {time:"10am",note:"Chamberí → Plaza de Olavide. Walk Calle de Fuencarral. Belle Époque buildings, bar terraces, zero tourist infrastructure."},
+      {time:"Noon",note:"Malasaña — walk Calle del Pez + Plaza del Dos de Mayo. Tabacalera Cultural Centre (C/ Embajadores 51) Thurs–Sun, free."},
+      {time:"6–8pm",note:"⭐ Prado FREE entry window (Mon–Sat 6–8pm, Sun 5–7pm). Same Velázquez, Goya, Bosch. No queue, no cost."},
+      {time:"Evening",note:"Lavapiés for dinner — Madrid's cheapest, most interesting neighbourhood."},
+    ]},
+  ],
+  see:[
+    {t:"Retiro Park — 6am start",d:"350 acres, open from 6am. Crystal Palace (free), rowboats. Zero tourists at 7am."},
+    {t:"La Latina — Plaza de la Paja",d:"Oldest part of Madrid. More authentic than Plaza Mayor. Walk every lane off Calle de la Cava Baja."},
+    {t:"Chamberí — Plaza de Olavide",d:"Two metro stops north. Belle Époque buildings, oval square ringed with local bar terraces."},
+    {t:"Malasaña",d:"Madrid's creative neighbourhood. Walk Calle del Pez and around Plaza del Dos de Mayo."},
+    {t:"Tabacalera Cultural Centre",d:"C/ Embajadores 51. Former tobacco factory. Free cultural space Thurs–Sun. Walk in off the street."},
+    {t:"Prado — free entry window",d:"Mon–Sat 6–8pm, Sun 5–7pm. World-class Velázquez, Goya, Bosch. No queue, no cost."},
+  ],
+  eat:{
+    headline:"Madrid invented two iconic foods: a squid sandwich eaten on the street and churros dunked in thick dark chocolate at 2am. Neither sounds like much. Both are unforgettable.",
+    dishes:[
+      {name:"Bocadillo de calamares",story:"Fried squid rings in a crusty baguette — Madrid's street food identity. Order from a bar with a visible fryer and a queue of locals.",origin:"Madrid original",
+       venues:[{n:"C/ de Botoneras + C/ Ciudad Rodrigo",addr:"Streets north of Plaza Mayor",ctx:"Walk until you find a bar with a fryer and people eating outside."}]},
+      {name:"Churros con chocolate",story:"Thicker than fairground churros, served with a cup of very thick dark chocolate for dipping. The correct Madrid breakfast and the correct 2am snack.",origin:"Madrid icon since 1894",
+       venues:[{n:"Chocolatería San Ginés",addr:"C/ Pasadizo de San Ginés (hidden alley off C/ Arenal)",ctx:"Open 24 hours since 1894. The queue at midnight is real. So is the chocolate."}]},
+      {name:"Gambas al ajillo",story:"Prawns sizzling in garlic-infused olive oil, brought to the table still bubbling in a clay dish. Simple; depends entirely on oil quality.",origin:"Andalusian roots, perfected in Madrid tapas bars",
+       venues:[{n:"Calle de la Cava Baja (La Latina)",addr:"Walk the street, pick whichever bar has locals standing outside",ctx:"Any traditional bar on this street does a solid version."}]},
+    ],
+    porkCompass:"Croquetas are almost always jamón-filled. Ask '¿de jamón o de bacalao?' before ordering. Cocido madrileño (Madrid's famous stew) = all pork. Skip it entirely.",
+  },
+  stay:{
+    area:"Lavapiés or Sol/Centro",
+    note:"Lavapiés is the sweet spot — 10-min walk to Prado, Retiro, Gran Vía. Multicultural, cheap food everywhere.",
+    options:[
+      {n:"ibis Budget Madrid Centro Lavapiés",area:"Lavapiés",price:"€55–70/night",tip:"Book 6–8 weeks out"},
+      {n:"B&B Hotel Madrid Centro Puerta del Sol",area:"Sol",price:"€60–75/night",tip:"Directly central, everything walkable"},
+      {n:"Hostal Oliver",area:"Sol",price:"€45–65/night",tip:"More character, older property"},
+    ],
+    tax:"None",
+  },
+  move:{
+    in:"Metro Line 8 (T4) → Nuevos Ministerios → centre. ~€5, 25 min.",
+    out:"Toledo: ALSA bus from Plaza Elíptica → Toledo, ~1h, €6. Return to Atocha → AVE → Seville Santa Justa, 2h20m, €50–70.",
+    local:"Tourist Transport Card Zone A: €10/day — all metro + bus + airport.",
+    cost:"~$23 local transport",
+  },
+  note:"Locals leave Madrid in August — heat drives them to the coast. Sites are less crowded than spring. No tourist tax. Prado free window (6–8pm Mon–Sat) is the best art per euro on this trip.",
+},
+{
+  id:"toledo",name:"Toledo",country:"es",
+  days:"Day 3 morning",duration:"3–4 hour stop",
+  heat:39,heatLabel:"37–40°C",heatColor:"#FF5722",
+  cityCost:{accom:0,food:15,local:0,intercity:7,total:22},
+  dayPlan:[{label:"Day 3 morning — 9am to 1pm",blocks:[
+    {time:"9am",note:"Arrive from Madrid. Leave bags at Toledo station coin lockers (~€3–5). Walk straight uphill to the old city."},
+    {time:"9:15",note:"Puerta de Bisagra — the ancient walled city entrance used for 1,000 years. Streets narrow to 1.5m. Walk uphill with no plan."},
+    {time:"9:45",note:"Synagogue del Tránsito (C/ del Ángel) — extraordinary 14th-century Mudéjar stucco work. One of three surviving medieval synagogues in Spain. ~€3."},
+    {time:"10:30",note:"Mosque of Cristo de la Luz — one of the oldest Islamic buildings in Spain. Exterior free; entry ~€2.80 if open."},
+    {time:"11:00",note:"⚠ HEAT: 39–40°C by 11am. Take taxi down to Mirador del Valle (€5) for the panoramic view of Toledo on its Tagus loop. Then back to station."},
+    {time:"12:30",note:"Buy mazapán from Confitería Santo Tomé (C/ Santo Tomé 3) for the train. ALSA bus back to Atocha, then AVE → Seville."},
+  ]}],
+  see:[
+    {t:"Puerta de Bisagra + old city walk",d:"Same walls used for 1,000 years. Streets narrow to 1.5m. Walk uphill with no map needed."},
+    {t:"Synagogue del Tránsito",d:"C/ del Ángel. 14th-century Mudéjar stucco, one of three surviving medieval synagogues in Spain. ~€3."},
+    {t:"Mosque of Cristo de la Luz",d:"One of the oldest Islamic buildings in Spain. Exterior free from the street."},
+    {t:"Mirador del Valle",d:"Taxi (€5) to the road below the city. Full panorama of Toledo on its rocky Tagus loop."},
+  ],
+  eat:{
+    headline:"Toledo invented mazapán — almond marzipan made here since the Middle Ages. Denser, less sweet, more almond than any version you've tried. It's the one thing you buy here.",
+    dishes:[
+      {name:"Mazapán",story:"Toledo's almond marzipan — on menus and in shops since the Middle Ages. Completely pork-free. Two sources: the nuns who make it by hand, and the commercial benchmark.",origin:"Toledo original since medieval times",
+       venues:[
+         {n:"Convento de San Clemente",addr:"C/ del Ángel (Jewish quarter)",ctx:"Cloistered nuns sell through a wooden turntable window in the convent wall. The real, handmade version."},
+         {n:"Confitería Santo Tomé",addr:"C/ Santo Tomé 3",ctx:"Family business since the 19th century. Good quality, easy to find."},
+       ]},
+    ],
+    porkCompass:"Carcamusas (Toledo pork stew) — avoid. Everything else in Toledo is safe.",
+  },
+  stay:{area:"No overnight — day trip",note:"Leave bags at Toledo station coin lockers (~€3–5). Return to Atocha and connect to Seville.",options:[],tax:"N/A"},
+  move:{
+    in:"ALSA bus from Madrid Plaza Elíptica → Toledo, ~1h, €6. First buses from 6:30am.",
+    out:"ALSA back to Atocha then AVE → Seville Santa Justa, 2h20m, €50–70.",
+    local:"Entirely walkable once in the old city. Leave bags at the station.",
+    cost:"~$7 RT bus",
+  },
+  note:"Toledo sat at the intersection of Visigoth, Muslim, Jewish, and Catholic civilisation — sometimes simultaneously. More layers of history per square metre than almost anywhere in Spain. The walled hilltop city on a loop of the Tagus is one of the most dramatically positioned sites you'll see on this trip.",
+},
+{
+  id:"seville",name:"Seville",country:"es",
+  days:"Days 3-4",duration:"2 nights",
+  heat:40,heatLabel:"38–42°C",heatColor:"#F44336",
+  cityCost:{accom:110,food:40,local:6,intercity:46,total:202},
+  dayPlan:[
+    {label:"Day 3 — Evening arrival",blocks:[
+      {time:"Arrive",note:"Drop bags. Heat is 38–42°C by day — plan arrivals for late afternoon."},
+      {time:"Evening",note:"Walk Barrio Santa Cruz at dusk — old Moorish quarter adjacent to the Cathedral. Narrow lanes, tiled patios, bougainvillea. Best after 8pm when the temperature drops."},
+    ]},
+    {label:"Day 4 — Heat-smart full day",blocks:[
+      {time:"7–11am",note:"Metropol Parasol (Las Setas, Plaza de la Encarnación) for panoramic views (~€5). Then Triana — walk the Mercado de Triana (free), ceramics workshops open to the street."},
+      {time:"11am–6pm",note:"⚠ HARD STOP. 42°C is genuinely dangerous outdoors. Find AC. Menú del día at 2–4pm. Order gazpacho as starter — it's a meal in itself here."},
+      {time:"6pm",note:"Real Fábrica de Tabacos (C/ San Fernando) — the Carmen building. Free courtyard. Largest baroque building in Spain after El Escorial."},
+      {time:"7pm",note:"⭐ Plaza de España at golden hour. Built for 1929 exhibition, semicircular canal with tiled alcoves. Filmed in Star Wars. Free. The light at this hour is extraordinary."},
+      {time:"9pm",note:"⭐ Dinner at Las Golondrinas (C/ Antillano Campos 5, Triana). No English menu, local clientele, old-school. Be there by 9pm."},
+    ]},
+  ],
+  see:[
+    {t:"Metropol Parasol (Las Setas) — early morning",d:"Mushroom-shaped wooden structure the size of a city block. Walkway-level panoramic views. ~€5. Before 9am or you'll cook."},
+    {t:"Triana — cross the river",d:"Walk the Isabel II bridge. Mercado de Triana (free), ceramics workshops open to street. More authentic than Santa Cruz."},
+    {t:"Real Fábrica de Tabacos (University)",d:"The Carmen building. Free courtyard. Astonishing baroque scale."},
+    {t:"Plaza de España — golden hour",d:"1929 exhibition masterpiece. Tiled alcoves for all 50 Spanish provinces. Filmed in Star Wars. Go at 7pm. Free."},
+    {t:"Barrio Santa Cruz — dusk only",d:"Old Moorish quarter. Walk after 8pm when it cools and the light turns golden."},
+    {t:"Alameda de Hércules",d:"Seville's main local boulevard. Roman columns at each end, bar terraces down the middle. Where Seville actually socialises in summer."},
+  ],
+  eat:{
+    headline:"Two things define Seville: pescado frito (fried fish) eaten on the street, and the Moorish vegetable dishes that have been on menus here for 800 years.",
+    dishes:[
+      {name:"Pescado frito",story:"Mixed fried fish in a paper cone. Seville's street food identity. Order 'surtido mixto' from a freiduría where the oil is fresh and the queue is local.",origin:"Seville signature",
+       venues:[
+         {n:"Freiduría Puerta de la Carne",addr:"C/ Castelar 2 (near Barrio Santa Cruz)",ctx:"Classic Sevillano freiduría. Counter service, local, queue moves fast."},
+         {n:"Any freiduría in Triana",addr:"Walk Triana's main street, find the frying smell",ctx:"Triana does this better than the tourist centre."},
+       ]},
+      {name:"Espinacas con garbanzos",story:"Spinach and chickpeas with cumin and paprika — on Andalusian menus since the Moorish period. Vegetarian, deeply flavoured.",origin:"Moorish Andalusia, Seville staple",
+       venues:[{n:"Bar El Rinconcillo",addr:"C/ Gerona 40",ctx:"Spain's oldest bar (1670). They mark your tab on the wall in chalk. Benchmark espinacas."}]},
+    ],
+    porkCompass:"Salmorejo is always pork-free — say 'sin jamón' to skip the ham topping. Montaditos (small sandwiches) are often jamón-based. Ask first.",
+  },
+  stay:{
+    area:"Santa Cruz / Centro Histórico",
+    note:"August = Seville low season. 38–42°C keeps tourists away, prices drop 30–40% vs spring. Critical: confirm AC is in the ROOM, not just the lobby.",
+    options:[
+      {n:"Hotel Goya",area:"Santa Cruz",price:"€50–65/night",tip:"Solid value in August"},
+      {n:"Hotel Doña Lina",area:"Santa Cruz",price:"€55–70/night",tip:"Most atmospheric part of the city"},
+      {n:"Hotel Becquer",area:"Centro",price:"€60–75/night",tip:"Reliable AC, walkable to everything"},
+    ],
+    tax:"None",
+  },
+  move:{
+    in:"AVE from Toledo (via Atocha) → Seville Santa Justa, 2h20m, €50–70.",
+    out:"Take the EARLIEST AVE → Córdoba (~45 min, €15–20). Depart 6:30–7am to catch the free Mezquita window.",
+    local:"Almost entirely walkable from any central hotel.",
+    cost:"~$6 local transport",
+  },
+  note:"Best evening atmosphere on the entire route. Locals eat dinner at 9:30pm — showing up at 7pm means eating with other tourists. Day 4 outdoor activity ONLY 7–11am. The 42°C heat is real and dangerous.",
+},
+{
+  id:"cordoba",name:"Córdoba",country:"es",
+  days:"Day 5 morning",duration:"4 hour stop",
+  heat:42,heatLabel:"40–43°C",heatColor:"#B71C1C",
+  cityCost:{accom:0,food:12,local:0,intercity:32,total:44},
+  dayPlan:[{label:"Day 5 morning — 8:15am to 12:30pm",blocks:[
+    {time:"8:15am",note:"Walk from station (~20 min) or taxi (€5). Be at the Mezquita door by 8:15am."},
+    {time:"8:30am",note:"⭐ Mezquita FREE window opens. A mosque built in 784AD with a full cathedral inserted through it in 1523 without demolishing it. 40 minutes inside. After 9:30am it costs €13."},
+    {time:"9:30am",note:"Synagogue of Córdoba (C/ Judíos) — one of three surviving medieval synagogues in Spain, 1315. Entry ~€0.30. Tiny, perfect, almost no visitors."},
+    {time:"10:00am",note:"Calleja de las Flores — the famous flower-lined alley. 2 minutes. Then Alcázar gardens (~€4.50 or free Tues afternoon). 45 minutes."},
+    {time:"11:30am",note:"Early lunch at Taberna Salinas (C/ Tundidores 3) — open since 1879, benchmark for salmorejo. Say 'sin jamón' for the topping."},
+    {time:"12:30pm",note:"⚠ HEAT: 43°C. Train or bus to Granada by 1pm at the latest."},
+  ]}],
+  see:[
+    {t:"Mezquita-Catedral — FREE 8:30–9:30am",d:"A mosque built in 784AD with a Christian cathedral inserted through it in 1523. 856 horseshoe arches meeting a gothic nave. One of the most extraordinary buildings on earth. FREE Mon–Sat 8:30–9:30am."},
+    {t:"Synagogue of Córdoba",d:"C/ Judíos. One of three surviving medieval synagogues in Spain, 1315. Entry ~€0.30. Tiny, perfect."},
+    {t:"Calleja de las Flores",d:"Famous flower-lined alley. Two minutes. Worth it."},
+    {t:"Alcázar gardens",d:"Islamic-tradition water gardens. Entry ~€4.50, free Tues afternoon. 45 minutes."},
+  ],
+  eat:{
+    headline:"Salmorejo was invented in Córdoba — richer and thicker than anywhere else in Andalusia. Berenjenas con miel (fried aubergine with honey) is Moorish-origin and unique to this region.",
+    dishes:[
+      {name:"Salmorejo (the original)",story:"Córdoba invented this — thicker and richer than Seville's because it has more bread and less water. The benchmark version is at Taberna Salinas.",origin:"Invented in Córdoba",
+       venues:[{n:"Taberna Salinas",addr:"C/ Tundidores 3",ctx:"Open since 1879. The benchmark. Say 'sin jamón' for the topping."}]},
+      {name:"Berenjenas con miel",story:"Fried aubergine slices drizzled with cane honey. Vegan, Moorish origin, unique to this region. Don't leave without trying it.",origin:"Moorish Andalusia",
+       venues:[{n:"Bodega Guzmán",addr:"C/ de los Judíos 7 (Jewish quarter, next to the synagogue)",ctx:"Old wine bodega. Berenjenas con miel is their signature."}]},
+    ],
+    porkCompass:"Flamenquín = pork loin wrapped in jamón, breaded and fried. All pork. The name sounds harmless. Skip it.",
+  },
+  stay:{area:"No overnight — transit stop",note:"The morning window is the whole game. Be gone by 1pm.",options:[],tax:"N/A"},
+  move:{
+    in:"AVE from Seville → Córdoba, ~45 min, €15–20. Walk from station to Mezquita ~20 min.",
+    out:"Regional train or ALSA bus → Granada, 2–2.5h, €15–20. Depart by 12:30–1pm maximum.",
+    local:"Walkable. ~20 min on foot from station to Mezquita.",
+    cost:"~$32 intercity (Seville→Córdoba + Córdoba→Granada)",
+  },
+  note:"The Mezquita free window (8:30–9:30am Mon–Sat) is the tactical core of this stop. Arrive at 8:15, be first through. Stand at the crossing point where 856 horseshoe arches meet the gothic nave. Córdoba is the hottest city in mainland Europe in summer. Do not stay past 1pm.",
+},
+{
+  id:"granada",name:"Granada",country:"es",
+  days:"Days 5-6",duration:"2 nights",
+  heat:36,heatLabel:"34–37°C",heatColor:"#FF9800",
+  warn:"⚠ Book Alhambra NOW — sells out months ahead in August. Only at alhambra-patronato.es",
+  cityCost:{accom:120,food:36,local:9,intercity:23,total:188},
+  dayPlan:[
+    {label:"Day 5 — Evening arrival",blocks:[
+      {time:"Arrive",note:"Drop bags. Wait out afternoon heat if arriving early."},
+      {time:"Evening",note:"Walk Realejo — Granada's old Jewish quarter, less visited than Albaicín, beautiful and quiet."},
+      {time:"Night",note:"Albaicín at dusk. Walk up as the temperature drops. Order any drink at any traditional bar — a free tapa arrives. Order a second. This is how Granada operates."},
+    ]},
+    {label:"Day 6 — Alhambra day",blocks:[
+      {time:"Morning",note:"⭐ Alhambra — arrive at your exact Nasrid Palaces timed entry slot. No exceptions or late admissions. The plasterwork in Comares Hall is at a level of craft modern tools can barely replicate. Budget 2.5–3 hours total."},
+      {time:"Midday",note:"Walk DOWN through Albaicín from the Alhambra. Walk Calle del Agua. Whitewashed houses, cobbled lanes, street cats."},
+      {time:"Golden hour",note:"⭐ Mirador de San Nicolás — the single best free view in Spain. The Alhambra against the Sierra Nevada at dusk. Get there early for a position."},
+      {time:"Dusk",note:"Sacromonte cave district above Albaicín. Walk the hillside paths. Informal street music sometimes happens. No ticket."},
+      {time:"Evening",note:"Free tapas again. Calle Navas or Plaza Bib-Rambla. Two drinks = a full meal. The free tapa system does not sleep."},
+    ]},
+  ],
+  see:[
+    {t:"Alhambra — pre-booked timed entry",d:"14th-century Nasrid Palaces — the greatest surviving Moorish palace in the world. Arrive at your EXACT time slot. Book only at alhambra-patronato.es."},
+    {t:"Generalife gardens",d:"The Alhambra's summer palace — water channels, cypress hedges. Move through in the morning heat."},
+    {t:"Mirador de San Nicolás",d:"The single best free view in Spain. The Alhambra against the Sierra Nevada at dusk. Arrive early."},
+    {t:"Albaicín neighbourhood",d:"UNESCO hillside Moorish quarter. Walk Calle del Agua. The city below was Christian after 1492; Albaicín remained Muslim for decades after."},
+    {t:"Sacromonte cave district",d:"Above Albaicín. Walk the hillside paths at dusk. Informal flamenco sometimes happens. No ticket."},
+    {t:"Realejo — old Jewish quarter",d:"Less visited than Albaicín. Local bars, traditional architecture. Good for the first evening."},
+  ],
+  eat:{
+    headline:"Granada has a rule that changes everything: every drink — including juice, water, or soft drinks — comes with a free tapa. Not a promotion. It's the local bar economy.",
+    dishes:[
+      {name:"The free tapa system",story:"Order any drink at any traditional bar. A tapa arrives. If it has jamón, say '¿me puede cambiar el tapa?' and they'll swap it. Two drinks at two different bars = a full meal.",origin:"Granada's defining food culture",
+       venues:[
+         {n:"Bodegas Castañeda",addr:"C/ Almireceros 1 (corner with C/ Elvira)",ctx:"Historic wine shop turned bar. The free tapa here is consistently better than average. Tiles on the barrels, locals at the counter."},
+         {n:"Bar Los Diamantes",addr:"C/ Navas 28",ctx:"Local institution for fresh seafood tapas. The pescado frito tapa that arrives is excellent."},
+       ]},
+      {name:"Remojón granadino",story:"Shredded salt cod with orange, olives, and spring onion in olive oil. A Granada original — completely pork-free and unlike anything else in Andalusia.",origin:"Granada original",
+       venues:[{n:"Any traditional tasca in Albaicín",addr:"Albaicín neighbourhood bars",ctx:"Ask for it specifically. Not on every menu but any good traditional bar will have it."}]},
+    ],
+    porkCompass:"Free tapas sometimes arrive with jamón — say '¿me puede cambiar el tapa?' and they swap without drama. Plato alpujarreño = all pork and sausage. Skip it.",
+  },
+  stay:{
+    area:"Albaicín or Centro/Realejo",
+    note:"Book alongside Alhambra tickets — both are date-locked. Albaicín gives rooftop views of the Alhambra worth the cobblestone hills.",
+    options:[
+      {n:"Hostal Casa del Aljarife",area:"Albaicín",price:"€55–70/night",tip:"Rooftop Alhambra views. Book early."},
+      {n:"Hostal Sierpes",area:"Centro",price:"€50–65/night",tip:"Flat and central"},
+      {n:"Booking.com — filter Albaicín",area:"Albaicín",price:"€60–75/night",tip:"Sort by location score, look for terrace"},
+    ],
+    tax:"None",
+  },
+  move:{
+    in:"Regional train or ALSA bus from Córdoba, 2–2.5h, €15–20.",
+    out:"ALSA bus → Málaga, 1.5–2h, ~€10. Bus is better than train — more direct.",
+    local:"Walk Albaicín and city centre. Bus or Uber to the Alhambra.",
+    cost:"~$9 local transport",
+  },
+  note:"Alhambra timed entry for the Nasrid Palaces: miss your slot and they will not admit you. No exceptions. Book before anything else on this trip. First entry slot (8:30am) beats heat and crowds. General entry (€14–19) is sufficient.",
+},
+{
+  id:"malaga",name:"Málaga",country:"es",
+  days:"Day 7",duration:"Afternoon + 1 night",
+  heat:31,heatLabel:"29–32°C (sea breeze)",heatColor:"#FFC107",
+  cityCost:{accom:0,food:10,local:3.5,intercity:13,total:26.5},
+  dayPlan:[{label:"Day 7 — Arrive midday, depart next morning",blocks:[
+    {time:"Arrive",note:"ALSA bus from Granada. Drop bags, head to Mercado Atarazanas before it closes at 3pm."},
+    {time:"1pm",note:"⭐ Mercado Central de Atarazanas (C/ Atarazanas 10) — 14th-century Moorish arch as entrance. Iron-and-glass interior. Local lunch counters. Buy and eat espetos here."},
+    {time:"3pm",note:"Alcazaba fortress — €3.50. Views over the port. Gardens better than expected. 45 minutes."},
+    {time:"4:30pm",note:"El Soho street art district — south of Alameda Principal. Walk it. Some of the best murals in Spain."},
+    {time:"Sunset",note:"Muelle Uno port promenade. Walk it, sit on the pier. Don't eat here — tourist prices."},
+    {time:"Morning",note:"⚠ Check flight AGP → VLC against Groundforce strike calendar. Fly Tue/Thu/Sat/Sun only."},
+  ]}],
+  see:[
+    {t:"Mercado Central de Atarazanas",d:"C/ Atarazanas 10. 14th-century Moorish arch as entrance, iron-and-glass interior. Busy with locals until 3pm."},
+    {t:"Alcazaba fortress",d:"€3.50. Views over the port, gardens inside. 45 minutes."},
+    {t:"El Soho street art district",d:"South of Alameda Principal. Walk it — some of the best murals in Spain."},
+    {t:"La Malagueta beach",d:"10-min walk from centre. Sea breeze makes August here the most comfortable on the Andalusian leg."},
+  ],
+  eat:{
+    headline:"Málaga has one dish that is its total identity: espetos de sardinas, grilled on bamboo skewers over burning embers in converted fishing boats on the beach. Non-negotiable.",
+    dishes:[
+      {name:"Espetos de sardinas",story:"Fresh sardines on bamboo skewers grilled over burning embers in a converted fishing boat on the beach. Exists nowhere else in this form. Find a chiringuito with a working espeto rig.",origin:"Málaga original",
+       venues:[
+         {n:"Chiringuitos on La Malagueta beach",addr:"La Malagueta beach, east end — find the smoke",ctx:"The rig is unmistakable. Eat standing on the beach."},
+         {n:"El Tintero",addr:"Playa del Palo (taxi €8 east of city)",ctx:"Legendary local institution. Waiters walk around with plates shouting what they have."},
+       ]},
+      {name:"Ajoblanco",story:"Málaga's cold almond-garlic soup — invented here. Served cold in August, completely pork-free. Overlooked because everyone focuses on gazpacho.",origin:"Invented in Málaga",
+       venues:[{n:"Any traditional Málaga bar in the historic centre",addr:"Calle Granada area",ctx:"Ask for it specifically. Any good bar will have it."}]},
+    ],
+    porkCompass:"Standard croqueta risk — ask if they're bacalao or jamón. Muelle Uno restaurants: overpriced tourist food, walk past.",
+  },
+  stay:{
+    area:"Historic centre",
+    note:"Optional 1 night as transit hub before flying to Valencia. Prioritise central — early departure from AGP in the morning.",
+    options:[
+      {n:"ibis Málaga Centro",area:"Centro",price:"€55–70/night",tip:"Reliable, central, easy AGP access"},
+      {n:"Budget guesthouse near Alcazaba",area:"Centro",price:"€45–65/night",tip:"More character, neighbourhood feel"},
+    ],
+    tax:"None",
+  },
+  move:{
+    in:"ALSA bus from Granada, 1.5–2h, ~€10.",
+    out:"⚠ Morning flight AGP → VLC. Tue/Thu/Sat/Sun ONLY (Groundforce strike). Or train ~5.5h, €35–50.",
+    local:"Walk the historic centre and beach. Entirely walkable.",
+    cost:"~$3.50 local transport",
+  },
+  note:"Most underrated city on this route. The historic centre is beautiful and comparatively uncrowded. Picasso was born here. El Soho street art is the only scene in Spain that rivals Barcelona's. If you have schedule slack, Málaga earns more than a half day.",
+},
+{
+  id:"valencia",name:"Valencia",country:"es",
+  days:"Day 8",duration:"1 full day + night",
+  heat:32,heatLabel:"30–33°C",heatColor:"#FFC107",
+  cityCost:{accom:60,food:22,local:9,intercity:49,total:140},
+  dayPlan:[{label:"Day 8 — Full day",blocks:[
+    {time:"Morning",note:"City of Arts and Sciences — walk the full complex along the dry Turia riverbed. Do NOT pay to enter the Oceanogràfic — the exterior walk is free and is the entire show."},
+    {time:"Late morning",note:"Mercado Central (Plaza del Mercado) — arrive before 1pm. 1928 modernist masterpiece. Buy and eat immediately."},
+    {time:"Lunch",note:"⭐ Horchatería de Santa Catalina (Plaza de Santa Catalina 6) for horchata y fartons. Menú del día in El Carmen. Or book La Pepica 30 min in advance."},
+    {time:"Afternoon",note:"El Carmen neighbourhood — walk Calle dels Cavallers and the lanes around it. Bohemian, local, tile work on every doorway."},
+    {time:"Evening",note:"Ruzafa neighbourhood — walk Calle de Sueca. Best evening bar density in Valencia."},
+  ]}],
+  see:[
+    {t:"City of Arts and Sciences — exterior",d:"Calatrava's futuristic complex along the dry Turia riverbed. The exterior walk is free. Do not pay to enter the Oceanogràfic."},
+    {t:"Mercado Central",d:"1928 modernist masterpiece. Arrive before 1pm."},
+    {t:"El Carmen neighbourhood",d:"Valencia's old quarter. Walk Calle dels Cavallers. Bohemian, local, tile work on every doorway."},
+    {t:"Ruzafa neighbourhood",d:"Creative district south of old town. Walk Calle de Sueca. Best evening bar density."},
+    {t:"Valencia Cathedral — Holy Grail",d:"The cathedral claims to hold the actual Holy Grail — a genuine medieval chalice. 5 minutes inside, free."},
+  ],
+  eat:{
+    headline:"Valencia invented paella. The real version has chicken, rabbit, green beans, and garrofón beans. Chorizo in paella = wrong restaurant. Walk away immediately.",
+    dishes:[
+      {name:"Paella Valenciana",story:"Chicken + rabbit + ferraura beans + garrofón beans. No pork, no chorizo. 30–40 minutes to cook properly. The rice should have socarrat — caramelised bottom layer.",origin:"Invented in Valencia — the actual original",
+       venues:[
+         {n:"La Pepica",addr:"Paseo Neptuno 6 (beachfront, La Malvarrosa)",ctx:"Open since 1898. Hemingway ate here. Touristy but the real paella. Book ahead — minimum 2 people, 30-min lead."},
+         {n:"La Riuà",addr:"C/ del Mar 27 (El Carmen)",ctx:"Local choice for authentic Valencian rice. Smaller, less famous, consistently excellent."},
+       ]},
+      {name:"Horchata y fartons",story:"Horchata: cold tiger nut milk — slightly sweet, nothing like anything else. Fartons: soft elongated pastry sticks for dipping. This combination was invented here.",origin:"Valencia original",
+       venues:[{n:"Horchatería de Santa Catalina",addr:"Plaza de Santa Catalina 6",ctx:"Open since 1836. Stone interior, marble counters. Nothing has changed."}]},
+    ],
+    porkCompass:"Chorizo in paella = walk away from that restaurant. In menú del día, ask for the fish second course.",
+  },
+  stay:{
+    area:"Barrio del Carmen",
+    note:"No tourist tax. Valencia is the best budget win on the Spain leg. One night: location above all.",
+    options:[
+      {n:"Hostal Venecia",area:"Carmen/Centro",price:"€55–65/night",tip:"Best value, genuinely central"},
+      {n:"Ad Hoc Monumental",area:"Carmen",price:"€65–80/night",tip:"More boutique, good breakfast"},
+    ],
+    tax:"None",
+  },
+  move:{
+    in:"⚠ Morning flight AGP → VLC (check strike calendar — Tue/Thu/Sat/Sun only). Or train from Málaga ~5.5h, €35–50.",
+    out:"Renfe or Iryo high-speed → Barcelona Sants, 3h, €25–40. Book at renfe.com or iryo.eu.",
+    local:"Centre walkable. Tram to Malvarrosa beach. Metro for longer distances.",
+    cost:"~$9 local transport",
+  },
+  note:"Consistently one of the trip highlights for people who weren't expecting much. The City of Arts and Sciences at dusk is one of the most architecturally striking things in Spain. Eating bad tourist paella in Valencia is a specific kind of waste — ask for socarrat, order from a kitchen you can see.",
+},
+{
+  id:"barcelona",name:"Barcelona",country:"es",
+  days:"Days 9-10",duration:"2 nights",
+  heat:30,heatLabel:"28–31°C",heatColor:"#FFC107",
+  warn:"⚠ Book Sagrada Família NOW at sagradafamilia.org — sold out day-of every day in August.",
+  cityCost:{accom:155,food:50,local:15,intercity:35,total:255},
+  dayPlan:[
+    {label:"Day 9 — Arrive + explore",blocks:[
+      {time:"Arrive",note:"Metro from Sants → El Born (10 min). Drop bags."},
+      {time:"Afternoon",note:"El Born immediately. Basílica de Santa Maria del Mar (14th-century Gothic, built by the people of the Ribera neighbourhood, not the nobility) — free during non-mass hours."},
+      {time:"Evening",note:"Barceloneta waterfront for sunset. Don't eat on the seafront. Walk one block inland for neighbourhood prices."},
+      {time:"Night",note:"Gràcia neighbourhood — Plaza del Sol, local bars. Where young Barcelona actually lives."},
+    ]},
+    {label:"Day 10 — Architecture day",blocks:[
+      {time:"Morning",note:"⭐ Sagrada Família — QR code, walk straight in. 90 minutes inside. The most ambitious building under construction in the world. ~€29–31."},
+      {time:"Mid-morning",note:"Hospital de Sant Pau (walk south on Avinguda de Gaudí) — UNESCO modernist complex. Usually uncrowded. Walk the exterior + gardens free."},
+      {time:"Noon",note:"Walk the full Passeig de Gràcia — Casa Batlló, Casa Amatller, La Pedrera. The facades are the show. Don't pay to go inside any of them."},
+      {time:"Lunch",note:"Mercat del Ninot (C/ Mallorca 133, Eixample) — where Barcelona people shop. No tourist markup. Eat at a counter inside."},
+      {time:"Afternoon",note:"Montjuïc by Funicular del Port (metro-priced). Jardins de Laribal (free), Castell de Montjuïc (€5, 360° views). Walk down through Poble Sec."},
+      {time:"Evening",note:"⭐ Carrer de Blai, Poble Sec — pintxos. Walk the whole street, eat from multiple bars. €1–2 each."},
+    ]},
+  ],
+  see:[
+    {t:"Sagrada Família — pre-booked",d:"The most ambitious building under construction in the world. ~€29–31 with centenary surcharge. Book at sagradafamilia.org only."},
+    {t:"El Born + Santa Maria del Mar",d:"One of Europe's most beautiful medieval neighbourhoods. The 14th-century basilica was built by the people of the Ribera, not the church or nobility. Free."},
+    {t:"Passeig de Gràcia facades",d:"Walk the full length. Casa Batlló, Casa Amatller, La Pedrera. The facades are the experience. Don't pay to go inside."},
+    {t:"Gràcia neighbourhood",d:"Former independent village. Plaza del Sol, great bars. Where young Barcelona actually lives."},
+    {t:"Hospital de Sant Pau",d:"UNESCO World Heritage modernist complex. Usually uncrowded. Walk exterior and gardens free."},
+    {t:"Carrer de Blai — pintxos (Poble Sec)",d:"Barcelona's pintxos street. Walk the whole street, graze multiple bars. €1–2 each."},
+  ],
+  eat:{
+    headline:"Barcelona has the best food culture on this trip — market-driven, neighbourhood-focused. The Boqueria is a tourist trap. The local market system is the real show.",
+    dishes:[
+      {name:"Pintxos on Carrer de Blai",story:"Basque-style small bites on bread, €1–2 each. Walk the entire Poble Sec street and eat from multiple bars. Most are naturally pork-free (anchovy, prawn, smoked fish).",origin:"Basque tradition, best Barcelona execution on this street",
+       venues:[{n:"Carrer de Blai (multiple bars)",addr:"C/ de Blai, Poble Sec (metro: Paral·lel)",ctx:"Walk from the Paral·lel end to the far end. Don't stop at the first bar — the middle stretch has the best variety."}]},
+      {name:"Menú del día in Gràcia",story:"Barcelona is the best city in Spain for the fixed-price lunch. €12–14 for 3 courses + drink at genuinely good restaurants. Walk 2 streets off any tourist zone.",origin:"Catalan lunch tradition",
+       venues:[{n:"Any restaurant with a handwritten chalkboard in Gràcia",addr:"Gràcia neighbourhood, 2+ streets off Passeig de Gràcia",ctx:"Laminated photo menu outside = walk past. Handwritten board = go in."}]},
+    ],
+    porkCompass:"Fuet (thin white Catalan sausage) looks harmless — all pork. It's in pintxos, sandwiches, charcuterie. La Boqueria: walk through, do not eat. Las Ramblas: worst value in Spain.",
+  },
+  stay:{
+    area:"Gràcia or Eixample",
+    note:"⚠ Full apartments average $419/night in August. Book hostel private room or Airbnb 'private room' (NOT 'entire place'). Book 2–3 months out.",
+    options:[
+      {n:"Generator Barcelona (private room)",area:"Gràcia",price:"€65–85/night",tip:"Good design hostel. Book 2–3 months out."},
+      {n:"Casa Gràcia (private room)",area:"Eixample/Gràcia border",price:"€60–80/night",tip:"More boutique, slightly quieter"},
+      {n:"Airbnb private room",area:"Gràcia or Eixample",price:"€50–75/night",tip:"Filter: 'private room' NOT 'entire place'"},
+    ],
+    tax:"€6.60/night (hostel) or €9.50/night (apartment). 2 nights = €13.20–19.",
+  },
+  move:{
+    in:"Renfe or Iryo from Valencia, 3h, €25–40.",
+    out:"⚠ Fly BCN → OPO — Ryanair/Vueling, ~2h, €30–80. TUE/THU/SAT/SUN ONLY (Groundforce strike). Book 2–3 weeks ahead.",
+    local:"T-Casual 10-trip card: €11.35. Gràcia funicular OPEN (April 30 2026).",
+    cost:"~$15 local transport",
+  },
+  note:"Sagrada Família: sold out day-of every day in August. Book before you fly. Standard entry (~€29) is enough. Skip the tower add-on — the interior is the spectacle.",
+},
+{
+  id:"porto",name:"Porto",country:"pt",
+  days:"Day 11",duration:"1 full day + night",
+  heat:26,heatLabel:"24–27°C (cool & perfect)",heatColor:"#4CAF50",
+  travelIn:"flight",
+  cityCost:{accom:63.5,food:20,local:9,intercity:64,total:156.5},
+  dayPlan:[{label:"Day 11 — Full day",blocks:[
+    {time:"Arrive",note:"Metro Linha E (Violet) from airport → city centre, ~€2.10. Go directly to Ribeira."},
+    {time:"Afternoon",note:"Walk the entire Ribeira waterfront quay. Free. Then cross Dom Luís I Bridge on the UPPER pedestrian level — full panorama over terracotta rooftops and the Douro."},
+    {time:"3–4pm",note:"⭐ Vintage Tram Line 1 from Infante stop → Foz do Douro, 40 min on 1872 rolling stock, €6. Walk Foz beach. Return on next tram."},
+    {time:"Late afternoon",note:"São Bento train station — 20,000 azulejo tiles depicting Portuguese history. Walk in even if not catching a train. Free."},
+    {time:"7–8pm",note:"⭐ Vila Nova de Gaia — cross back to the port wine cave side. Walk the terrace at sunset. South bank blazes orange at 8pm. Best photograph of the trip."},
+    {time:"Evening",note:"Jardim das Virtudes — terraced gardens, locals sit here at dusk. Then dinner near Mercado do Bolhão area."},
+  ]}],
+  see:[
+    {t:"Ribeira waterfront",d:"UNESCO-listed medieval waterfront along the Douro. Walk the entire length. Most visually dramatic waterfront on the whole trip."},
+    {t:"Dom Luís I Bridge — upper deck",d:"Cross on the UPPER pedestrian level. Full panorama over terracotta rooftops, the Douro, and Vila Nova de Gaia."},
+    {t:"Vintage Tram Line 1 to Foz",d:"Board at Infante stop. 40 min on 1872 rolling stock, €6. How Porto commuted to the coast for 150 years."},
+    {t:"São Bento train station",d:"One of the world's most beautiful stations. 20,000 azulejo tiles. Walk in even if not taking a train. Free."},
+    {t:"Vila Nova de Gaia — sunset terrace",d:"Cross the bridge to the port wine cave side. Walk the terrace at 8pm. The Douro reflection is the best photograph of the trip."},
+  ],
+  eat:{
+    headline:"Porto runs on salt cod and the Atlantic. Bacalhau has 365 recipes here — all pork-free. The city's most famous dish (francesinha) is entirely pork-based. Learn the name so you can skip it.",
+    dishes:[
+      {name:"Polvo à lagareiro",story:"Roasted octopus with crushed potatoes, olive oil, and garlic — the tentacles caramelised. One of the great dishes of Portuguese cooking. Completely pork-free.",origin:"Traditional Porto",
+       venues:[{n:"Adega São Nicolau",addr:"Rua São Nicolau 1 (Ribeira)",ctx:"Right in Ribeira, a local institution. The real version."}]},
+      {name:"Bacalhau à Gomes de Sá",story:"Flaked salt cod baked with potatoes, eggs, onion, and olives. Invented here by a Porto cod merchant in the 19th century.",origin:"Invented in Porto, 19th century",
+       venues:[{n:"Taberna dos Mercadores",addr:"C/ dos Mercadores 36 (near Ribeira)",ctx:"Traditional tasca. The bacalhau is done properly here."}]},
+      {name:"Conservas (take-home)",story:"Tins of sardines in spiced olive oil — Portuguese conservas are a serious food category. The best souvenir on this trip.",origin:"Portuguese tradition",
+       venues:[{n:"Mercado do Bolhão",addr:"Rua Formosa (restored 1914 market)",ctx:"Go in the morning. Buy from multiple vendors."}]},
+    ],
+    porkCompass:"Francesinha = every layer is pork. Learn the name. Alheira sausage: ask 'tem porco?' — modern versions often contain pork.",
+  },
+  stay:{
+    area:"Baixa / Ribeira",
+    note:"One night central near the river. The Passenger Hostel is the standout: private rooms inside São Bento Station with free breakfast.",
+    options:[
+      {n:"The Passenger Hostel (São Bento Station)",area:"Baixa",price:"€55–70/night",tip:"⭐ Private rooms in a UNESCO heritage station. Free breakfast. Book early."},
+      {n:"Onefam Ribeira",area:"Ribeira",price:"€50–65/night",tip:"Social hostel, strong location"},
+      {n:"The House Ribeira Porto Hotel",area:"Ribeira/Baixa",price:"€65–75/night",tip:"More hotel-style"},
+    ],
+    tax:"€3/person/night",
+  },
+  move:{
+    in:"⚠ Fly BCN → OPO on Tue/Thu/Sat/Sun only. ~2h, €30–80. Metro Linha E (Violet) from airport, ~€2.10.",
+    out:"Alfa Pendular → Lisboa Oriente, 3h, €20–25. Depart Porto Campanhã at 7am. Book at cp.pt.",
+    local:"Ribeira is flat and walkable. Uber for the hills. Vintage Tram 1 to Foz (€6, worth it).",
+    cost:"~$9 local transport",
+  },
+  note:"Porto is one of the most visually spectacular cities in Europe. Getting lost here is a feature. The tonal shift from Baroque Andalusia to this older, Atlantic, granite city is one of the best moments of the whole trip. 24–27°C after two weeks of Andalusian heat will feel miraculous.",
+},
+{
+  id:"lisbon",name:"Lisboa",country:"pt",
+  days:"Day 12",duration:"4–5 hours then fly",
+  heat:29,heatLabel:"27–30°C",heatColor:"#8BC34A",
+  cityCost:{accom:0,food:12,local:8,intercity:25,total:45},
+  dayPlan:[{label:"Day 12 — Arrive 10am, fly evening",blocks:[
+    {time:"10am",note:"Arrive Lisboa Oriente. Drop bags at luggage storage (~€4–5). Head straight to Alfama."},
+    {time:"10:30",note:"⭐ Alfama via Tram 12E (NOT Tram 28 — overcrowded, pickpockets). Walk up through the oldest district in Lisbon."},
+    {time:"11:30",note:"Miradouro da Graça via Graça funicular (OPEN since April 30 2026). Best viewpoint in Alfama, no entry fee."},
+    {time:"12:00",note:"Walk down through Mouraria — the Moorish quarter that remained Muslim after the Reconquista. Walk Largo do Intendente, Rua do Benformoso. Where fado originated."},
+    {time:"12:30",note:"Museu do Aljube (Rua de Augusta 33) — former Salazar-era political prison, free museum. One of the most quietly powerful spaces in Europe. 45 minutes."},
+    {time:"1:30",note:"⭐ Tram 15E west to Belém (30 min) for Pastéis de Belém. Buy and eat hot with cinnamon. Buy a box for the flight. Return by tram."},
+    {time:"3pm",note:"Lunch at Mercado de Campo de Ourique — neighbourhood market hall where actual Lisboetas eat. Not Time Out Market."},
+    {time:"4:30",note:"Metro to Humberto Delgado Airport. Allow 90 minutes minimum from central Lisbon."},
+  ]}],
+  see:[
+    {t:"Alfama — Tram 12E (not 28)",d:"Oldest district in Lisbon. Same route as Tram 28, fraction of the crowd, far fewer pickpockets."},
+    {t:"Miradouro da Graça (funicular OPEN)",d:"Graça funicular reopened April 30 2026. Best viewpoint in Alfama. Free."},
+    {t:"Mouraria neighbourhood",d:"The Moorish quarter that remained Muslim after 1147. Walk Largo do Intendente and Rua do Benformoso. Where fado originated."},
+    {t:"Museu do Aljube (free)",d:"Rua de Augusta 33. Former Salazar prison. One of the most quietly powerful spaces in Europe."},
+    {t:"Pastéis de Belém",d:"Rua de Belém 84–92. Original since 1837, secret recipe. Tram 15E west. Buy a box for the flight."},
+  ],
+  eat:{
+    headline:"August in Lisbon means peak sardine season — charcoal grills appear in Mouraria. One bakery has been making the original custard tart since 1837. The recipe has never been shared.",
+    dishes:[
+      {name:"Pastel de nata — the original",story:"Developed by monks at the Jerónimos Monastery and sold from this bakery since 1837. The recipe has never been shared. Every other 'pastel de nata' in Lisbon is an approximation.",origin:"Created at Jerónimos Monastery, sold here since 1837",
+       venues:[{n:"Fábrica de Pastéis de Belém",addr:"Rua de Belém 84–92 (take Tram 15E)",ctx:"The only place making the original recipe. The queue moves. Eat 4 on the spot — hot with cinnamon. Buy a box for the flight home."}]},
+      {name:"Sardines grelhadas (August only)",story:"August is peak sardine season in Lisbon. Street grills appear throughout Alfama and Mouraria — charcoal, whole sardines, bread underneath to catch the juices.",origin:"Lisbon summer tradition",
+       venues:[{n:"Street grills in Mouraria (Rua do Capelão area)",addr:"Walk Mouraria streets in early evening, follow the smoke",ctx:"Informal, unscheduled. Every time you see a grill in August, stop."}]},
+    ],
+    porkCompass:"Alheira sausage: ask 'tem porco?' — modern versions often contain pork. Time Out Market: good food, tourist prices — go to Campo de Ourique instead.",
+  },
+  stay:{
+    area:"No overnight — fly out",
+    note:"Book an evening flight to keep the full day. Airport is 20 min by metro. Allow 90 min from Alfama. If overnight needed: Alfama/Mouraria guesthouses €65–80.",
+    options:[{n:"If overnight needed — Alfama/Mouraria",area:"Alfama",price:"€65–80/night",tip:"30–40% cheaper than Chiado/Baixa, more atmospheric"}],
+    tax:"€4/person/night if overnight needed",
+  },
+  move:{
+    in:"Alfa Pendular from Porto Campanhã → Lisboa Oriente, 3h, €20–25. Depart 7am, arrive 10am.",
+    out:"Metro to Humberto Delgado Airport (LIS), ~20 min, ~€2. Allow 90 min from central Lisbon. EgyptAir LIS→CAI.",
+    local:"⚠ Tram 12E (NOT Tram 28). Graça funicular OPEN. Glória + Bica SUSPENDED. Navegante Occasional day card: €7.",
+    cost:"~$8 local transport",
+  },
+  note:"The 90-min airport window is non-negotiable — do not miss the 7am Alfa Pendular from Porto. Museu do Aljube (free) is the most quietly powerful hour on the whole trip. Factor the Belém detour carefully against your departure time.",
+},
+];
+
+// ─── BUDGET HACKS PER CITY ───────────────────────────────────────────────────
+const BUDGET_HACKS={
+  madrid:"Prado free Mon–Sat 6–8pm, Sun 5–7pm — saves ~€15 per person. Metro Zone A day pass €10 covers the airport, every metro line, and all buses.",
+  toledo:"Mezquita of Cristo de la Luz entry is €2.80 — one of the oldest Islamic buildings in Spain. Station coin locker ~€3 so you're not lugging bags uphill in 39°C.",
+  seville:"August = Seville's low season. 38–42°C keeps tourists away, accommodation drops 30–40% vs spring. Menú del día €12–15 Mon–Sat 1:30–4:30pm is always the right call over à la carte.",
+  cordoba:"Mezquita free Mon–Sat 8:30–9:30am saves €13 per person. Alcázar free Tuesday afternoons. The whole Córdoba stop costs ~$44 if you time the free windows.",
+  granada:"Two drinks at two different bars ≈ one full dinner on the free-tapa system. Budget €8–10 for a complete meal this way. Order drinks, don't order food — the food arrives.",
+  malaga:"No tourist tax, no Alhambra surcharge. Cheapest major city on the Andalusian leg. If you stay one night, it's the best value overnighter on the route.",
+  valencia:"No tourist tax. City of Arts and Sciences exterior walk: entirely free. Renfe/Iryo Valencia→Barcelona booked 2 weeks out: €25–40. Left it late: €80+.",
+  barcelona:"Book hostel private room to avoid €419/night August apartment prices. T-Casual 10-trip metro card €11.35. Tourist tax bites: €6.60 (hostel) to €9.50/night (apartment). 2-night stay = €13–19 extra.",
+  porto:"Metro from airport: €2.10. Vintage Tram Line 1: €6 — worth doing once. Skip port wine cave tours (€15–25) unless you drink wine. Passenger Hostel includes breakfast: knocks ~€8–10 off daily food spend.",
+  lisbon:"Tram 12E = same route as Tram 28, none of the pickpockets. Graça funicular metro-priced. Pastel de nata at Belém: buy 4, eat 2 on the bench, box 2 for the flight home.",
+};
+
+// ─── HELPERS ─────────────────────────────────────────────────────────────────
+const DAY_MAP={1:"madrid",2:"madrid",3:"seville",4:"seville",5:"granada",
+               6:"granada",7:"malaga",8:"valencia",9:"barcelona",10:"barcelona",
+               11:"porto",12:"lisbon"};
+
+const TRIP_START=new Date(2026,7,2); // Aug 2, 2026 (month is 0-indexed)
+const DNAMES=["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+// Transit cities share a day with the next stop — not in DAY_MAP
+const TRANSIT_DAY={toledo:3, cordoba:5};
+function cityDates(cityId){
+  const cityDays=Object.entries(DAY_MAP).filter(([,id])=>id===cityId).map(([d])=>Number(d));
+  const d1=cityDays.length?Math.min(...cityDays):TRANSIT_DAY[cityId];
+  const d2=cityDays.length?Math.max(...cityDays):TRANSIT_DAY[cityId];
+  if(!d1) return "";
+  const date1=new Date(TRIP_START.getTime()+(d1-1)*86400000);
+  const date2=new Date(TRIP_START.getTime()+(d2-1)*86400000);
+  if(d1===d2) return `${DNAMES[date1.getDay()]} · Aug ${date1.getDate()}`;
+  return `${DNAMES[date1.getDay()]}-${DNAMES[date2.getDay()]} · Aug ${date1.getDate()}-${date2.getDate()}`;
+}
+
+// ─── SMALL UI PIECES ─────────────────────────────────────────────────────────
+function Tag({children,color}){
+  return <span style={{background:color+"18",color,border:`1px solid ${color}33`,
+    borderRadius:4,padding:"2px 7px",fontSize:11,fontWeight:600,letterSpacing:.3,
+    display:"inline-block",marginRight:4}}>{children}</span>;
+}
+function SH({label}){
+  return <div style={{fontWeight:700,fontSize:10,letterSpacing:1.2,color:MUT,
+    textTransform:"uppercase",marginBottom:8,marginTop:18,borderBottom:`1px solid ${BORDER}`,
+    paddingBottom:5}}>{label}</div>;
+}
+function Row({t,d}){
+  return <div style={{marginBottom:10,paddingBottom:10,borderBottom:`1px solid ${BORDER}`}}>
+    <div style={{fontWeight:600,fontSize:13,color:TXT,marginBottom:2}}>{t}</div>
+    <div style={{fontSize:12,color:"#666",lineHeight:1.6}}>{d}</div>
+  </div>;
+}
+
+// ─── HORIZONTAL ROUTE STRIP ───────────────────────────────────────────────────
+function RouteStrip({sel,onSelect,dayMode,activeDay}){
+  const activeCityId=dayMode?DAY_MAP[activeDay]:sel;
+
+  return(
+    <div style={{background:CARD,border:`1px solid ${BORDER}`,borderRadius:10,
+      marginBottom:14,overflow:"hidden"}}>
+      <div style={{overflowX:"auto",WebkitOverflowScrolling:"touch"}}>
+        <div style={{display:"flex",alignItems:"center",padding:"16px 20px",
+          minWidth:"max-content",gap:0}}>
+
+          {/* Cairo start */}
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
+            <div style={{fontSize:14}}>✈</div>
+            <div style={{width:10,height:10,borderRadius:"50%",background:"#ccc"}}/>
+            <div style={{fontSize:9,color:MUT,fontWeight:600}}>CAI</div>
+          </div>
+
+          {/* Flight line to Madrid */}
+          <FlightConnector/>
+
+          {/* City nodes */}
+          {CITIES.map((c,i)=>{
+            const isActive=c.id===activeCityId;
+            const cc2=c.country==="pt"?PT:ES;
+            const needFlight=c.id==="porto"; // after Barcelona
+            return(
+              <div key={c.id} style={{display:"flex",alignItems:"center",gap:0}}>
+                {/* Connector before this city */}
+                {i>0&&(needFlight ? <FlightConnector/> : <TrainConnector/>)}
+
+                {/* City node */}
+                <button onClick={()=>onSelect(c.id)}
+                  style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,
+                    background:"none",border:"none",cursor:"pointer",padding:"0 6px",
+                    position:"relative"}}>
+                  {/* Heat indicator */}
+                  <div style={{width:7,height:7,borderRadius:"50%",background:c.heatColor,
+                    boxShadow:`0 0 4px ${c.heatColor}88`}}/>
+                  {/* City circle */}
+                  <div style={{
+                    width:isActive?34:26, height:isActive?34:26,
+                    borderRadius:"50%",
+                    background:isActive?cc2:CARD,
+                    border:`2px solid ${isActive?cc2:BORDER}`,
+                    display:"flex",alignItems:"center",justifyContent:"center",
+                    boxShadow:isActive?`0 2px 12px ${cc2}44`:"none",
+                    transition:"all .15s",
+                  }}>
+                    {isActive&&<div style={{width:8,height:8,borderRadius:"50%",background:CARD}}/>}
+                    {!isActive&&<div style={{width:6,height:6,borderRadius:"50%",background:BORDER}}/>}
+                  </div>
+                  {/* Label */}
+                  <div style={{fontSize:isActive?10:9,fontWeight:isActive?700:400,
+                    color:isActive?cc2:MUT,whiteSpace:"nowrap",letterSpacing:.2}}>{c.name}</div>
+                  <div style={{fontSize:8,color:MUT,marginTop:-2}}>{c.days}</div>
+                  {/* Day badge */}
+                  {dayMode&&DAY_MAP[activeDay]===c.id&&(
+                    <div style={{position:"absolute",top:-4,right:-2,background:WRN,
+                      color:"#fff",fontSize:7,fontWeight:700,borderRadius:3,
+                      padding:"1px 3px",lineHeight:1.3}}>D{activeDay}</div>
+                  )}
+                </button>
+              </div>
+            );
+          })}
+
+          {/* Flight line to Cairo */}
+          <FlightConnector/>
+
+          {/* Cairo end */}
+          <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:4,opacity:.5}}>
+            <div style={{fontSize:14}}>✈</div>
+            <div style={{width:10,height:10,borderRadius:"50%",background:"#ccc"}}/>
+            <div style={{fontSize:9,color:MUT,fontWeight:600}}>CAI</div>
+          </div>
+        </div>
+      </div>
+
+      {/* Dynamic legend bar */}
+      {(()=>{
+        const sc=CITIES.find(c=>c.id===sel)||CITIES[0];
+        const scColor=sc.country==="pt"?PT:ES;
+        const scFlag=sc.country==="pt"?"🇵🇹 Portugal":"🇪🇸 Spain";
+        return(
+          <div style={{display:"flex",alignItems:"center",borderTop:`1px solid ${BORDER}`,
+            fontSize:9,fontWeight:600,letterSpacing:.4,textTransform:"uppercase"}}>
+            <div style={{flex:"0 0 auto",padding:"5px 14px",color:scColor,
+              borderRight:`1px solid ${BORDER}`,whiteSpace:"nowrap"}}>{scFlag}</div>
+            <div style={{flex:1,padding:"5px 0",color:MUT,fontSize:8,textAlign:"center",letterSpacing:.3}}>
+              Heat: <span style={{color:"#4CAF50"}}>●</span> ≤27°C &nbsp;
+              <span style={{color:"#FFC107"}}>●</span> 28–34°C &nbsp;
+              <span style={{color:"#FF9800"}}>●</span> 35–40°C &nbsp;
+              <span style={{color:"#F44336"}}>●</span> 41°C+
+            </div>
+            <div style={{flex:"0 0 auto",padding:"5px 14px",borderLeft:`1px solid ${BORDER}`,
+              color:sc.heatColor,fontWeight:700,fontSize:9,whiteSpace:"nowrap"}}>
+              {sc.heatLabel}
+            </div>
+          </div>
+        );
+      })()}
+    </div>
+  );
+}
+
+function TrainConnector(){
+  return(
+    <div style={{display:"flex",alignItems:"center",gap:2,padding:"0 2px",marginTop:-4}}>
+      <div style={{width:20,height:1.5,background:BORDER}}/>
+    </div>
+  );
+}
+
+function FlightConnector(){
+  return(
+    <div style={{display:"flex",flexDirection:"column",alignItems:"center",gap:1,
+      padding:"0 3px",marginTop:-18}}>
+      <div style={{fontSize:9,color:MUT}}>✈</div>
+      <div style={{width:22,height:1,borderTop:`1.5px dashed ${BORDER}`}}/>
+    </div>
+  );
+}
+
+// ─── BUDGET OVERLAY ───────────────────────────────────────────────────────────
+function BudgetOverlay({onClose}){
+  const C=2*Math.PI*52;
+  let cum=0;
+  const segs=BUDGET.cats.map(cat=>{
+    const len=(cat.pct/100)*C;
+    const offset=C*(1.25-cum/100);
+    cum+=cat.pct;
+    return {...cat,len,offset};
+  });
+  const maxCity=Math.max(...CITIES.map(c=>c.cityCost.total));
+
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.35)",zIndex:200,
+      display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:CARD,borderRadius:14,padding:26,width:520,maxWidth:"95vw",
+        maxHeight:"85vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.15)"}}
+        onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div style={{fontWeight:800,fontSize:16,color:TXT}}>Trip Budget</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+        </div>
+
+        {/* Totals */}
+        <div style={{display:"grid",gridTemplateColumns:"1fr 1fr 1fr",gap:10,marginBottom:22}}>
+          {[["All-in","$1,683","incl. flights"],["On-ground","$1,343","12 days in Iberia"],["Daily avg","$111.90","pure daily $82"]].map(([l,v,s])=>(
+            <div key={l} style={{background:C2,borderRadius:10,padding:"12px",textAlign:"center"}}>
+              <div style={{fontSize:9,color:MUT,marginBottom:3,textTransform:"uppercase",letterSpacing:.5}}>{l}</div>
+              <div style={{fontSize:17,fontWeight:800,color:TXT}}>{v}</div>
+              <div style={{fontSize:9,color:MUT}}>{s}</div>
+            </div>
+          ))}
+        </div>
+
+        {/* Donut + bars */}
+        <div style={{display:"flex",gap:22,alignItems:"flex-start",marginBottom:20}}>
+          <svg viewBox="0 0 124 124" width="120" height="120" style={{flexShrink:0}}>
+            {segs.map((s,i)=>(
+              <circle key={i} cx="62" cy="62" r="52" fill="none"
+                stroke={s.color} strokeWidth="16"
+                strokeDasharray={`${s.len} ${C}`}
+                strokeDashoffset={s.offset}
+                transform="rotate(-90,62,62)"/>
+            ))}
+            <text x="62" y="57" textAnchor="middle" fontSize="13" fontWeight="800" fill={TXT}>$1,343</text>
+            <text x="62" y="72" textAnchor="middle" fontSize="9" fill={MUT}>on-ground</text>
+          </svg>
+          <div style={{flex:1}}>
+            {BUDGET.cats.map(c=>(
+              <div key={c.label} style={{marginBottom:10}}>
+                <div style={{display:"flex",justifyContent:"space-between",marginBottom:3}}>
+                  <span style={{fontSize:11,color:TXT}}>{c.label}</span>
+                  <span style={{fontSize:11,color:c.color,fontWeight:700}}>${c.amount.toFixed(0)}</span>
+                </div>
+                <div style={{background:C2,borderRadius:4,height:6,overflow:"hidden"}}>
+                  <div style={{background:c.color,width:`${c.pct}%`,height:"100%",borderRadius:4}}/>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <SH label="Per-city spend"/>
+        <div style={{borderRadius:8,overflow:"hidden",border:`1px solid ${BORDER}`}}>
+          {CITIES.map((c,i)=>(
+            <div key={c.id} style={{padding:"8px 12px",borderBottom:i<CITIES.length-1?`1px solid ${BORDER}`:"none",
+              background:i%2===0?CARD:C2}}>
+              <div style={{display:"flex",justifyContent:"space-between",marginBottom:4}}>
+                <span style={{fontSize:11,fontWeight:600,color:TXT}}>{c.name}</span>
+                <span style={{fontSize:11,color:WRN,fontWeight:700}}>${c.cityCost.total.toFixed(0)}</span>
+              </div>
+              <div style={{display:"flex",height:7,borderRadius:4,overflow:"hidden",background:"#eee"}}>
+                {c.cityCost.accom>0&&<div title={`Accom $${c.cityCost.accom}`} style={{background:"#4A90E2",width:`${(c.cityCost.accom/maxCity)*100}%`}}/>}
+                {c.cityCost.food>0&&<div title={`Food $${c.cityCost.food}`} style={{background:GRN,width:`${(c.cityCost.food/maxCity)*100}%`}}/>}
+                {c.cityCost.local>0&&<div title={`Local $${c.cityCost.local}`} style={{background:"#9B59B6",width:`${(c.cityCost.local/maxCity)*100}%`}}/>}
+                {c.cityCost.intercity>0&&<div title={`Intercity $${c.cityCost.intercity}`} style={{background:"#E07B39",width:`${(c.cityCost.intercity/maxCity)*100}%`}}/>}
+              </div>
+            </div>
+          ))}
+        </div>
+        <div style={{display:"flex",gap:12,marginTop:8,flexWrap:"wrap"}}>
+          {[["#4A90E2","Accom"],[GRN,"Food"],["#9B59B6","Local"],["#E07B39","Intercity"]].map(([c,l])=>(
+            <div key={l} style={{display:"flex",alignItems:"center",gap:4,fontSize:9,color:MUT}}>
+              <div style={{background:c,width:8,height:8,borderRadius:2}}/>{l}
+            </div>
+          ))}
+        </div>
+        <div style={{fontSize:11,color:MUT,lineHeight:1.6,background:C2,borderRadius:8,
+          padding:10,marginTop:14}}>{BUDGET.note}</div>
+      </div>
+    </div>
+  );
+}
+
+// ─── PHRASES OVERLAY ──────────────────────────────────────────────────────────
+function PhrasesOverlay({onClose}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.35)",zIndex:200,
+      display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:CARD,borderRadius:14,padding:26,width:480,maxWidth:"95vw",
+        maxHeight:"80vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.15)"}}
+        onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:20}}>
+          <div style={{fontWeight:800,fontSize:16,color:TXT}}>Phrase Book</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+        </div>
+        {Object.values(PHRASES).map(lang=>(
+          <div key={lang.label} style={{marginBottom:24}}>
+            <div style={{fontWeight:700,fontSize:13,color:lang.color,marginBottom:12,
+              paddingBottom:6,borderBottom:`2px solid ${lang.color}33`}}>{lang.label}</div>
+            {lang.items.map((item,i)=>(
+              <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:`1px solid ${BORDER}`,
+                display:"flex",gap:14,alignItems:"flex-start"}}>
+                <div style={{fontWeight:700,fontSize:13,color:TXT,minWidth:190,flexShrink:0}}>{item.p}</div>
+                <div style={{fontSize:12,color:"#666",lineHeight:1.5}}>{item.m}</div>
+              </div>
+            ))}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── BOOKINGS OVERLAY ─────────────────────────────────────────────────────────
+function BookingsOverlay({done,onToggle,onClose}){
+  return(
+    <div style={{position:"fixed",inset:0,background:"rgba(0,0,0,.35)",zIndex:200,
+      display:"flex",alignItems:"center",justifyContent:"center"}} onClick={onClose}>
+      <div style={{background:CARD,borderRadius:14,padding:26,width:440,maxWidth:"95vw",
+        maxHeight:"80vh",overflowY:"auto",boxShadow:"0 20px 60px rgba(0,0,0,.15)"}}
+        onClick={e=>e.stopPropagation()}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+          <div style={{fontWeight:800,fontSize:16,color:TXT}}>Booking Checklist</div>
+          <button onClick={onClose} style={{background:"none",border:"none",color:MUT,fontSize:20,cursor:"pointer",lineHeight:1}}>×</button>
+        </div>
+        <div style={{fontSize:11,color:MUT,marginBottom:16}}>Priority order — book top items first.</div>
+        {BOOKINGS.map(b=>(
+          <div key={b.id} style={{display:"flex",gap:12,marginBottom:12,paddingBottom:12,
+            borderBottom:`1px solid ${BORDER}`,alignItems:"flex-start"}}>
+            <input type="checkbox" checked={!!done[b.id]} onChange={()=>onToggle(b.id)}
+              style={{marginTop:3,accentColor:GRN,flexShrink:0,width:14,height:14}}/>
+            <div style={{flex:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:6,marginBottom:3}}>
+                <span style={{fontWeight:600,fontSize:13,color:done[b.id]?MUT:TXT,
+                  textDecoration:done[b.id]?"line-through":"none"}}>{b.label}</span>
+                {b.hot&&!done[b.id]&&<span style={{background:ES+"15",color:ES,fontSize:9,
+                  padding:"1px 6px",borderRadius:3,fontWeight:700,border:`1px solid ${ES}33`}}>URGENT</span>}
+              </div>
+              <div style={{fontSize:11,color:"#777",marginBottom:4}}>{b.detail}</div>
+              <a href={b.url} target="_blank" rel="noreferrer"
+                style={{fontSize:10,color:PT,textDecoration:"none"}}>→ {b.url.replace("https://","")}</a>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+// ─── TAB CONTENT ──────────────────────────────────────────────────────────────
+function DaysTab({city}){
+  return <div>
+    {city.dayPlan.map((dp,i)=>(
+      <div key={i} style={{marginBottom:20}}>
+        <div style={{fontWeight:700,fontSize:13,color:city.country==="pt"?PT:ES,
+          marginBottom:10,paddingBottom:6,borderBottom:`2px solid ${city.country==="pt"?PT:ES}22`}}>{dp.label}</div>
+        {dp.blocks.map((b,j)=>(
+          <div key={j} style={{display:"flex",gap:12,marginBottom:10,alignItems:"flex-start"}}>
+            <div style={{minWidth:64,fontSize:11,fontWeight:600,color:WRN,paddingTop:1,flexShrink:0}}>{b.time}</div>
+            <div style={{fontSize:12,color:"#555",lineHeight:1.65,flex:1}}>{b.note}</div>
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>;
+}
+
+function SeeTab({city,customSee,setCustomSee,seeDone,setSeeDone,seeHidden,setSeeHidden}){
+  const [form,setForm]=useState({t:'',d:''});
+  const [showRemovedSee,setShowRemovedSee]=useState(false);
+  const cc2=city.country==="pt"?PT:ES;
+  const myPlaces=customSee[city.id]||[];
+  function addPlace(){
+    if(!form.t.trim()) return;
+    const next={...customSee,[city.id]:[...myPlaces,{t:form.t.trim(),d:form.d.trim()}]};
+    setCustomSee(next); lsSet('custom-see',next); setForm({t:'',d:''});
+  }
+  function removePlace(idx){
+    const next={...customSee,[city.id]:myPlaces.filter((_,j)=>j!==idx)};
+    setCustomSee(next); lsSet('custom-see',next);
+  }
+  function toggleDone(k){
+    const n={...seeDone,[k]:!seeDone[k]}; setSeeDone(n); lsSet('see-done',n);
+  }
+  function hideItem(k){
+    const n={...seeHidden,[k]:true}; setSeeHidden(n); lsSet('see-hidden',n);
+  }
+  const inp={width:"100%",padding:"8px 10px",borderRadius:7,border:`1px solid ${BORDER}`,
+    fontSize:12,marginBottom:7,background:CARD,color:TXT,outline:"none",boxSizing:"border-box"};
+  return <div>
+    {city.see.map((s,i)=>{
+      const k=city.id+'-see-'+i;
+      if(seeHidden[k]) return null;
+      const done=!!seeDone[k];
+      return(
+        <div key={i} style={{display:"flex",gap:10,alignItems:"flex-start",
+          marginBottom:10,paddingBottom:10,borderBottom:`1px solid ${BORDER}`}}>
+          <input type="checkbox" checked={done} onChange={()=>toggleDone(k)}
+            style={{marginTop:3,accentColor:cc2,flexShrink:0,width:14,height:14}}/>
+          <div style={{flex:1,opacity:done?.5:1}}>
+            <div style={{fontWeight:600,fontSize:13,color:done?MUT:TXT,
+              textDecoration:done?"line-through":"none",marginBottom:2}}>{s.t}</div>
+            <div style={{fontSize:12,color:"#666",lineHeight:1.6}}>{s.d}</div>
+          </div>
+          <button onClick={()=>hideItem(k)}
+            style={{background:"none",border:"none",color:BORDER,cursor:"pointer",
+              fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}
+            title="Remove">×</button>
+        </div>
+      );
+    })}
+    {myPlaces.length>0&&<div style={{marginTop:4}}>
+      <div style={{fontWeight:700,fontSize:10,letterSpacing:1.2,color:cc2,textTransform:"uppercase",
+        marginBottom:8,borderBottom:`2px solid ${cc2}33`,paddingBottom:5}}>My places</div>
+      {myPlaces.map((p,idx)=>(
+        <div key={idx} style={{marginBottom:10,paddingBottom:10,borderBottom:`1px solid ${BORDER}`,
+          display:"flex",gap:8,alignItems:"flex-start"}}>
+          <div style={{flex:1}}>
+            <div style={{fontWeight:600,fontSize:13,color:TXT,marginBottom:2}}>{p.t}</div>
+            {p.d&&<div style={{fontSize:12,color:"#666",lineHeight:1.6}}>{p.d}</div>}
+          </div>
+          <button onClick={()=>removePlace(idx)}
+            style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,
+              lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+        </div>
+      ))}
+    </div>}
+    <div style={{marginTop:16,background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+      <div style={{fontSize:10,fontWeight:700,color:cc2,textTransform:"uppercase",
+        letterSpacing:.5,marginBottom:10}}>+ Add a place</div>
+      <input value={form.t} onChange={e=>setForm(f=>({...f,t:e.target.value}))}
+        placeholder="Place name *" style={inp}/>
+      <input value={form.d} onChange={e=>setForm(f=>({...f,d:e.target.value}))}
+        placeholder="Notes (optional)" style={{...inp,marginBottom:10}}/>
+      <button onClick={addPlace}
+        style={{background:cc2,color:"#fff",border:"none",borderRadius:7,padding:"9px 0",
+          fontSize:12,fontWeight:700,cursor:"pointer",width:"100%"}}>Add place</button>
+    </div>
+    {(()=>{
+      const hidden=city.see.map((s,i)=>({k:city.id+'-see-'+i,label:s.t})).filter(x=>seeHidden[x.k]);
+      if(!hidden.length) return null;
+      return <div style={{marginTop:14}}>
+        <button onClick={()=>setShowRemovedSee(o=>!o)}
+          style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+            width:"100%",background:C2,border:`1px solid ${BORDER}`,borderRadius:8,
+            padding:"8px 12px",cursor:"pointer",fontSize:12,color:MUT,fontWeight:600}}>
+          <span>Removed places ({hidden.length})</span><span>{showRemovedSee?'▲':'▼'}</span>
+        </button>
+        {showRemovedSee&&<div style={{marginTop:6,background:C2,borderRadius:10,padding:12,border:`1px solid ${BORDER}`}}>
+          {hidden.map(({k,label})=>(
+            <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+              padding:"7px 0",borderBottom:`1px solid ${BORDER}`}}>
+              <span style={{fontSize:12,color:MUT}}>{label}</span>
+              <button onClick={()=>{const n={...seeHidden};delete n[k];setSeeHidden(n);lsSet('see-hidden',n);}}
+                style={{background:cc2,color:"#fff",border:"none",borderRadius:6,padding:"4px 10px",
+                  fontSize:11,fontWeight:700,cursor:"pointer"}}>Restore</button>
+            </div>
+          ))}
+        </div>}
+      </div>;
+    })()}
+  </div>;
+}
+
+function EatTab({city,customDishes,setCustomDishes,customVenues,setCustomVenues,eatDone,setEatDone,eatHidden,setEatHidden}){
+  const cc2=city.country==="pt"?PT:ES;
+  const e=city.eat;
+  const myDishes=customDishes[city.id]||[];
+  const myVenues=customVenues[city.id]||{};
+  const [showVF,setShowVF]=useState({});
+  const [vf,setVF]=useState({});
+  const [showDF,setShowDF]=useState(false);
+  const [df,setDF]=useState({name:'',desc:''});
+  const [showRemoved,setShowRemoved]=useState(false);
+  function gvf(k){ return vf[k]||{n:'',addr:'',note:''}; }
+  function svf(k,field,val){ setVF(f=>({...f,[k]:{...gvf(k),[field]:val}})); }
+  function addVenue(k){
+    const form=gvf(k); if(!form.n.trim()) return;
+    if(k.startsWith('cd')){
+      const di=parseInt(k.slice(2));
+      const upd=myDishes.map((d,i)=>i===di?{...d,venues:[...d.venues,{n:form.n.trim(),addr:form.addr.trim(),note:form.note.trim()}]}:d);
+      const next={...customDishes,[city.id]:upd}; setCustomDishes(next); lsSet('custom-dishes',next);
+    } else {
+      const existing=myVenues[k]||[];
+      const next={...customVenues,[city.id]:{...myVenues,[k]:[...existing,{n:form.n.trim(),addr:form.addr.trim(),note:form.note.trim()}]}};
+      setCustomVenues(next); lsSet('custom-venues',next);
+    }
+    setVF(f=>({...f,[k]:{n:'',addr:'',note:''}})); setShowVF(f=>({...f,[k]:false}));
+  }
+  function removeCustomVenue(k,idx){
+    const next={...customVenues,[city.id]:{...myVenues,[k]:(myVenues[k]||[]).filter((_,j)=>j!==idx)}};
+    setCustomVenues(next); lsSet('custom-venues',next);
+  }
+  function removeDishVenue(di,vi){
+    const upd=myDishes.map((d,i)=>i===di?{...d,venues:d.venues.filter((_,j)=>j!==vi)}:d);
+    const next={...customDishes,[city.id]:upd}; setCustomDishes(next); lsSet('custom-dishes',next);
+  }
+  function addDish(){
+    if(!df.name.trim()) return;
+    const next={...customDishes,[city.id]:[...myDishes,{name:df.name.trim(),desc:df.desc.trim(),venues:[]}]};
+    setCustomDishes(next); lsSet('custom-dishes',next); setDF({name:'',desc:''}); setShowDF(false);
+  }
+  function removeDish(idx){
+    const next={...customDishes,[city.id]:myDishes.filter((_,j)=>j!==idx)};
+    setCustomDishes(next); lsSet('custom-dishes',next);
+  }
+  function toggleVenue(k){ const n={...eatDone,[k]:!eatDone[k]}; setEatDone(n); lsSet('eat-done',n); }
+  function hideVenue(k){ const n={...eatHidden,[k]:true}; setEatHidden(n); lsSet('eat-hidden',n); }
+  function restoreVenue(k){ const n={...eatHidden}; delete n[k]; setEatHidden(n); lsSet('eat-hidden',n); }
+  const hiddenItems=Object.keys(eatHidden).filter(k=>eatHidden[k]&&k.startsWith(city.id+'-eat-')).map(k=>{
+    const rest=k.slice((city.id+'-eat-').length); const [di,vi]=rest.split('-').map(Number);
+    const dish=e.dishes[di]; const v=dish?.venues[vi];
+    return v?{k,label:v.n,dish:dish.name}:null;
+  }).filter(Boolean);
+  const inp={width:"100%",padding:"8px 10px",borderRadius:7,border:`1px solid ${BORDER}`,
+    fontSize:12,marginBottom:7,background:CARD,color:TXT,outline:"none",boxSizing:"border-box"};
+  function VenueForm({k}){
+    return <div style={{marginTop:8,padding:10,background:CARD,borderRadius:8,border:`1px solid ${BORDER}`}}>
+      <input value={gvf(k).n} onChange={ev=>svf(k,'n',ev.target.value)} placeholder="Venue name *" style={inp}/>
+      <input value={gvf(k).addr} onChange={ev=>svf(k,'addr',ev.target.value)} placeholder="Address (optional)" style={inp}/>
+      <input value={gvf(k).note} onChange={ev=>svf(k,'note',ev.target.value)} placeholder="Notes (optional)" style={{...inp,marginBottom:8}}/>
+      <div style={{display:"flex",gap:6}}>
+        <button onClick={()=>addVenue(k)} style={{flex:1,background:cc2,color:"#fff",border:"none",borderRadius:7,padding:"7px 0",fontSize:12,fontWeight:700,cursor:"pointer"}}>Add</button>
+        <button onClick={()=>setShowVF(f=>({...f,[k]:false}))} style={{background:C2,color:MUT,border:`1px solid ${BORDER}`,borderRadius:7,padding:"7px 12px",fontSize:12,cursor:"pointer"}}>Cancel</button>
+      </div>
+    </div>;
+  }
+  return <div>
+    <div style={{fontSize:12,color:"#555",lineHeight:1.7,marginBottom:18,
+      borderLeft:`3px solid ${cc2}`,paddingLeft:12,fontStyle:"italic"}}>{e.headline}</div>
+
+    {/* Built-in dish cards */}
+    {e.dishes.map((d,i)=>{
+      const vfKey='d'+i; const cvs=myVenues[vfKey]||[];
+      return <div key={i} style={{marginBottom:18,background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+        <div style={{fontWeight:700,fontSize:14,color:TXT,marginBottom:5}}>{d.name}</div>
+        <Tag color={cc2}>{d.origin}</Tag>
+        <div style={{fontSize:12,color:"#555",margin:"10px 0",lineHeight:1.65}}>{d.story}</div>
+        <SH label="Where exactly"/>
+        {d.venues.map((v,j)=>{
+          const k=city.id+'-eat-'+i+'-'+j; if(eatHidden[k]) return null;
+          const tried=!!eatDone[k];
+          return <div key={j} style={{marginBottom:8,paddingBottom:8,borderBottom:`1px solid ${BORDER}`,display:"flex",gap:8,alignItems:"flex-start"}}>
+            <input type="checkbox" checked={tried} onChange={()=>toggleVenue(k)} style={{marginTop:3,accentColor:cc2,flexShrink:0,width:14,height:14}}/>
+            <div style={{flex:1,opacity:tried?.5:1}}>
+              <div style={{fontWeight:600,fontSize:12,color:tried?MUT:TXT,textDecoration:tried?"line-through":"none"}}>{v.n}</div>
+              <div style={{display:"flex",alignItems:"center",gap:8,marginTop:1,flexWrap:"wrap"}}>
+                <span style={{fontSize:11,color:MUT}}>{v.addr}</span>
+                {v.addr&&<a href={mapsUrl(v.n,v.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>↗ Maps</a>}
+              </div>
+              <div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{v.ctx}</div>
+            </div>
+            <button onClick={()=>hideVenue(k)} style={{background:"none",border:"none",color:BORDER,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}} title="Remove">×</button>
+          </div>;
+        })}
+        {cvs.map((cv,j)=>(
+          <div key={'cv'+j} style={{marginBottom:8,paddingBottom:8,borderBottom:`1px solid ${BORDER}`,display:"flex",gap:8,alignItems:"flex-start"}}>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:600,fontSize:12,color:TXT}}>{cv.n}</div>
+              {cv.addr&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:1}}>
+                <span style={{fontSize:11,color:MUT}}>{cv.addr}</span>
+                <a href={mapsUrl(cv.n,cv.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>↗ Maps</a>
+              </div>}
+              {cv.note&&<div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{cv.note}</div>}
+            </div>
+            <button onClick={()=>removeCustomVenue(vfKey,j)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+          </div>
+        ))}
+        {showVF[vfKey]?<VenueForm k={vfKey}/>:(
+          <button onClick={()=>setShowVF(f=>({...f,[vfKey]:true}))}
+            style={{marginTop:8,width:"100%",background:"none",border:`1px dashed ${cc2}66`,color:cc2,borderRadius:6,padding:"5px 0",fontSize:11,fontWeight:600,cursor:"pointer"}}>+ Add a venue here</button>
+        )}
+      </div>;
+    })}
+
+    {/* Pork compass */}
+    <div style={{background:"#FFF8EE",border:`1px solid ${WRN}44`,borderRadius:10,padding:12,marginTop:4}}>
+      <div style={{fontSize:10,fontWeight:700,color:WRN,marginBottom:5,letterSpacing:.5}}>🧭 PORK COMPASS</div>
+      <div style={{fontSize:12,color:"#666",lineHeight:1.55}}>{e.porkCompass}</div>
+    </div>
+
+    {/* Custom dish cards */}
+    {myDishes.map((d,di)=>{
+      const vfKey='cd'+di;
+      return <div key={di} style={{marginTop:14,background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+        <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:5}}>
+          <div style={{fontWeight:700,fontSize:14,color:TXT}}>{d.name}</div>
+          <button onClick={()=>removeDish(di)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>×</button>
+        </div>
+        {d.desc&&<div style={{fontSize:12,color:"#555",marginBottom:10,lineHeight:1.65,fontStyle:"italic"}}>{d.desc}</div>}
+        {d.venues.length>0&&<SH label="Venues"/>}
+        {d.venues.map((v,vi)=>(
+          <div key={vi} style={{marginBottom:8,paddingBottom:8,borderBottom:`1px solid ${BORDER}`,display:"flex",gap:8,alignItems:"flex-start"}}>
+            <div style={{flex:1}}>
+              <div style={{fontWeight:600,fontSize:12,color:TXT}}>{v.n}</div>
+              {v.addr&&<div style={{display:"flex",alignItems:"center",gap:8,marginTop:1}}>
+                <span style={{fontSize:11,color:MUT}}>{v.addr}</span>
+                <a href={mapsUrl(v.n,v.addr)} target="_blank" rel="noreferrer" style={{fontSize:10,color:PT,fontWeight:600,textDecoration:"none"}}>↗ Maps</a>
+              </div>}
+              {v.note&&<div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{v.note}</div>}
+            </div>
+            <button onClick={()=>removeDishVenue(di,vi)} style={{background:"none",border:"none",color:MUT,cursor:"pointer",fontSize:18,lineHeight:1,padding:"0 4px"}}>×</button>
+          </div>
+        ))}
+        {showVF[vfKey]?<VenueForm k={vfKey}/>:(
+          <button onClick={()=>setShowVF(f=>({...f,[vfKey]:true}))}
+            style={{marginTop:d.venues.length>0?8:0,width:"100%",background:"none",border:`1px dashed ${cc2}66`,color:cc2,borderRadius:6,padding:"5px 0",fontSize:11,fontWeight:600,cursor:"pointer"}}>+ Add a venue</button>
+        )}
+      </div>;
+    })}
+
+    {/* Add new dish */}
+    <div style={{marginTop:14}}>
+      {showDF?(
+        <div style={{background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+          <div style={{fontSize:10,fontWeight:700,color:cc2,textTransform:"uppercase",letterSpacing:.5,marginBottom:10}}>+ New dish</div>
+          <input value={df.name} onChange={ev=>setDF(f=>({...f,name:ev.target.value}))} placeholder="Dish name *" style={inp}/>
+          <input value={df.desc} onChange={ev=>setDF(f=>({...f,desc:ev.target.value}))} placeholder="Description (optional)" style={{...inp,marginBottom:10}}/>
+          <div style={{display:"flex",gap:6}}>
+            <button onClick={addDish} style={{flex:1,background:cc2,color:"#fff",border:"none",borderRadius:7,padding:"9px 0",fontSize:12,fontWeight:700,cursor:"pointer"}}>Add dish</button>
+            <button onClick={()=>setShowDF(false)} style={{background:C2,color:MUT,border:`1px solid ${BORDER}`,borderRadius:7,padding:"9px 12px",fontSize:12,cursor:"pointer"}}>Cancel</button>
+          </div>
+        </div>
+      ):(
+        <button onClick={()=>setShowDF(true)}
+          style={{width:"100%",background:C2,border:`1px dashed ${cc2}66`,color:cc2,borderRadius:10,padding:"10px 0",fontSize:12,fontWeight:700,cursor:"pointer"}}>+ Add a new dish</button>
+      )}
+    </div>
+
+    {/* Removed items */}
+    {hiddenItems.length>0&&<div style={{marginTop:14}}>
+      <button onClick={()=>setShowRemoved(!showRemoved)}
+        style={{width:"100%",background:"none",border:`1px solid ${BORDER}`,borderRadius:8,padding:"8px 12px",fontSize:11,color:MUT,cursor:"pointer",display:"flex",alignItems:"center",justifyContent:"space-between"}}>
+        <span>Removed venues ({hiddenItems.length})</span><span>{showRemoved?'▲':'▼'}</span>
+      </button>
+      {showRemoved&&<div style={{marginTop:6,background:C2,borderRadius:10,padding:12,border:`1px solid ${BORDER}`}}>
+        {hiddenItems.map(({k,label,dish})=>(
+          <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",paddingBottom:8,marginBottom:8,borderBottom:`1px solid ${BORDER}`}}>
+            <div>
+              <div style={{fontSize:12,color:TXT,fontWeight:600}}>{label}</div>
+              <div style={{fontSize:10,color:MUT}}>from {dish}</div>
+            </div>
+            <button onClick={()=>restoreVenue(k)} style={{background:GRN+"15",border:`1px solid ${GRN}44`,color:GRN,borderRadius:6,padding:"4px 10px",fontSize:11,fontWeight:700,cursor:"pointer"}}>Restore</button>
+          </div>
+        ))}
+      </div>}
+    </div>}
+  </div>;
+}
+
+function BudgetTab({city,actualSpend,setActualSpend}){
+  const cc=city.cityCost;
+  const cc2=city.country==="pt"?PT:ES;
+  const maxCity=Math.max(...CITIES.map(c=>c.cityCost.total));
+  const sorted=[...CITIES].sort((a,b)=>a.cityCost.total-b.cityCost.total);
+  const rank=sorted.findIndex(c=>c.id===city.id)+1; // 1 = cheapest
+  const nights=parseInt(city.duration)||0;
+  const perDay=nights>1?(cc.total/nights).toFixed(0):null;
+  const cats=[
+    {l:"Accommodation",v:cc.accom,c:"#4A90E2"},
+    {l:"Food",v:cc.food,c:GRN},
+    {l:"Local transport",v:cc.local,c:"#9B59B6"},
+    {l:"Intercity",v:cc.intercity,c:"#E07B39"},
+  ].filter(x=>x.v>0);
+
+  return <div>
+    {/* Hero total */}
+    <div style={{background:C2,borderRadius:12,padding:18,marginBottom:16,
+      border:`1px solid ${BORDER}`}}>
+      <div style={{display:"flex",alignItems:"flex-end",justifyContent:"space-between",
+        flexWrap:"wrap",gap:8}}>
+        <div>
+          <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:4}}>
+            Estimated spend
+          </div>
+          <div style={{fontSize:36,fontWeight:900,color:TXT,lineHeight:1}}>${cc.total.toFixed(0)}</div>
+          <div style={{fontSize:11,color:MUT,marginTop:4}}>{city.duration}</div>
+        </div>
+        <div style={{textAlign:"right"}}>
+          {perDay&&<div>
+            <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:2}}>Per day</div>
+            <div style={{fontSize:22,fontWeight:800,color:cc2}}>${perDay}</div>
+          </div>}
+          <div style={{marginTop:8}}>
+            <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:2}}>Route rank</div>
+            <div style={{fontSize:13,fontWeight:700,color:rank<=3?GRN:rank>=8?ES:WRN}}>
+              {rank<=3?"💚":rank>=8?"🔴":"🟡"} #{rank} of 10 cities
+            </div>
+            <div style={{fontSize:9,color:MUT}}>{rank<=3?"budget-friendly":rank>=8?"higher spend":"mid-range"}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {/* Actual spend tracker */}
+    <div style={{background:C2,borderRadius:10,padding:14,marginBottom:16,border:`1px solid ${BORDER}`}}>
+      <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:10}}>Actual spend</div>
+      <div style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap"}}>
+        <div style={{display:"flex",alignItems:"center",gap:4,background:CARD,
+          borderRadius:7,border:`1px solid ${BORDER}`,padding:"6px 12px"}}>
+          <span style={{fontSize:13,color:MUT,fontWeight:600}}>$</span>
+          <input type="number" inputMode="decimal"
+            placeholder={cc.total.toFixed(0)}
+            value={actualSpend[city.id]??''}
+            onChange={ev=>{
+              const v=ev.target.value;
+              const next={...actualSpend,[city.id]:v===''?null:Number(v)};
+              setActualSpend(next); lsSet('actual-spend',next);
+            }}
+            style={{width:72,border:"none",background:"transparent",fontSize:15,
+              fontWeight:700,color:TXT,outline:"none",WebkitAppearance:"none"}}/>
+        </div>
+        {actualSpend[city.id]!=null&&(()=>{
+          const diff=actualSpend[city.id]-cc.total;
+          const over=diff>0;
+          return <div style={{display:"flex",alignItems:"center",gap:5}}>
+            <span style={{fontSize:14,fontWeight:800,color:over?ES:GRN}}>
+              {over?'▲':'▼'} ${Math.abs(diff).toFixed(0)}
+            </span>
+            <span style={{fontSize:10,color:MUT}}>{over?'over':'under'} estimate</span>
+          </div>;
+        })()}
+        {actualSpend[city.id]==null&&
+          <span style={{fontSize:11,color:MUT}}>Enter what you actually spent</span>}
+      </div>
+    </div>
+
+    {/* Stacked bar breakdown */}
+    <div style={{marginBottom:16}}>
+      <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:8}}>Where the money goes</div>
+      <div style={{display:"flex",height:12,borderRadius:6,overflow:"hidden",background:"#eee",marginBottom:8}}>
+        {cats.map(cat=>(
+          <div key={cat.l} title={`${cat.l}: $${cat.v}`}
+            style={{background:cat.c,width:`${(cat.v/cc.total)*100}%`,transition:"width .2s"}}/>
+        ))}
+      </div>
+      <div style={{display:"flex",flexWrap:"wrap",gap:"8px 16px"}}>
+        {cats.map(cat=>(
+          <div key={cat.l} style={{display:"flex",alignItems:"center",gap:6}}>
+            <div style={{width:8,height:8,borderRadius:2,background:cat.c,flexShrink:0}}/>
+            <div style={{fontSize:11,color:TXT}}>{cat.l}</div>
+            <div style={{fontSize:11,fontWeight:700,color:cat.c}}>${cat.v}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    {/* All-cities comparison */}
+    <div style={{marginBottom:16}}>
+      <div style={{fontSize:9,color:MUT,letterSpacing:.5,textTransform:"uppercase",marginBottom:8}}>
+        vs. rest of the route
+      </div>
+      <div style={{display:"flex",flexDirection:"column",gap:4}}>
+        {sorted.map(c=>{
+          const isThis=c.id===city.id;
+          const cc3=c.country==="pt"?PT:ES;
+          return(
+            <div key={c.id} style={{display:"flex",alignItems:"center",gap:8}}>
+              <div style={{width:68,fontSize:isThis?11:9,fontWeight:isThis?700:400,
+                color:isThis?cc2:MUT,textAlign:"right",flexShrink:0,whiteSpace:"nowrap"}}>
+                {c.name}
+              </div>
+              <div style={{flex:1,background:"#eee",borderRadius:4,height:isThis?10:7,overflow:"hidden"}}>
+                <div style={{
+                  background:isThis?cc2:BORDER,
+                  width:`${(c.cityCost.total/maxCity)*100}%`,
+                  height:"100%",borderRadius:4,transition:"width .2s"
+                }}/>
+              </div>
+              <div style={{width:36,fontSize:isThis?11:9,fontWeight:isThis?700:400,
+                color:isThis?cc2:MUT,flexShrink:0}}>${c.cityCost.total.toFixed(0)}</div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+
+    {/* Budget hack */}
+    <div style={{background:"#F0F7FF",border:`1px solid ${PT}33`,borderRadius:10,padding:14}}>
+      <div style={{fontSize:10,fontWeight:700,color:PT,marginBottom:6,letterSpacing:.5}}>
+        💡 BUDGET HACK
+      </div>
+      <div style={{fontSize:12,color:"#444",lineHeight:1.65}}>{BUDGET_HACKS[city.id]}</div>
+    </div>
+  </div>;
+}
+
+function LogisticsTab({city,stayDone,setStayDone,stayHidden,setStayHidden}){
+  const s=city.stay; const m=city.move;
+  const cc2=city.country==="pt"?PT:ES;
+  const [showRemovedStay,setShowRemovedStay]=useState(false);
+  function toggleStay(key){
+    const next={...stayDone,[key]:!stayDone[key]};
+    setStayDone(next); lsSet('stay-done',next);
+  }
+  function hideStay(key){
+    const next={...stayHidden,[key]:true}; setStayHidden(next); lsSet('stay-hidden',next);
+  }
+  return <div>
+    <SH label="Where to stay"/>
+    {s.options.length>0 ? <>
+      <div style={{fontSize:12,color:"#555",marginBottom:14,lineHeight:1.6}}>{s.note}</div>
+      <div style={{fontSize:10,fontWeight:600,color:MUT,marginBottom:10}}>Best area: {s.area}</div>
+      {s.options.map((o,i)=>{
+        const key=city.id+'-stay-'+i;
+        if(stayHidden[key]) return null;
+        const booked=!!stayDone[key];
+        return(
+          <div key={i} style={{marginBottom:10,paddingBottom:10,borderBottom:`1px solid ${BORDER}`,
+            display:"flex",gap:10,alignItems:"flex-start"}}>
+            <input type="checkbox" checked={booked} onChange={()=>toggleStay(key)}
+              style={{marginTop:3,accentColor:GRN,flexShrink:0,width:14,height:14}}/>
+            <div style={{flex:1,opacity:booked?.5:1}}>
+              <div style={{display:"flex",alignItems:"center",gap:6}}>
+                <span style={{fontWeight:600,fontSize:13,color:booked?MUT:TXT,
+                  textDecoration:booked?"line-through":"none"}}>{o.n}</span>
+                {booked&&<span style={{fontSize:9,background:GRN+"15",color:GRN,
+                  padding:"1px 6px",borderRadius:3,fontWeight:700,border:`1px solid ${GRN}33`}}>BOOKED</span>}
+              </div>
+              <div style={{fontSize:11,color:MUT,marginTop:2}}>{o.area} · {o.price}</div>
+              <div style={{fontSize:11,color:"#777",marginTop:3,fontStyle:"italic"}}>{o.tip}</div>
+            </div>
+            <button onClick={()=>hideStay(key)}
+              style={{background:"none",border:"none",color:BORDER,cursor:"pointer",
+                fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}
+              title="Remove">×</button>
+          </div>
+        );
+      })}
+      {s.tax!=="None"&&<div style={{fontSize:11,color:WRN,marginTop:4,fontWeight:600}}>⚠ Tourist tax: {s.tax}</div>}
+    </> : <div style={{fontSize:12,color:"#666",lineHeight:1.65,marginBottom:4}}>{s.note}</div>}
+    {(()=>{
+      const hidden=s.options.map((o,i)=>({k:city.id+'-stay-'+i,label:o.n})).filter(x=>stayHidden[x.k]);
+      if(!hidden.length) return null;
+      return <div style={{marginTop:10,marginBottom:6}}>
+        <button onClick={()=>setShowRemovedStay(o=>!o)}
+          style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+            width:"100%",background:C2,border:`1px solid ${BORDER}`,borderRadius:8,
+            padding:"8px 12px",cursor:"pointer",fontSize:12,color:MUT,fontWeight:600}}>
+          <span>Removed stays ({hidden.length})</span><span>{showRemovedStay?'▲':'▼'}</span>
+        </button>
+        {showRemovedStay&&<div style={{marginTop:6,background:C2,borderRadius:10,padding:12,border:`1px solid ${BORDER}`}}>
+          {hidden.map(({k,label})=>(
+            <div key={k} style={{display:"flex",justifyContent:"space-between",alignItems:"center",
+              padding:"7px 0",borderBottom:`1px solid ${BORDER}`}}>
+              <span style={{fontSize:12,color:MUT}}>{label}</span>
+              <button onClick={()=>{const n={...stayHidden};delete n[k];setStayHidden(n);lsSet('stay-hidden',n);}}
+                style={{background:GRN,color:"#fff",border:"none",borderRadius:6,padding:"4px 10px",
+                  fontSize:11,fontWeight:700,cursor:"pointer"}}>Restore</button>
+            </div>
+          ))}
+        </div>}
+      </div>;
+    })()}
+
+    {/* Move */}
+    <SH label="Getting around"/>
+    {[["→ Getting in",m.in],["→ Moving on",m.out],["Local transport",m.local],["Estimated cost",m.cost]].map(([l,v])=>(
+      <div key={l} style={{marginBottom:12,paddingBottom:12,borderBottom:`1px solid ${BORDER}`}}>
+        <div style={{fontSize:10,fontWeight:700,color:MUT,marginBottom:4,textTransform:"uppercase",letterSpacing:.5}}>{l}</div>
+        <div style={{fontSize:12,color:"#555",lineHeight:1.6}}>{v}</div>
+      </div>
+    ))}
+  </div>;
+}
+
+function NotesTab({city,customNotes,setCustomNotes}){
+  const cc2=city.country==="pt"?PT:ES;
+  const [text,setText]=useState('');
+  const myNotes=customNotes[city.id]||[];
+  function addNote(){
+    if(!text.trim()) return;
+    const next={...customNotes,[city.id]:[...myNotes,text.trim()]};
+    setCustomNotes(next); lsSet('custom-notes',next);
+    setText('');
+  }
+  function removeNote(idx){
+    const next={...customNotes,[city.id]:myNotes.filter((_,j)=>j!==idx)};
+    setCustomNotes(next); lsSet('custom-notes',next);
+  }
+  return <div>
+    <div style={{background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+      <div style={{fontSize:10,fontWeight:700,color:cc2,textTransform:"uppercase",
+        letterSpacing:.5,marginBottom:8}}>Local Insight</div>
+      <div style={{fontSize:12,color:"#555",lineHeight:1.75}}>{city.note}</div>
+    </div>
+    {city.warn&&(
+      <div style={{background:"#FFF8EE",border:`1px solid ${WRN}55`,borderRadius:10,
+        padding:12,marginTop:12}}>
+        <div style={{fontSize:12,color:WRN,lineHeight:1.55,fontWeight:500}}>{city.warn}</div>
+      </div>
+    )}
+
+    {/* Personal notes */}
+    <div style={{marginTop:16}}>
+      <SH label="My Notes"/>
+      {myNotes.length>0&&myNotes.map((n,idx)=>(
+        <div key={idx} style={{display:"flex",gap:8,alignItems:"flex-start",
+          marginBottom:8,paddingBottom:8,borderBottom:`1px solid ${BORDER}`}}>
+          <div style={{flex:1,fontSize:12,color:TXT,lineHeight:1.65,whiteSpace:"pre-wrap"}}>{n}</div>
+          <button onClick={()=>removeNote(idx)}
+            style={{background:"none",border:"none",color:MUT,cursor:"pointer",
+              fontSize:18,lineHeight:1,padding:"0 4px",flexShrink:0}}>×</button>
+        </div>
+      ))}
+      {myNotes.length===0&&<div style={{fontSize:12,color:MUT,marginBottom:12,fontStyle:"italic"}}>
+        No notes yet for {city.name}.
+      </div>}
+      <div style={{background:C2,borderRadius:10,padding:14,border:`1px solid ${BORDER}`}}>
+        <div style={{fontSize:10,fontWeight:700,color:cc2,textTransform:"uppercase",
+          letterSpacing:.5,marginBottom:10}}>+ Add a note</div>
+        <textarea value={text} onChange={e=>setText(e.target.value)}
+          placeholder="Type anything — a tip, a reminder, a reservation number…"
+          rows={3}
+          style={{width:"100%",padding:"8px 10px",borderRadius:7,border:`1px solid ${BORDER}`,
+            fontSize:12,background:CARD,color:TXT,outline:"none",resize:"vertical",
+            fontFamily:"inherit",lineHeight:1.5,marginBottom:8,boxSizing:"border-box"}}/>
+        <button onClick={addNote}
+          style={{background:cc2,color:"#fff",border:"none",borderRadius:7,padding:"9px 0",
+            fontSize:12,fontWeight:700,cursor:"pointer",width:"100%"}}>Save note</button>
+      </div>
+    </div>
+  </div>;
+}
+
+// ─── MAIN APP ─────────────────────────────────────────────────────────────────
+const TABS=[
+  {id:"days",label:"Days"},
+  {id:"see",label:"See"},
+  {id:"eat",label:"Eat"},
+  {id:"logistics",label:"Stay & Move"},
+  {id:"budget",label:"Budget"},
+  {id:"notes",label:"Notes"},
+];
+
+function SpainPortugal(){
+  const [sel,setSel]=useState("madrid");
+  const [tab,setTab]=useState("days");
+  const [bkOpen,setBkOpen]=useState(false);
+  const [bdOpen,setBdOpen]=useState(false);
+  const [phOpen,setPhOpen]=useState(false);
+  const [done,setDone]=useState(()=>ls('bk-done',{}));
+  const [dayMode,setDayMode]=useState(false);
+  const [activeDay,setActiveDay]=useState(1);
+  const [actualSpend,setActualSpend]=useState(()=>ls('actual-spend',{}));
+  const [customDishes,setCustomDishes]=useState(()=>ls('custom-dishes',{}));
+  const [customVenues,setCustomVenues]=useState(()=>ls('custom-venues',{}));
+  const [customSee,setCustomSee]=useState(()=>ls('custom-see',{}));
+  const [customNotes,setCustomNotes]=useState(()=>ls('custom-notes',{}));
+  const [stayDone,setStayDone]=useState(()=>ls('stay-done',{}));
+  const [stayHidden,setStayHidden]=useState(()=>ls('stay-hidden',{}));
+  const [seeDone,setSeeDone]=useState(()=>ls('see-done',{}));
+  const [seeHidden,setSeeHidden]=useState(()=>ls('see-hidden',{}));
+  const [eatDone,setEatDone]=useState(()=>ls('eat-done',{}));
+  const [eatHidden,setEatHidden]=useState(()=>ls('eat-hidden',{}));
+
+  const isMobile=useWindowWidth()<640;
+
+  const city=CITIES.find(c=>c.id===sel)||CITIES[0];
+  const cc2=city.country==="pt"?PT:ES;
+  const doneCount=Object.values(done).filter(Boolean).length;
+
+  function toggleDone(id){
+    setDone(prev=>{const n={...prev,[id]:!prev[id]};lsSet('bk-done',n);return n;});
+  }
+  function handleDayChange(d){
+    const n=Number(d); setActiveDay(n); setDayMode(true);
+    const cid=DAY_MAP[n]; if(cid){setSel(cid);setTab("days");}
+  }
+  useEffect(()=>{
+    const today=new Date();
+    const start=new Date(2026,7,2);
+    const day=Math.round((today-start)/86400000)+1;
+    if(day>=1&&day<=12) handleDayChange(day);
+  },[]);
+
+  return(
+    <div style={{fontFamily:"'Inter',system-ui,sans-serif",background:BG,minHeight:"100vh",color:TXT}}>
+
+      {/* TOP BAR */}
+      <div style={{background:CARD,borderBottom:`1px solid ${BORDER}`,
+        padding:isMobile?"10px 12px":"12px 20px",
+        display:"flex",flexWrap:"wrap",alignItems:"center",gap:8,justifyContent:"space-between",
+        boxShadow:"0 1px 3px rgba(0,0,0,.05)"}}>
+        <div>
+          <div style={{fontWeight:800,fontSize:isMobile?15:16,letterSpacing:-.3}}>
+            <span style={{color:ES}}>Spain</span> <span style={{color:MUT,fontWeight:400,fontSize:13}}>+</span> <span style={{color:PT}}>Portugal</span>
+          </div>
+          {!isMobile&&<div style={{fontSize:10,color:MUT,marginTop:1}}>August 2026 · 12 days · 10 cities · Cairo ↔</div>}
+        </div>
+
+        <div style={{display:"flex",gap:6,flexWrap:"wrap",alignItems:"center"}}>
+          {/* Day mode */}
+          <div style={{display:"flex",alignItems:"center",gap:5,background:dayMode?"#FFF8EE":C2,
+            border:`1px solid ${dayMode?WRN:BORDER}`,borderRadius:7,padding:"4px 10px"}}>
+            <span style={{fontSize:9,color:dayMode?WRN:MUT,fontWeight:600,textTransform:"uppercase",letterSpacing:.5}}>Day</span>
+            <select value={activeDay} onChange={e=>handleDayChange(e.target.value)}
+              style={{background:"transparent",border:"none",color:dayMode?WRN:TXT,
+                fontSize:12,fontWeight:700,cursor:"pointer",outline:"none",
+                WebkitAppearance:"none",appearance:"none"}}>
+              {Array.from({length:12},(_,i)=>i+1).map(d=>(
+                <option key={d} value={d}>{d}</option>
+              ))}
+            </select>
+            {dayMode&&<button onClick={()=>setDayMode(false)}
+              style={{background:"none",border:"none",color:MUT,fontSize:12,cursor:"pointer",padding:0,lineHeight:1}}>✕</button>}
+          </div>
+
+          <button onClick={()=>{setBkOpen(true);setBdOpen(false);setPhOpen(false);}}
+            style={{background:doneCount===BOOKINGS.length?GRN+"15":ES+"12",
+              border:`1px solid ${doneCount===BOOKINGS.length?GRN:ES}33`,
+              color:doneCount===BOOKINGS.length?GRN:ES,
+              borderRadius:7,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>
+            📋 {isMobile?`${doneCount}/${BOOKINGS.length}`:`Bookings ${doneCount}/${BOOKINGS.length}`}
+          </button>
+          <button onClick={()=>{setBdOpen(true);setBkOpen(false);setPhOpen(false);}}
+            style={{background:PT+"12",border:`1px solid ${PT}33`,color:PT,
+              borderRadius:7,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>
+            💰{isMobile?'':' Budget'}
+          </button>
+          <button onClick={()=>{setPhOpen(true);setBkOpen(false);setBdOpen(false);}}
+            style={{background:C2,border:`1px solid ${BORDER}`,color:MUT,
+              borderRadius:7,padding:"5px 10px",fontSize:11,fontWeight:600,cursor:"pointer"}}>
+            🗣{isMobile?'':' Phrases'}
+          </button>
+        </div>
+      </div>
+
+      {/* ROUTE STRIP */}
+      <div style={{padding:"14px 20px 0"}}>
+        <RouteStrip sel={sel} onSelect={id=>{setSel(id);setTab("days");}}
+          dayMode={dayMode} activeDay={activeDay}/>
+      </div>
+
+      {/* BODY */}
+      <div style={{display:"flex",padding:`0 ${isMobile?12:20}px 24px`,gap:12}}>
+
+        {/* SIDEBAR — desktop only */}
+        {!isMobile&&<div style={{width:148,flexShrink:0}}>
+          {CITIES.map(c=>{
+            const active=c.id===sel;
+            const cc3=c.country==="pt"?PT:ES;
+            return(
+              <button key={c.id} onClick={()=>{setSel(c.id);setTab("days");}}
+                style={{width:"100%",textAlign:"left",
+                  background:active?cc3+"12":CARD,
+                  border:`1px solid ${active?cc3:BORDER}`,
+                  borderRadius:7,padding:"8px 10px",marginBottom:4,
+                  cursor:"pointer",transition:"all .12s",
+                  boxShadow:active?`0 1px 6px ${cc3}22`:"none"}}>
+                <div style={{fontWeight:active?700:500,fontSize:12,
+                  color:active?cc3:TXT}}>{c.name}</div>
+                <div style={{fontSize:9,color:active?cc3:MUT,marginTop:1}}>{c.days}</div>
+                <div style={{fontSize:9,color:MUT,marginTop:2,lineHeight:1.3}}>
+                  {cityDates(c.id)}
+                </div>
+              </button>
+            );
+          })}
+        </div>}
+
+        {/* DETAIL PANEL */}
+        <div style={{flex:1,minWidth:0}}>
+          {/* City header */}
+          <div style={{background:CARD,borderRadius:10,padding:"14px 16px",marginBottom:10,
+            border:`1px solid ${BORDER}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+            <div style={{display:"flex",alignItems:"center",gap:8,flexWrap:"wrap"}}>
+              <div style={{fontWeight:800,fontSize:22,color:cc2}}>{city.name}</div>
+              <Tag color={cc2}>{city.days}</Tag>
+              <Tag color={cc2}>{city.duration}</Tag>
+              <Tag color={city.heatColor}>{city.heatLabel}</Tag>
+              {city.warn&&<Tag color={WRN}>⚠ Action needed</Tag>}
+            </div>
+            <div style={{fontSize:10,color:MUT,marginTop:4}}>{cityDates(city.id)}</div>
+            {dayMode&&DAY_MAP[activeDay]===city.id&&(
+              <div style={{marginTop:6,fontSize:11,color:WRN,fontWeight:600,
+                background:"#FFF8EE",display:"inline-block",padding:"2px 8px",
+                borderRadius:4,border:`1px solid ${WRN}44`}}>
+                📍 You are here — Day {activeDay} of 12
+              </div>
+            )}
+          </div>
+
+          {/* Tabs */}
+          <div style={{display:"flex",gap:3,marginBottom:10,overflowX:"auto",paddingBottom:2}}>
+            {TABS.map(t=>(
+              <button key={t.id} onClick={()=>setTab(t.id)}
+                style={{padding:"6px 13px",borderRadius:7,
+                  border:`1px solid ${tab===t.id?cc2:BORDER}`,
+                  background:tab===t.id?cc2:CARD,
+                  color:tab===t.id?"#fff":MUT,
+                  fontSize:11,fontWeight:tab===t.id?700:500,
+                  cursor:"pointer",whiteSpace:"nowrap",flexShrink:0,
+                  transition:"all .1s",
+                  boxShadow:tab===t.id?`0 1px 4px ${cc2}44`:"none"}}>
+                {t.label}
+              </button>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div style={{background:CARD,borderRadius:10,padding:"16px",
+            border:`1px solid ${BORDER}`,boxShadow:"0 1px 3px rgba(0,0,0,.04)"}}>
+            {tab==="days"&&<DaysTab city={city}/>}
+            {tab==="see"&&<SeeTab city={city} customSee={customSee} setCustomSee={setCustomSee} seeDone={seeDone} setSeeDone={setSeeDone} seeHidden={seeHidden} setSeeHidden={setSeeHidden}/>}
+            {tab==="eat"&&<EatTab city={city} customDishes={customDishes} setCustomDishes={setCustomDishes} customVenues={customVenues} setCustomVenues={setCustomVenues} eatDone={eatDone} setEatDone={setEatDone} eatHidden={eatHidden} setEatHidden={setEatHidden}/>}
+            {tab==="logistics"&&<LogisticsTab city={city} stayDone={stayDone} setStayDone={setStayDone} stayHidden={stayHidden} setStayHidden={setStayHidden}/>}
+            {tab==="budget"&&<BudgetTab city={city} actualSpend={actualSpend} setActualSpend={setActualSpend}/>}
+            {tab==="notes"&&<NotesTab city={city} customNotes={customNotes} setCustomNotes={setCustomNotes}/>}
+          </div>
+        </div>
+      </div>
+
+      {/* OVERLAYS */}
+      {bkOpen&&<BookingsOverlay done={done} onToggle={toggleDone} onClose={()=>setBkOpen(false)}/>}
+      {bdOpen&&<BudgetOverlay onClose={()=>setBdOpen(false)}/>}
+      {phOpen&&<PhrasesOverlay onClose={()=>setPhOpen(false)}/>}
+    </div>
+  );
+}
+    ReactDOM.createRoot(document.getElementById('root')).render(<SpainPortugal />);
+  </script>
+</body>
+</html>
